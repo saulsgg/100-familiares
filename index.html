@@ -121,7 +121,16 @@
     <p class="psub" id="psub"></p>
     <button type="button" class="ghost sm" id="chteam">Cambiar de equipo</button>
   </section>
+  <div class="cmdbar" id="cmdbar" hidden aria-label="Comodines de tu equipo"></div>
   <div class="pres" id="pres" hidden></div>
+  <section class="chat" id="chat" hidden role="dialog" aria-modal="true" aria-labelledby="chatt">
+    <header class="chat-h"><b id="chatt">💬 Junta de equipo</b><span class="chat-sec"><span id="chats">30</span> s</span></header>
+    <div class="chat-bar" aria-hidden="true"><i id="chatbar"></i></div>
+    <p class="chat-q" id="chatq"></p>
+    <div class="chat-m" id="chatm" aria-live="polite"></div>
+    <form class="chat-f" id="chatf" autocomplete="off"><input id="chati" maxlength="80" enterkeyhint="send" placeholder="Escribe a tu equipo…" aria-label="Mensaje para tu equipo"><button class="chat-go" aria-label="Enviar">➤</button></form>
+    <button type="button" class="ghost sm" id="chatok">¡Ya sabemos! Seguir jugando</button>
+  </section>
   <section class="finph" id="finph" hidden role="dialog" aria-modal="true" aria-labelledby="finpht">
     <div class="finph-in">
       <div class="finph-av" id="finphav"></div>
@@ -153,6 +162,8 @@
       <span class="ask-sec" id="asksec">15</span>
     </header>
     <p class="ask-q" id="askq"></p>
+    <p class="ask-hint" id="askhint" hidden></p>
+    <div class="cmdbar ask-cmd" id="askcmd" aria-label="Comodines"></div>
     <div class="ask-time" aria-hidden="true"><i id="askbar"></i></div>
     <div class="ask-prev" id="askprev" aria-hidden="true"></div>
     <form class="ask-f" id="askf" autocomplete="off">

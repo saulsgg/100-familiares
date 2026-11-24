@@ -1,5 +1,5 @@
 /* Guarda la app en el aparato para que abra rápido; si hay versión nueva, la baja. */
-const V='botones-v16';
+const V='botones-v17';
 const FILES=['./','index.html','juego.html','ver.html','app.css','app.js','avatars.js','vendor/qrcode.js','manifest.webmanifest',
   'fonts/lilita.woff2','fonts/rubik-500.woff2','fonts/rubik-700.woff2','fonts/rubik-800.woff2',
   'icons/icon-192.png','icons/icon-512.png','vendor/paho-mqtt.min.js',

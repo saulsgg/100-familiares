@@ -1075,6 +1075,29 @@ body{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-r
 .j-mav{display:block;width:44px;height:44px}.j-mav .l3-svg{width:100%;height:100%}
 .j-fin-btns{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin-top:12px}
 .j-meds .l2-md .dk{background:radial-gradient(circle at 35% 30%,#2f3aa0,#121746 72%);box-shadow:0 0 0 3px #ffc42e,0 0 0 6px var(--mc),0 6px 14px rgba(0,0,0,.45)}
+/* comodines */
+.l2-tw{display:grid;gap:6px;justify-items:stretch}
+.l2-cmds{display:flex;gap:6px;justify-content:center}
+.l2-cmd{cursor:pointer}
+.l2-cmd.can:not(.used) .l2-cf{box-shadow:inset 0 0 0 2px #ffc42e,0 0 14px rgba(255,196,46,.75),0 4px 10px rgba(0,0,0,.35);animation:jcan 1.2s ease-in-out infinite}
+@keyframes jcan{50%{transform:translateY(-3px)}}
+.l2-cmd:not(.can):not(.used){filter:grayscale(.5) brightness(.8)}
+#board .tile .front .l2-hint{z-index:2}
+/* reloj en pausa durante la junta */
+.l3-clk.paused{filter:saturate(.35) brightness(.85)}
+.l3-clk.paused::after{content:"⏸ PAUSA";position:absolute;left:50%;bottom:-10px;transform:translateX(-50%);padding:1px 8px;border-radius:99px;background:#ff2e88;color:#fff;font:400 12px var(--disp);white-space:nowrap}
+/* junta de equipo en esta pantalla */
+.j-chat{position:fixed;right:14px;bottom:14px;z-index:64;display:grid;gap:8px;width:min(92vw,380px);padding:14px;border-radius:20px;background:linear-gradient(180deg,#1e2569,#121746);box-shadow:0 0 0 3px var(--tc,#ffd76a),0 18px 40px rgba(0,0,0,.55)}
+.j-chh{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.j-chh b{font:400 22px var(--disp);color:var(--tc,#fff)}
+.j-cht{padding:2px 10px;border-radius:99px;background:#0b0f3a;color:var(--gold);font:400 20px var(--disp)}
+.j-chx{margin:0;color:var(--mute);font-weight:700;font-size:14px}
+.j-chx::before{content:"💭 ";display:inline-block;animation:jbob 1s ease-in-out infinite}
+.j-chm{max-height:200px;overflow:auto;display:grid;gap:4px}
+.j-chm p{margin:0;padding:6px 10px;border-radius:12px;background:rgba(255,255,255,.07);font-size:15px}
+.j-chm p.me{background:color-mix(in srgb,var(--tc) 30%,transparent)}
+.j-chf{display:flex;gap:6px}.j-chf input{flex:1;min-width:0;min-height:42px;padding:6px 12px;border:0;border-radius:12px;background:#fff8ec;color:var(--cink);font:700 15px Rubik,sans-serif}
+@media (max-width:600px){.l2-cmd{width:40px}}
 
 /* pantalla del jugador: sin botones de quien dirige y pensada para celular */
 body.ver{overflow-x:hidden}
@@ -1097,6 +1120,9 @@ body.ver{overflow-x:hidden}
 }
 /* el marcador siempre a la vista */
 .ver .l2-score{position:sticky;top:0;z-index:30;margin-left:-8px;margin-right:-8px;padding:6px 8px;background:linear-gradient(180deg,rgba(7,10,36,.96) 75%,rgba(7,10,36,0))}
+.ver .j-chm{display:none}
+.ver .j-chat{left:50%;right:auto;bottom:12px;transform:translateX(-50%)}
+.ver .l2-cmd{cursor:default}
 </style>
 </head>
 <body class="ver">
@@ -1114,9 +1140,9 @@ body.ver{overflow-x:hidden}
   </header>
 
   <div class="l2-score">
-    <div class="l2-tw"><div class="l2-team a" id="tm0"><span class="l2-turn" id="turn0">¡Contestan!</span><span class="l2-ava j-ava" id="av0"></span><span><span class="l2-tn">Turquesas</span><b class="l2-ts" id="ts0" data-v="0">0</b></span></div></div>
+    <div class="l2-tw"><div class="l2-team a" id="tm0"><span class="l2-turn" id="turn0">¡Contestan!</span><span class="l2-ava j-ava" id="av0"></span><span><span class="l2-tn">Turquesas</span><b class="l2-ts" id="ts0" data-v="0">0</b></span></div><div class="l2-cmds" data-t="0"></div></div>
     <div class="l2-bank"><small>En juego</small><b id="bv" data-v="0">0</b><span class="j-bm" id="bm"></span></div>
-    <div class="l2-tw"><div class="l2-team b" id="tm1"><span class="l2-turn" id="turn1">¡Contestan!</span><span class="l2-ava j-ava" id="av1"></span><span><span class="l2-tn">Dorados</span><b class="l2-ts" id="ts1" data-v="0">0</b></span></div></div>
+    <div class="l2-tw"><div class="l2-team b" id="tm1"><span class="l2-turn" id="turn1">¡Contestan!</span><span class="l2-ava j-ava" id="av1"></span><span><span class="l2-tn">Dorados</span><b class="l2-ts" id="ts1" data-v="0">0</b></span></div><div class="l2-cmds" data-t="1"></div></div>
   </div>
 
   <section class="l3-qp" id="qp" aria-label="Pregunta">
@@ -1146,6 +1172,11 @@ body.ver{overflow-x:hidden}
   <div class="xslots" id="xslots" aria-label="Errores"><div class="xslot"></div><div class="xslot"></div><div class="xslot"></div></div>
   <div class="l3-xbig" id="xbig" aria-hidden="true">✕</div>
 
+</div>
+<div class="j-chat" id="jchat" hidden role="dialog" aria-labelledby="jchn">
+  <div class="j-chh"><b id="jchn">💬 Junta</b><span class="j-cht"><span id="jcht">30</span> s</span></div>
+  <p class="j-chx" id="jchx">Están platicando en sus celulares… el reloj está en pausa ⏸</p>
+  <div class="j-chm" id="jchm"></div>
 </div>
 <div class="j-fin" id="fin" hidden role="dialog" aria-modal="true" aria-labelledby="finw">
   <div class="j-fin-in">
@@ -1563,7 +1594,7 @@ function finHide(){FINRUN++;$('#fin').hidden=true}
 
 /* ===================== EL JUEGO EN VIVO EN EL CELULAR DE CADA JUGADOR ===================== */
 /* recibe lo que pasa en la pantalla del juego y lo anima igual, sin botones de quien dirige */
-let VFIN=0,V=null,VQ=null,VREV=new Set(),VXS=0,VAW=0,VPH='',VSAY=null,SC=[0,0],FLY=0;
+let VFIN=0,VCEV=0,VCMD='',VHINT=new Set(),V=null,VQ=null,VREV=new Set(),VXS=0,VAW=0,VPH='',VSAY=null,SC=[0,0],FLY=0;
 const HEAD='ENCUESTAMOS A 100 PERSONAS…';
 const tile=i=>$(`#board .tile[data-i="${i}"]`);
 const XSVG='<svg viewBox="0 0 100 100" aria-hidden="true"><path d="M24 24 76 76M76 24 24 76"/></svg>';
@@ -1613,6 +1644,7 @@ function saySync(s,v){const t=v.ph==='steal'?1-v.ctl:Math.max(0,v.ctl);
   VSAY=s}
 /* reloj al mismo paso que la pantalla grande */
 function ckSync(c,stopX){if(!c)return;
+  if(c.pause){if(CK.run){clearInterval(CK.id);CK.run=false}$('#clk').classList.add('paused');return}$('#clk').classList.remove('paused');
   if(c.tot&&c.tot!==CK.tot&&!CK.run){CK.tot=c.tot;ckBuild();$('#cbulbs').style.setProperty('--n',CK.tot);ckReset()}
   if(c.run&&!CK.run){ckStart();if(c.left<CK.tot){CK.left=c.left;hand(CK.tot-CK.left,true);ckDraw('run')}}
   else if(!c.run&&CK.run){if(c.left<=0)ckTimeout();else ckStop(stopX?'x':'ok')}
@@ -1625,7 +1657,7 @@ function apply(v){const first=!V;
   $('#rn').textContent=(v.rn||1)+(v.rr?' de '+v.rr:'');
   /* nueva ronda o nueva pregunta */
   const q=v.q||'';
-  if(q!==VQ){F.tok++;VREV=new Set();VXS=v.xs||0;VSAY=null;hideSay();drawX(v.x||0);
+  if(q!==VQ){F.tok++;VREV=new Set();VHINT=new Set();VXS=v.xs||0;VSAY=null;hideSay();drawX(v.x||0);
     if(!q){qIdle();drawBoard(v.n||6);if(!CK.run)ckReset()}
     else{drawBoard(v.n||6);if(!first&&v.ph==='q'){scrollTo({top:0,behavior:'smooth'});qReveal(q)}else qShowNow(q)}
     VQ=q}
@@ -1648,6 +1680,11 @@ function apply(v){const first=!V;
   /* dos errores: se preparan para robar */
   const wn=v.warn==null?-1:v.warn;$$('.l2-team').forEach((e,k)=>{e.classList.toggle('ready',k===wn);if(k===wn)$('.l2-turn',e).textContent='¡Prepárense!'});const s3=$$('#xslots .xslot')[2];if(s3)s3.classList.toggle('next',wn>=0);
   if(wn>=0&&(!V||V.warn!==wn)&&!first){cinta(`¡PREPÁRENSE, ${NAMES[wn].toUpperCase()}!`,'Una ✕ más y pueden robar los puntos',wn?'c-gold':'c-teal');sfr('grow',.5);bump($('#tm'+wn),1.12)}
+  /* comodines: tarjetas, pistas, avisos y junta */
+  if(v.cmd){const k=JSON.stringify(v.cmd);if(k!==VCMD){const old=VCMD?JSON.parse(VCMD):null;VCMD=k;drawCmdsV(v.cmd,old)}}
+  (v.hints||[]).forEach(([i,L])=>{if(VHINT.has(i))return;VHINT.add(i);hintOnV(i,L,!first)});
+  if(v.cev&&v.cev.id!==VCEV){const was=VCEV;VCEV=v.cev.id;if(!first&&was!==undefined)cevFx(v.cev)}
+  chatV(v.chat);
   /* premio y ceremonia del final */
   const pz=v.pz||'';$('#pzchip').hidden=!pz;$('#pzt').textContent=pz;
   if(v.fin&&!VFIN){VFIN=1;const f=v.fin;if(first)finShow(f);else later(2700,()=>{if(V&&V.fin)finShow(f)})}else if(!v.fin&&VFIN){VFIN=0;finHide()}
@@ -1659,6 +1696,17 @@ new ResizeObserver(()=>marquee($('#marq'))).observe($('#marq'));
 ckBuild();ckReset();qIdle();drawBoard(6);[0,1].forEach(t=>$('#av'+t).innerHTML=avSVG(AV[t]));stInit();
 try{document.fonts.load('40px "Lilita One"')}catch(e){}
 try{parent.postMessage({t:'ver-listo'},'*')}catch(e){}
+
+/* comodines (solo se ven; los usan desde el celular) */
+const CMDSV=[{k:'p',i:'💡',n:'Pista'},{k:'s',i:'🤫',n:'Silencio'},{k:'c',i:'💬',n:'Junta'}];
+function drawCmdsV(c,old){$$('.l2-cmds').forEach(box=>{const t=+box.dataset.t;box.innerHTML=CMDSV.map((x,j)=>`<div class="l2-cmd${c.u[t][j]?' used':''}${c.can[t][j]?' can':''}" data-k="${x.k}"><span class="l2-ci"><span class="l2-cf"><i>${x.i}</i><small>${x.n}</small></span><span class="l2-cb">USADO</span></span></div>`).join('');
+  if(old)CMDSV.forEach((x,j)=>{if(c.u[t][j]&&!old.u[t][j]&&!RM()){const e=$(`[data-k="${x.k}"]`,box);e.classList.remove('used');void e.offsetWidth;later(30,()=>e.classList.add('used'))}})})}
+function hintOnV(i,L,anim){const tl=tile(i);if(!tl||$('.l2-hint',tl))return;const h=document.createElement('span');h.className='l2-hint';$('.front',tl).appendChild(h);
+  if(!anim){h.textContent=L+'…';return}seeIt(tl);stage('aim',{el:tl});later(1400,stIdle);later(250,()=>flapText(h,L+'…'))}
+function cevFx(e){sfr('cmd',.9);const big=e.k==='p'?'💡 ¡PISTA!':e.k==='s'?'🤫 ¡SILENCIO!':'💬 ¡JUNTA DE EQUIPO!';
+  const sub=e.k==='p'?`${losN(e.t,1)} usaron su pista: ${e.extra}`:e.k==='s'?`${losN(e.t,1)} silenciaron a ${e.extra}`:`${losN(e.t,1)} se ponen de acuerdo`;
+  cinta(big,sub,e.k==='s'?'c-pink':e.t?'c-gold':'c-teal')}
+function chatV(c){const p=$('#jchat');if(!p)return;if(!c){p.hidden=true;return}p.hidden=false;p.style.setProperty('--tc',TCOL[c.t]);$('#jchn').textContent=`💬 Junta de ${losN(c.t)}`;$('#jcht').textContent=c.left}
 
 }
 </script>
