@@ -256,6 +256,7 @@ function playMsg(topic,m){
   P.lastHost=performance.now();
   if(m.t==='ping'){psend({t:'pong',ts:m.ts,pt:performance.now()});return}
   if(m.t==='off'){if(isFinite(+m.off))P.hoff=+m.off;return}
+  if(m.t==='ev'){const f=$('#gvf');if(VERok&&f.contentWindow)try{f.contentWindow.postMessage({t:'ev',e:m,_d:isFinite(P.hoff)?performance.timeOrigin-P.hoff:null},'*')}catch(e){}return}
   if(m.t==='who'){hello();return}
   if(m.t==='rtc-answer'){if(P.pc&&typeof m.sdp==='string'&&P.pc.signalingState==='have-local-offer')P.pc.setRemoteDescription({type:'answer',sdp:m.sdp}).catch(()=>dropP());return}
   if(m.t==='state'){const firstFound=!P.found,prevT=P.team;P.found=true;setNames(m.names);if(m.info&&m.info.text)P.info=m.info;if(Array.isArray(m.av))preAnimals(m.av);clearTimeout(P.probeT);P.st=m;P.foul=!!m.foul;if(m.team===0||m.team===1)P.team=m.team;else if(m.team===-1)P.team=-1;

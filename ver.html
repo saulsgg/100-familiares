@@ -1216,12 +1216,13 @@ body.ver{overflow-x:hidden}
   body.ver{overflow:hidden}
   .ver .j-wrap{display:flex;flex-direction:column;gap:7px;height:100dvh;max-height:100dvh;padding:6px 8px 8px;overflow:hidden}
   /* barra de arriba */
-  .ver .j-top{flex:none;min-height:46px;margin:0!important;padding-right:150px;gap:5px;flex-wrap:nowrap;overflow:hidden}
+  .ver .j-top{flex:none;min-height:46px;margin:0!important;padding-right:134px;gap:5px;flex-wrap:nowrap;overflow:hidden}
   .ver .j-logo{display:none}
-  .ver .l3-rnd,.ver .l3-mult,.ver .j-pz{flex:none;font-size:13px;padding:4px 9px;white-space:nowrap}
-  .ver .j-pz{max-width:34vw;overflow:hidden;text-overflow:ellipsis}
-  .ver .xslots{position:fixed;top:13px;right:66px;z-index:9;margin:0;gap:4px}
-  .ver .xslot{width:24px;border-radius:7px;border-width:2px}
+  .ver .l3-rnd,.ver .j-pz{flex:none;font-size:12px;padding:4px 9px;white-space:nowrap}
+  .ver .l3-mult{display:none!important}
+  .ver .j-pz{flex:0 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis}
+  .ver .xslots{position:fixed;top:14px;right:60px;z-index:9;margin:0;gap:3px}
+  .ver .xslot{width:22px;border-radius:7px;border-width:2px}
   .ver .xslot.next{box-shadow:0 0 10px rgba(255,77,102,.8)}
   .ver .l3-clk{position:fixed;top:4px!important;right:6px;transform:scale(.62);transform-origin:100% 0}
   /* marcador */
@@ -1243,6 +1244,8 @@ body.ver{overflow-x:hidden}
   .ver .j-wrap .l3-qp{flex:none;margin:0!important;padding:8px 8px 9px;border-radius:16px}
   .ver .l3-qhead{display:none}
   .ver .l3-qb{min-height:0;gap:.26em .42em;font-size:clamp(14px,4.4vw,21px)}
+  .ver #qb.long{font-size:clamp(12px,3.6vw,17px)}
+  .ver #qb.xlong{font-size:clamp(11px,3.1vw,15px)}
   .ver .l3-qb .l2-w{gap:2px}
   .ver .j-say{min-height:0;padding:8px 10px;gap:4px}
   .ver .j-sayq{margin:0;padding-right:0;font-size:12px;text-align:center}
@@ -1815,9 +1818,10 @@ const HEAD='ENCUESTAMOS A 100 PERSONAS…';
 const tile=i=>$(`#board .tile[data-i="${i}"]`);
 const XSVG='<svg viewBox="0 0 100 100" aria-hidden="true"><path d="M24 24 76 76M76 24 24 76"/></svg>';
 /* pregunta */
-function qIdle(){F.qshown=false;$('#qhead').innerHTML=cellsHTML(HEAD,true);$('#qb').innerHTML=cellsHTML('100 Familiares dijeron');$('#qp').classList.remove('lit')}
-function qShowNow(q){$('#qhead').innerHTML=cellsHTML(HEAD);$('#qb').innerHTML=cellsHTML(q);F.qshown=true;$('#qp').classList.add('lit')}
-function qReveal(q){F.qshown=false;$('#qhead').innerHTML=cellsHTML(HEAD,true);$('#qb').innerHTML=cellsHTML(q,true);$('#qp').classList.remove('lit');
+function qIdle(){qLen('');F.qshown=false;$('#qhead').innerHTML=cellsHTML(HEAD,true);$('#qb').innerHTML=cellsHTML('100 Familiares dijeron');$('#qp').classList.remove('lit')}
+function qLen(q){const b=$('#qb'),n=(q||'').length;b.classList.toggle('long',n>34&&n<=60);b.classList.toggle('xlong',n>60)}
+function qShowNow(q){qLen(q);$('#qhead').innerHTML=cellsHTML(HEAD);$('#qb').innerHTML=cellsHTML(q);F.qshown=true;$('#qp').classList.add('lit')}
+function qReveal(q){qLen(q);F.qshown=false;$('#qhead').innerHTML=cellsHTML(HEAD,true);$('#qb').innerHTML=cellsHTML(q,true);$('#qp').classList.remove('lit');
   sfr('pa',.8);const hs=[...HEAD.replace(/ /g,'')];$$('#qhead .l2-c').forEach((c,k)=>flipCell(c,hs[k],2+k%3,150+k*30,true));
   const words=q.toUpperCase().split(' '),t0=RM()?0:Math.max(0,QI_T0.pa-VLAG);let end=0;
   $$('#qb .l2-w').forEach((w,wi)=>{const ch=[...words[wi]];$$('.l2-c',w).forEach((c,k)=>{end=Math.max(end,flipCell(c,ch[k],3+Math.floor(Math.random()*3),t0+wi*WD+k*38,true))})});
@@ -1898,9 +1902,7 @@ function apply(v){const first=!V;
   else{document.body.classList.remove('steal');setTurn(v.ph==='play'?v.ctl:-1,false)}
   bankTo(v.bank||0,v.m||1);
   /* puntos para un equipo: vuelan del banco al marcador */
-  if(v.aw&&v.aw.id!==VAW){const fresh=!first;VAW=v.aw.id;if(fresh){const{t,pts,why}=v.aw;
-    if(pts>0){FLY=1;flyChip($('#bv'),$('#ts'+t),'+'+pts,t?'gold':'teal',800,()=>{FLY=0;SC[t]+=pts;scoreTo(t,SC[t],true);bump($('#tm'+t),1.08);sfr('pts',.85);stage('team',{el:$('#tm'+t),c:TCOL[t]});later(1800,stIdle)})}
-    cinta(pts>0?`¡+${pts} para ${NAMES[t]}!`:why,pts>0?why:'',t?'c-gold':'c-teal')}}
+  if(v.aw&&v.aw.id!==VAW){VAW=v.aw.id;if(!first)awardFx(v.aw)}
   if(Array.isArray(v.sc)&&!FLY)[0,1].forEach(t=>{if(SC[t]!==v.sc[t]){SC[t]=v.sc[t];scoreTo(t,v.sc[t],!first)}});
   if(v.ph==='end'&&VPH!=='end'&&!first){const[a,b]=v.sc,w=a===b?-1:a>b?0:1;cinta(w<0?'¡EMPATE!':`¡GANARON ${losN(w).toUpperCase()}!`,`${NAMES[0]} ${a} · ${NAMES[1]} ${b}`,w<0?'c-pink':w?'c-gold':'c-teal');
     later(300,()=>{sfr('top1',.9);confetti()});later(1400,()=>sfr('pts',.8));if(w>=0){bump($('#tm'+w),1.12);stage('team',{el:$('#tm'+w),c:TCOL[w]});later(2500,stIdle)}}
@@ -1934,6 +1936,20 @@ function cevFx(e){sfr('cmd',.9);const big=e.k==='p'?'💡 ¡PISTA!':e.k==='s'?'�
   const sub=e.k==='p'?`${losN(e.t,1)} usaron su pista: ${e.extra}`:e.k==='s'?`${losN(e.t,1)} silenciaron a ${e.extra}`:`${losN(e.t,1)} se ponen de acuerdo`;
   cinta(big,sub,e.k==='s'?'c-pink':e.t?'c-gold':'c-teal')}
 function chatV(c){const p=$('#jchat');if(!p)return;if(!c){p.hidden=true;return}p.hidden=false;p.style.setProperty('--tc',TCOL[c.t]);$('#jchn').textContent=`💬 Junta de ${losN(c.t)}`;$('#jcht').textContent=c.left}
+
+function awardFx(aw){const{t,pts,why}=aw;
+  if(pts>0){FLY=1;flyChip($('#bv'),$('#ts'+t),'+'+pts,t?'gold':'teal',800,()=>{FLY=0;SC[t]+=pts;scoreTo(t,SC[t],true);bump($('#tm'+t),1.08);sfr('pts',.85);stage('team',{el:$('#tm'+t),c:TCOL[t]});later(1800,stIdle)})}
+  cinta(pts>0?`¡+${pts} para ${NAMES[t]}!`:why,pts>0?why:'',t?'c-gold':'c-teal')}
+/* avisos por adelantado de la pantalla grande: se muestran a la misma hora que allá */
+function evRun(e,late){if(!V)return;VLAG=Math.max(0,Math.min(700,late||0));
+  if(e.k==='q'){if(e.q===VQ)return;F.tok++;VREV=new Set();VHINT=new Set();VXS=0;VSAY=null;hideSay();drawX(0);drawBoard(e.n||6);scrollTo({top:0,behavior:'smooth'});qReveal(e.q);VQ=e.q;return}
+  if(e.q!==VQ)return;
+  if(e.k==='rev'){if(VREV.has(e.i))return;VREV.add(e.i);revealT(e.i,e.text,e.pts,e.quiet?'quiet':'anim')}
+  else if(e.k==='x'){VXS++;strikeFx();drawX(e.x)}
+  else if(e.k==='aw'){if(e.aw.id===VAW)return;VAW=e.aw.id;awardFx(e.aw)}}
+addEventListener('message',e=>{if(e.source!==parent)return;const d=e.data;if(!d||d.t!=='ev'||!d.e)return;const ev=d.e;
+  const D=isFinite(d._d)?d._d-performance.timeOrigin:null,due=D!=null?ev.at+D:performance.now(),wait=due-performance.now();
+  if(wait>0&&wait<2000)setTimeout(()=>evRun(ev,0),wait);else evRun(ev,wait<0?-wait:0)});
 
 }
 </script>

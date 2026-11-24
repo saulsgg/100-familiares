@@ -2207,7 +2207,7 @@ function clearWarn(){if(R)R.warn=false;warnFx(0,false)}
 function startSteal(){if(!R||R.phase!=='play')return;clearWarn();R.phase='steal';const o=1-R.ctl;setTurn(o,true);ckReset();ctl('steal');document.body.classList.add('steal');MUS.sync();
   cinta('¡ROBO!',`${losN(o,1)} tienen una sola oportunidad`,'c-pink');nhInfo(`¡Robo! Contestan ${losN(o)}`,scoreLine());
   note(`Si ${losN(o)} atinan, toquen la ficha; si no, toquen “Falló el robo”.`);T(2600,turnStart)}
-function award(t,why){if(!R||R.phase==='done')return;clearWarn();G.fin=G.ri;saveG();closeAsk();clearGrace();later(1500,hideSay);R.phase='done';ckStop('ok');document.body.classList.remove('steal');MUS.sync();const pts=R.bank*R.m;R.aw={id:Date.now(),t,pts,why};setTurn(-1);ctl('done');
+function award(t,why,aid){if(!R||R.phase==='done')return;clearWarn();G.fin=G.ri;saveG();closeAsk();clearGrace();later(1500,hideSay);R.phase='done';ckStop('ok');document.body.classList.remove('steal');MUS.sync();const pts=R.bank*R.m;R.aw={id:aid||Date.now(),t,pts,why};setTurn(-1);ctl('done');
   if(pts>0){flyChip($('#bv'),$('#ts'+t),'+'+pts,t?'gold':'teal',800,()=>{G.sc[t]+=pts;saveG();scoreShow();bump($('#tm'+t),1.08);sfr('pts',.85);stage('team',{el:$('#tm'+t),c:TCOL[t]});later(1800,stIdle)})}
   R.bank=0;later(200,bankShow);
   cinta(pts>0?`¡+${pts} para ${NAMES[t]}!`:why,pts>0?why:'',t?'c-gold':'c-teal');
@@ -2449,7 +2449,24 @@ document.addEventListener('visibilitychange',wake);document.addEventListener('po
 meSync();drawOpts();
 /* cuando pasa algo importante se avisa a los celulares en ese mismo instante (sin esperar la siguiente revisión) */
 {const now=f=>function(...a){const r=f.apply(this,a);viewTick();return r};
-  reveal=now(reveal);strike=now(strike);startSteal=now(startSteal);award=now(award);qReveal=now(qReveal);turnStart=now(turnStart);showEnd=now(showEnd);showSay=now(showSay);sayState=now(sayState);hideSay=now(hideSay)}
+  startSteal=now(startSteal);turnStart=now(turnStart);showEnd=now(showEnd);showSay=now(showSay);sayState=now(sayState);hideSay=now(hideSay)}
+
+/* ===== que todos lo vean en el mismo instante =====
+   Esta pantalla avisa por adelantado a los celulares "esto pasa a tal hora" (su hora ya convertida en cada celular)
+   y ella misma lo muestra a esa misma hora. El adelanto es lo que tarda en llegar un mensaje al celular más lento,
+   así da igual si un celular está directo por Wi-Fi o por el servidor de internet. */
+function syncD(){if(!CEL)return 0;let m=0;NH.P.forEach(p=>{if(p.local||p.team<0||p.off==null)return;m=Math.max(m,nhRtt(p)/2)});return m>0?Math.round(Math.min(450,m+40)):0}
+function evAll(e){NH.P.forEach(p=>{if(!p.local&&p.team>=0)nhTo(p,e,1)})}
+function synced(kind,go,ann){const D=syncD();if(D<25){go();viewTick();return}const qid=R.q.q,e=ann();e.t='ev';e.k=kind;e.q=qid;e.at=performance.now()+D;evAll(e);
+  later(D,()=>{if(R&&R.q.q===qid){go();viewTick()}})}
+{const r0=reveal,s0=strike,a0=award,q0=qReveal;
+  reveal=function(i,quiet){if(!R||R.rev[i]||(R.pend&&R.pend['r'+i]))return;R.pend=R.pend||{};R.pend['r'+i]=1;
+    synced('rev',()=>{delete R.pend['r'+i];r0(i,quiet)},()=>({i,text:R.q.a[i][0],pts:R.q.a[i][1],quiet:!!quiet}))};
+  strike=function(){if(!R||(R.phase!=='play'&&R.phase!=='steal')||R.pendX)return;R.pendX=1;
+    synced('x',()=>{R.pendX=0;s0()},()=>({x:R.phase==='play'?Math.min(3,R.x+1):R.x}))};
+  award=function(t,why){if(!R||R.phase==='done'||R.pendA)return;R.pendA=1;const id=Date.now();
+    synced('aw',()=>{R.pendA=0;a0(t,why,id)},()=>({aw:{id,t,pts:R.bank*R.m,why}}))};
+  qReveal=function(){if(!R||R.pendQ)return;R.pendQ=1;synced('q',()=>{R.pendQ=0;q0()},()=>({n:R.n}))}}
 
 /* ===================== SALA: equipos y ajustes ===================== */
 /* el inicio manda el modo: pantalla grande o cada quien en su celular */
