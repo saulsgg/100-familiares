@@ -140,7 +140,7 @@ function pingAll(){if(!H.net||!H.net.up)return;const now=performance.now();let g
   H.P.forEach((p,k)=>{if(now-(p.last||now)>9000){dropRTC(p);H.P.delete(k);gone=true}});if(gone){drawTeams();bcastState()}
   bcast({t:'ping',ts:now});
   /* retraso típico de ida (la mitad de la vuelta) para que el semáforo de la tele vaya parejo con los celulares */
-  const best=players().filter(p=>p.rtts&&p.rtts.length).map(p=>Math.min(...p.rtts)).sort((a,b)=>a-b);H.lat=best.length?Math.min(300,best[Math.floor(best.length/2)]/2):0;
+  const best=players().filter(p=>p.rtts&&p.rtts.length).map(p=>Math.min(...p.rtts)).sort((a,b)=>a-b);H.lat=best.length?Math.min(300,best[best.length-1]/2):0;
   if(H.phase==='lobby'&&Math.random()<.2)hostUp()}
 function drawRule(){$$('#rule button').forEach(b=>b.setAttribute('aria-pressed',String((b.dataset.r==='foul')===H.foul)))}
 function clearHT(){H.T.forEach(clearTimeout);H.T=[];clearTimeout(H.dT)}
@@ -266,9 +266,13 @@ function arm(m){clearPT();hideRes();P.r=m.r;P.rt=0;P.lateUntil=0;P.foul=!!m.foul
   if(P.team<0){showPick();return}showPad();$$('#plamps i').forEach(l=>{l.className='';l.style.removeProperty('--wc')});
   padState('wait','Prepárense…',P.foul?'Si tocas antes del ¡YA!, tu equipo pierde el turno':'Esperen la luz verde');
   m.lights.forEach((ms,k)=>P.T.push(later(ms,()=>{if(P.phase==='wait'){plamp(k,'r');sf('lr',.35)}})));
-  P.T.push(later(m.d,()=>{if(P.phase!=='wait')return;P.phase='go';P.yaAt=performance.now();$$('#plamps i').forEach(l=>l.className='g');padState('go','¡YA!','¡Toca el botón!');sf('ya',.7);vib(70)}))}
-function press(){const now=performance.now(),dome=$('#dome');
-  if(P.phase==='go'){if(P.lock>now){if(!P.q)P.q=later(P.lock-now+5,()=>{P.q=0;press()});return}
+  P.T.push(later(m.d,()=>{if(P.phase!=='wait')return;P.phase='go';P.yaAt=performance.now();$$('#plamps i').forEach(l=>l.className='g');padState('go','¡YA!','¡Toca el botón!');sf('ya',.7);vib(70);
+    requestAnimationFrame(f=>{if(P.phase==='go'&&f>P.yaAt&&f-P.yaAt<200)P.yaAt=f})}))}
+/* menos de 0.1 s después del ¡YA! nadie reacciona: eso es adivinar */
+const MIN_RT=100;
+function press(ts){const pn=performance.now(),now=ts>0&&ts<=pn&&pn-ts<300?ts:pn,dome=$('#dome');
+  if(P.phase==='go'&&!P.foul&&(P.lock>now||now-P.yaAt<MIN_RT)){if(P.lock<=now){P.lock=now+400;animal(myAv(),.7)}vib(25);shake(dome);$('#psub').textContent='¡Muy pronto! Espera tantito y vuelve a tocar';return}
+  if(P.phase==='go'){
     P.phase='sent';P.rt=now-P.yaAt;psend({t:'press',r:P.r,rt:P.rt},1);tick();vib(30);padState('sent','¡Listo!',`Tu tiempo: ${sec(P.rt)}`);spk(dome,22,['#fff','#fff3c4',getComputedStyle($('#v-play')).getPropertyValue('--tc')]);return}
   if(P.phase==='wait'){
     if(P.foul){P.phase='early';psend({t:'early',r:P.r,before:Math.max(0,P.yaAt-now)},1);animal(myAv(),1);vib([60,40,60]);padState('early','¡Te adelantaste!','Esperen el resultado…');shake(dome);return}
@@ -288,7 +292,7 @@ function onRes(m){if(m.r!==P.r){if(P.phase!=='idle')return;P.r=m.r}clearPT();con
 function showRes(cls,big,txt,sub,av){const r=$('#pres');r.className='pres '+cls;r.innerHTML=(av?avSVG(av):'')+`<b>${esc(big)}</b><p>${esc(txt)}</p>`+(sub?`<p>${esc(sub)}</p>`:'');r.hidden=false;if(!RM()){pop($('.l3-svg',r),600);r.animate([{opacity:0},{opacity:1}],{duration:250})}}
 function hideRes(){clearTimeout(P.resT);$('#pres').hidden=true}
 function onDome(e){const d=$('#dome');if(MODE!=='play'||$('#pad').hidden)return false;const r=d.getBoundingClientRect();if(!r.width)return false;return Math.hypot(e.clientX-(r.left+r.width/2),e.clientY-(r.top+r.height/2))<=r.width/2}
-document.addEventListener('pointerdown',e=>{if(MODE!=='play'||!$('#ask').hidden||e.target.closest('button,input,a,.pbar'))return;if(!onDome(e))return;e.preventDefault();const p=$('#pad');if(P.phase==='go'||P.phase==='idle')p.classList.add('press');press()},{passive:false});
+document.addEventListener('pointerdown',e=>{if(MODE!=='play'||!$('#ask').hidden||e.target.closest('button,input,a,.pbar'))return;if(!onDome(e))return;e.preventDefault();const p=$('#pad');if(P.phase==='go'||P.phase==='idle')p.classList.add('press');press(e.timeStamp)},{passive:false});
 ['pointerup','pointercancel'].forEach(k=>document.addEventListener(k,()=>$('#pad').classList.remove('press')));
 $('#pteams').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;ac();loadSounds();P.team=+b.dataset.t;LS.set('bt-team',{code:P.code,team:P.team});psend({t:'team',team:P.team},1);tick();showPad()});
 $('#gvch').addEventListener('click',e=>$('#chteam').click());

@@ -1579,7 +1579,8 @@ function nhMsg(topic,m){const uid=String(m.u||'').slice(0,40);if(!uid)return;
 function nhPing(){if(!NH.net||!NH.net.up)return;const now=performance.now();let gone=false;
   NH.P.forEach((p,k)=>{if(!p.local&&now-(p.last||now)>9000){nhDrop(p);NH.P.delete(k);gone=true}});if(gone){NH.on.players();nhState()}
   nhBcast({t:'ping',ts:now});
-  const best=nhPlayers().filter(p=>p.rtts&&p.rtts.length).map(p=>Math.min(...p.rtts)).sort((a,b)=>a-b);NH.lat=best.length?Math.min(300,best[Math.floor(best.length/2)]/2):0;
+  const best=nhPlayers().filter(p=>p.rtts&&p.rtts.length).map(p=>Math.min(...p.rtts)).sort((a,b)=>a-b);/* la tele espera al celular más lento: así nadie ve el ¡YA! en la tele antes que en su propio celular */
+  NH.lat=best.length?Math.min(300,best[best.length-1]/2):0;
   if(NH.phase==='idle'&&Math.random()<.2)nhUp()}
 function nhClear(){NH.T.forEach(clearTimeout);NH.T=[];clearTimeout(NH.dT)}
 /* ¡YA! en los celulares: regresa el retraso a usar en la tele para que vaya pareja */
@@ -1589,7 +1590,7 @@ function nhGo(){if(NH.phase!=='arm')return;NH.phase='go';NH.T.push(later(7000,()
 function nhCancel(){if(NH.phase==='arm'||NH.phase==='go')nhBcast({t:'cancel'},1);nhClear();NH.phase='idle'}
 function nhEarly(pl,m){if(m.r!==NH.r||!NH.foul||pl.team<0||(NH.phase!=='arm'&&NH.phase!=='go'))return;NH.early={uid:pl.uid,name:pl.name,team:pl.team,before:Math.max(0,Math.min(15000,+m.before||0))};nhFinish('foul')}
 const nhSorted=()=>NH.presses.slice().sort((a,b)=>a.rt-b.rt);
-const nhRtt=p=>{const r=(p.rtts||[]).slice().sort((a,b)=>a-b);return r.length?r[Math.floor(r.length/2)]:800};
+const nhRtt=p=>{if(p.local)return 2*NH.lat+20;const r=(p.rtts||[]).slice().sort((a,b)=>a-b);return r.length?r[Math.floor(r.length/2)]:800};
 function nhPress(pl,m){const rt=+m.rt;if(m.r!==NH.r||pl.team<0||!(rt>=0&&rt<15000)||NH.presses.some(p=>p.uid===pl.uid))return;
   NH.presses.push({uid:pl.uid,name:pl.name,team:pl.team,rt:Math.round(rt)});NH.on.press(pl);
   if(NH.phase==='arm'||NH.phase==='go'){if(!NH.first)NH.first=performance.now();nhDecideSoon()}
@@ -1765,7 +1766,7 @@ function bzOpen(){setStep('buzz');ckReset();clearBZ();const w=$('#bz'),q=R.q.q;w
     $('#sem').animate([{transform:'translate(-50%,-50%) scale(0)'},{transform:'translate(-50%,-50%) scale(1.15)',offset:.7},{transform:'translate(-50%,-50%) scale(1)'}],{duration:500,delay:300,fill:'backwards',easing:'ease-out'})}
   const L=$$('#sem .l3-lamps i');[800,1400,2000].forEach((d,k)=>T(d,()=>{if(BZ.st!=='wait')return;L[k].className='r';sfr('lr',.6);if(!RM())L[k].animate([{transform:'scale(1.25)'},{transform:'scale(1)'}],{duration:220})}));
   const d=2000+yaWait();BZ.goAt=performance.now()+d;T(d,bzGo)}
-function bzGo(){if(BZ.st!=='wait')return;BZ.st='go';BZ.t0=performance.now();const w=$('#bz');w.classList.remove('wait');w.classList.add('l3-go','flash');later(520,()=>w.classList.remove('flash'));
+function bzGo(){if(BZ.st!=='wait')return;BZ.st='go';BZ.t0=performance.now();requestAnimationFrame(f=>{if(BZ.st==='go'&&f>BZ.t0&&f-BZ.t0<200)BZ.t0=f});const w=$('#bz');w.classList.remove('wait');w.classList.add('l3-go','flash');later(520,()=>w.classList.remove('flash'));
   $$('#sem .l3-lamps i').forEach(l=>l.className='g');const sb=$('#semt');sb.textContent='¡YA!';if(!RM())sb.animate([{transform:'scale(2.2) rotate(-12deg)',opacity:0},{transform:'scale(.92) rotate(3deg)',opacity:1,offset:.55},{transform:'scale(1) rotate(0)'}],{duration:420,easing:'cubic-bezier(.2,.9,.3,1)'});
   halves().forEach(h=>{h.classList.remove('early');$('.l3-bs',h).textContent='¡Toca tu botón!'});sfr('ya',.85);vib(80)}
 /* el que gana: hunde su botón, ondas, chispas y su avatar brinca */
@@ -1774,7 +1775,7 @@ function winFx(t){if(RM())return;const h=halves()[t],d=$('.l3-dome',h),av=$('.l3
   av.animate([{transform:'translateY(0) scale(1)'},{transform:'translateY(-55%) scale(1.45) rotate(-10deg)',offset:.35},{transform:'translateY(-48%) scale(1.4) rotate(8deg)',offset:.6},{transform:'translateY(0) scale(1)'}],{duration:1100,easing:'cubic-bezier(.3,1.3,.5,1)'});
   spk(d,26,[TCOL[t],'#fff','#fff3c4']);$('#semt').animate([{transform:'scale(1.4)'},{transform:'scale(1)'}],{duration:400,easing:'cubic-bezier(.3,1.6,.5,1)'})}
 function semWin(t,text){$$('#sem .l3-lamps i').forEach(l=>{l.className='t';l.style.setProperty('--wc',TCOL[t])});const sb=$('#semt');sb.className='wn';sb.style.setProperty('--wc',TCOL[t]);sb.textContent=text}
-function bzPress(t){const w=$('#bz');if(w.hidden)return;const now=performance.now(),h=halves()[t];
+function bzPress(t,ts){const w=$('#bz');if(w.hidden)return;const pn=performance.now(),now=ts>0&&ts<=pn&&pn-ts<300?ts:pn,h=halves()[t];
   if(BZ.st==='card'){if(now-BZ.cardAt>900)bzFinish();return}
   /* ya hay ganador: si el otro toca dentro de 1.5 s, se mide cuánto tardó */
   if(BZ.st==='done'){if(t!==BZ.win&&BZ.ms[t]==null&&now-BZ.t0<BZ.ms[BZ.win]+1500){BZ.ms[t]=now-BZ.t0;h.classList.add('press');later(160,()=>h.classList.remove('press'));showCard()}return}
@@ -1783,7 +1784,7 @@ function bzPress(t){const w=$('#bz');if(w.hidden)return;const now=performance.no
     if(BZ.lock[t]>now)return;BZ.lock[t]=now+400;h.classList.remove('early');void h.offsetWidth;h.classList.add('early');$('.l3-bs',h).textContent='¡Todavía no! Esperen la luz verde';animal(AV[t],.7);vib(25);
     if(!RM())$('.l3-dome',h).animate([0,-10,10,-8,6,-3,0].map(x=>({transform:`translateX(${x}px) rotate(${x*.6}deg)`})),{duration:420,easing:'ease-out'});later(420,()=>{if(BZ.st==='wait')h.classList.remove('early')});return}
   if(BZ.st!=='go')return;
-  if(BZ.lock[t]>now){if(!BZ.q[t])BZ.q[t]=later(BZ.lock[t]-now+5,()=>{BZ.q[t]=0;bzPress(t)});return}
+  if(!FOUL&&(BZ.lock[t]>now||now-BZ.t0<100)){if(BZ.lock[t]<=now){BZ.lock[t]=now+400;animal(AV[t],.7)}vib(25);$('.l3-bs',h).textContent='¡Muy pronto! Espera tantito';return}
   BZ.st='done';BZ.q.forEach(clearTimeout);const ms=now-BZ.t0,o=halves()[1-t];F.turn=t;BZ.win=t;BZ.ms[t]=ms;
   w.classList.remove('l3-go');h.classList.add('win');o.classList.add('lose');$('.l3-bs',h).textContent=`¡Primero! ${sec2(ms)}`;$('.l3-bs',o).textContent='¡Uy, casi!';
   semWin(t,`¡${NAMES[t]}!`);sfr('bz'+t,.9);vib(45);winFx(t);
@@ -1983,7 +1984,7 @@ function newGame(){const now=Date.now();if(now-armNew>4000){armNew=now;toast('To
 document.addEventListener('pointerdown',()=>{ac();loadSounds()},{capture:true});
 $('#wauto').addEventListener('click',()=>{ac();loadSounds().then(wAuto)});
 $('#wok').addEventListener('click',wClose);
-halves().forEach(h=>{h.addEventListener('pointerdown',e=>{e.preventDefault();if(BZ.net){if(meTap(+h.dataset.t,h)){h.classList.add('press');later(200,()=>h.classList.remove('press'));return}if(BZ.st==='card'&&performance.now()-BZ.cardAt>900)bzFinish();return}h.classList.add('press');bzPress(+h.dataset.t)});['pointerup','pointercancel','pointerleave'].forEach(k=>h.addEventListener(k,()=>{if(!BZ.net)h.classList.remove('press')}))});
+halves().forEach(h=>{h.addEventListener('pointerdown',e=>{e.preventDefault();if(BZ.net){if(meTap(+h.dataset.t,h,e.timeStamp)){h.classList.add('press');later(200,()=>h.classList.remove('press'));return}if(BZ.st==='card'&&performance.now()-BZ.cardAt>900)bzFinish();return}h.classList.add('press');bzPress(+h.dataset.t,e.timeStamp)});['pointerup','pointercancel','pointerleave'].forEach(k=>h.addEventListener(k,()=>{if(!BZ.net)h.classList.remove('press')}))});
 $('#bzc').addEventListener('pointerdown',()=>{if(BZ.st==='card'&&performance.now()-BZ.cardAt>900)bzFinish()});
 $('#bzx').addEventListener('pointerdown',e=>e.stopPropagation());
 $('#bzx').addEventListener('click',()=>{F.tok++;nhCancel();bzClose();closeAsk();hideSay();if(R){R.phase='q';ctl('play')}note('Botones cerrados. Toquen “Botones otra vez” cuando quieran.')});
@@ -2139,9 +2140,11 @@ function myHide(){const f=$('#myans');if(f.hidden)return;try{$('#myansi').blur()
 $('#myansi').addEventListener('input',e=>{const p=NH.P.get('me');if(!p||!MYA)return;onAskMsg(p,{t:'typing',a:MYA,w:e.target.value.toUpperCase().trim().split(/\s+/).filter(Boolean).map(x=>x.length)})});
 $('#myans').addEventListener('submit',e=>{e.preventDefault();const p=NH.P.get('me'),t=$('#myansi').value.trim();if(!p||!MYA)return;if(!t){shakeEl($('#myansi'),8);return}const a=MYA;myHide();onAskMsg(p,{t:'answer',a,text:t})});
 /* mi botón: la mitad de mi equipo en la pantalla de botones */
-function meTap(t,h){const p=NH.P.get('me');if(!p||p.team!==t||!BZ.net)return false;
-  if(BZ.st==='wait'){if(NH.foul&&BZ.meR!==NH.r){BZ.meR=NH.r;nhEarly(p,{r:NH.r,before:Math.max(0,(BZ.goPlan||0)-performance.now())})}return true}
-  if((BZ.st==='go'||BZ.st==='done')&&BZ.meR!==NH.r&&NH.phase!=='idle'){BZ.meR=NH.r;nhPress(p,{r:NH.r,rt:performance.now()-(BZ.t0||performance.now())});vib(30);return true}
+function meTap(t,h,ts){const p=NH.P.get('me');if(!p||p.team!==t||!BZ.net)return false;const pn=performance.now(),now=ts>0&&ts<=pn&&pn-ts<300?ts:pn;
+  /* regla suave: tocar antes castiga 0.4 s, igual que en los celulares */
+  const soft=()=>{if((BZ.meLock||0)<=now){BZ.meLock=now+400;animal(AV[t],.7)}vib(25);$('.l3-bs',h).textContent='¡Muy pronto! Espera tantito';return true};
+  if(BZ.st==='wait'){if(NH.foul){if(BZ.meR!==NH.r){BZ.meR=NH.r;nhEarly(p,{r:NH.r,before:Math.max(0,(BZ.goPlan||0)-now)})}return true}return soft()}
+  if((BZ.st==='go'||BZ.st==='done')&&BZ.meR!==NH.r&&NH.phase!=='idle'){const rt=now-(BZ.t0||now);if(!NH.foul&&((BZ.meLock||0)>now||rt<100))return soft();BZ.meR=NH.r;nhPress(p,{r:NH.r,rt});vib(30);return true}
   return BZ.st!=='card'}
 /* opciones de la sala */
 function drawOpts(){$$('#vmode button').forEach(b=>b.setAttribute('aria-pressed',String((b.dataset.v==='cel')===CEL)));
