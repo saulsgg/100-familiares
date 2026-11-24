@@ -331,14 +331,8 @@ a.card-btn{color:inherit;text-decoration:none}
 /* comodines en el celular */
 .cmdbar{display:flex;align-items:center;justify-content:center;gap:8px;margin:8px 0 0;flex-wrap:wrap}
 .cmdl{color:var(--mute);font-weight:800;font-size:12px;letter-spacing:.06em;text-transform:uppercase}
-.cmdb{display:grid;justify-items:center;gap:0;min-width:74px;padding:6px 8px;border:0;border-radius:14px;background:linear-gradient(180deg,#fff8ec,#ffe9b8);color:var(--cink);box-shadow:inset 0 0 0 2px #ffc42e,0 4px 0 rgba(0,0,0,.3);cursor:pointer}
-.cmdb i{font-style:normal;font-size:22px;line-height:1.1}.cmdb span{font:400 15px var(--disp)}.cmdb small{font:800 10px Rubik,sans-serif;opacity:.7}
-.cmdb.can{animation:jcanp 1.2s ease-in-out infinite;box-shadow:inset 0 0 0 2px #ffc42e,0 0 14px rgba(255,196,46,.8),0 4px 0 rgba(0,0,0,.3)}
-@keyframes jcanp{50%{box-shadow:inset 0 0 0 2px #ffc42e,0 0 22px rgba(255,196,46,1),0 4px 0 rgba(0,0,0,.3)}}
-.cmdb:not(.can):not(.used){filter:grayscale(.5) brightness(.85)}
-.cmdb.used{background:#232a60;color:#7d84b8;box-shadow:inset 0 0 0 2px rgba(156,192,255,.2)}
+.ask-cmd{margin:0}
 #v-play:not([data-pad=idle]) #cmdbar{display:none}
-.ask-cmd{margin:0}.ask-cmd .cmdb{min-width:90px}
 .ask-hint{margin:0;padding:8px 12px;border-radius:14px;background:linear-gradient(180deg,#ffe27a,#ffb020);color:#3a1a00;font:400 clamp(18px,5vw,22px) var(--disp);text-align:center}
 .ask.done .ask-cmd,.ask.done .ask-hint{display:none}
 .ask.paused .ask-sec{background:#ff2e88;color:#fff}
@@ -372,16 +366,23 @@ a.card-btn{color:inherit;text-decoration:none}
 #v-play.gvon .me .l3-svg{width:30px;height:30px}
 #v-play.gvon .me small{font-size:12px}
 #v-play.gvon #pstat{padding:4px 10px;font-size:11px}
-#v-play.gvon .cmdbar:not(.ask-cmd){flex-wrap:nowrap;gap:6px;margin:6px 0 0}
-#v-play.gvon .cmdbar:not(.ask-cmd) .cmdl{display:none}
-#v-play.gvon .cmdbar:not(.ask-cmd) .cmdb{flex:1;max-width:130px;min-width:0;display:flex;align-items:center;justify-content:center;gap:6px;padding:8px;border-radius:12px}
-#v-play.gvon .cmdbar:not(.ask-cmd) .cmdb i{font-size:18px}
-#v-play.gvon .cmdbar:not(.ask-cmd) .cmdb span{font-size:15px}
-#v-play.gvon .cmdbar:not(.ask-cmd) .cmdb small{display:none}
-#v-play.gvon .cmdb.used span{text-decoration:line-through}
 @media (max-width:600px){#v-play.gvon{padding-top:max(8px,env(safe-area-inset-top));padding-bottom:max(8px,env(safe-area-inset-bottom))}#v-play.gvon .gv{margin-top:6px}}
 /* las que ya salieron, dentro del recuadro para contestar */
 .ask-rev{display:flex;flex-wrap:wrap;justify-content:center;gap:5px 6px;max-height:4.6em;overflow:hidden;font:800 13px/1.2 Rubik,sans-serif}
 .ask-rev small{flex-basis:100%;text-align:center;color:var(--mute);font-size:12px}
 .ask-rev span{padding:4px 9px;border-radius:8px;background:#16308f;box-shadow:inset 0 0 0 1px #9cc0ff;color:#fff}
 .ask.done .ask-rev{display:none}
+
+/* barra de comodines: panel oscuro con las tres fichas */
+#cmdbar{gap:4px;padding:5px;border-radius:18px;background:rgba(8,11,40,.78);box-shadow:inset 0 0 0 1px rgba(156,192,255,.16)}
+#cmdbar .cmdl{padding:0 2px 0 8px}
+#v-play.gvon #cmdbar{flex-wrap:nowrap;margin:6px 0 0}
+#v-play.gvon #cmdbar .cmdl{display:none}
+.ask-cmd{gap:8px}
+.ask-cmd .ctk{flex:0 1 150px;background:rgba(255,255,255,.05);box-shadow:inset 0 0 0 1px rgba(156,192,255,.16)}
+@media (max-width:370px){.cmdbar .ctk{--s:30px;gap:5px;padding:5px 4px}.cmdbar .ctk-t b{font-size:14px}.cmdbar .ctk-t small{font-size:9px}}
+/* la etiqueta "Comodines" va arriba para que las tres fichas quepan en una fila */
+#cmdbar{flex-wrap:wrap;row-gap:2px}
+#cmdbar .cmdl{flex-basis:100%;padding:2px 0 0;text-align:center;font-size:11px}
+#cmdbar .ctk{flex:1 1 0}
+#v-play.ingame #chteam{display:none}

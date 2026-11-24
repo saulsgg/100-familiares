@@ -160,3 +160,13 @@ function raceRun(box,L,anim,onFirst,el){const lanes=[...box.querySelectorAll('.h
     if(d[i]<=el){l.classList.add('fin','still');return}
     setTimeout(()=>{l.classList.add('fin');if(i===0){hr.classList.add('flash');if(onFirst)onFirst();if(L[1]&&L[1].rt-L[0].rt<25)hr.classList.add('photo')}},d[i]-el)});
   setTimeout(()=>hr.classList.remove('run'),total-el);return{first:Math.max(0,d[0]-el),total:total-el}}
+
+/* ===================== COMODINES: fichas redondas con icono (iguales en todas las pantallas) ===================== */
+const CMDI={
+  p:`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.4a6.6 6.6 0 0 0-4 11.8c.8.6 1.3 1.4 1.3 2.3v.6h5.4v-.6c0-.9.5-1.7 1.3-2.3A6.6 6.6 0 0 0 12 2.4z" fill="#fff"/><path d="M9.4 15.6a4 4 0 0 1 .9-3.6" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" opacity=".55"/><path d="M9.6 19.3h4.8M10.4 21.6h3.2" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>`,
+  s:`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.8 9.2h3.8L11.6 5v14l-5-4.2H2.8z" fill="#fff" stroke="#fff" stroke-width="1.6" stroke-linejoin="round"/><path d="M15.4 8.8l5.4 6.4M20.8 8.8l-5.4 6.4" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/></svg>`,
+  c:`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18.4 8.6h1.4a2.2 2.2 0 0 1 2.2 2.2v5.2a2.2 2.2 0 0 1-2.2 2.2h-.8v2.6l-3.1-2.6h-4.1a2.2 2.2 0 0 1-2-1.3" fill="none" stroke="#fff" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"/><path d="M3.2 4.2h11.6a2.2 2.2 0 0 1 2.2 2.2v6a2.2 2.2 0 0 1-2.2 2.2H8.6l-3.8 3.1v-3.1H3.2A2.2 2.2 0 0 1 1 12.4v-6a2.2 2.2 0 0 1 2.2-2.2z" fill="#fff"/><g fill="currentColor"><circle cx="5.4" cy="9.4" r="1.25"/><circle cx="9" cy="9.4" r="1.25"/><circle cx="12.6" cy="9.4" r="1.25"/></g></svg>`};
+const CMDN={p:'Pista',s:'Silencio',c:'Junta'};
+/* o:{used,can,tag,attrs,label,sub} */
+function ctkHTML(k,o){o=o||{};const tag=o.tag||'span';return `<${tag} class="ctk ctk-${k}${o.used?' used':''}${o.can&&!o.used?' can':''}" ${o.attrs||''}><span class="ctk-d">${CMDI[k]}</span>`+
+  (o.label===false?'':`<span class="ctk-t"><b>${CMDN[k]}</b>${o.sub?`<small>${o.sub}</small>`:''}</span>`)+`</${tag}>`}

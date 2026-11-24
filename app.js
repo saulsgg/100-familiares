@@ -374,11 +374,11 @@ function gvDraw(v){const old=GV;GV=v;gvShow();verSend(v);drawCmdBar();$('#v-play
 /* ===================== COMODINES ===================== */
 const CMDS=[{k:'p',i:'💡',n:'Pista'},{k:'s',i:'🤫',n:'Silencio'},{k:'c',i:'💬',n:'Junta'}];
 function cmdBtns(keys){const c=GV&&GV.cmd,t=P.team;if(!c||t<0)return'';return CMDS.filter(x=>keys.includes(x.k)).map(x=>{const j=CMDS.indexOf(x),u=c.u[t][j],can=c.can[t][j];
-  return `<button type="button" class="cmdb${u?' used':''}${can&&!u?' can':''}" data-k="${x.k}" aria-label="Comodín ${x.n}${u?' (ya lo usaron)':''}"><i>${x.i}</i><span>${x.n}</span><small>${u?'Usado':can?'¡Úsalo!':'—'}</small></button>`}).join('')}
+  return ctkHTML(x.k,{used:u,can,tag:'button',sub:u?'Usado':can?'¡Ahora!':'',attrs:`type="button" data-k="${x.k}" aria-label="Comodín ${x.n}${u?' (ya lo usaron)':can?' (lo puedes usar ahora)':''}"`})}).join('')}
 function setHTML(el,h){if(el._h!==h){el._h=h;el.innerHTML=h}}
 function drawCmdBar(){const b=$('#cmdbar'),show=!!(GV&&GV.cmd&&P.found&&P.team>=0&&!P.picking);b.hidden=!show;setHTML(b,show?'<span class="cmdl">Comodines</span>'+cmdBtns(['p','s','c']):'');
   setHTML($('#askcmd'),show?cmdBtns(['p','c']):'')}
-function cmdTap(e){const b=e.target.closest('.cmdb');if(!b)return;ac();loadSounds();if(b.classList.contains('used')){toast('Ese comodín ya lo usaron en esta partida');return}
+function cmdTap(e){const b=e.target.closest('.ctk');if(!b)return;ac();loadSounds();if(b.classList.contains('used')){toast('Ese comodín ya lo usaron en esta partida');return}
   psend({t:'cmd',k:b.dataset.k,pt:performance.now()},1);tick();if(!RM())b.animate([{transform:'scale(1)'},{transform:'scale(.88)'},{transform:'scale(1)'}],{duration:220})}
 $('#cmdbar').addEventListener('click',cmdTap);$('#askcmd').addEventListener('click',cmdTap);
 /* en el recuadro para contestar: las que ya salieron en el tablero (para no repetir) */

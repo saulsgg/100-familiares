@@ -1159,6 +1159,45 @@ body{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-r
   #bzc .hr-lane{font-size:15px}
   #bzc .hr-t{font-size:20px}
 }
+
+/* ===== comodines: fichas redondas de concurso ===== */
+.ctk{--s:40px;--k1:#ffe680;--k2:#ef9200;--kg:255,186,40;position:relative;display:inline-flex;align-items:center;gap:8px;padding:0;border:0;background:none;color:#fff;font:inherit;text-align:left;-webkit-tap-highlight-color:transparent;-webkit-user-select:none;user-select:none}
+.ctk-s{--k1:#ff9ccb;--k2:#d81b72;--kg:255,72,150}
+.ctk-c{--k1:#a9bdff;--k2:#4656d8;--kg:122,142,255}
+.ctk-d{position:relative;flex:none;display:grid;place-items:center;width:var(--s);height:var(--s);border-radius:50%;color:var(--k2);
+  background:radial-gradient(circle at 32% 26%,rgba(255,255,255,.75) 0 7%,transparent 8%),radial-gradient(circle at 42% 34%,var(--k1),var(--k2) 74%);
+  box-shadow:inset 0 -3px 0 rgba(0,0,0,.22),inset 0 2px 0 rgba(255,255,255,.45),0 0 0 2px #fff,0 3px 8px rgba(0,0,0,.45);transition:transform .7s cubic-bezier(.3,1.25,.5,1),filter .45s}
+.ctk-d svg{width:60%;height:60%;filter:drop-shadow(0 1px 1px rgba(0,0,0,.35))}
+.ctk-t{display:grid;gap:1px;line-height:1.05;white-space:nowrap}
+.ctk-t b{font:400 16px var(--disp,Rubik),sans-serif}
+.ctk-t small{color:rgb(var(--kg));font:800 10px Rubik,sans-serif;letter-spacing:.05em;text-transform:uppercase}
+button.ctk{cursor:pointer}
+button.ctk:active .ctk-d{transform:scale(.88)}
+/* se puede usar ahora: brilla */
+.ctk.can .ctk-d{animation:ctkg 1.3s ease-in-out infinite}
+@keyframes ctkg{0%,100%{box-shadow:inset 0 -3px 0 rgba(0,0,0,.22),inset 0 2px 0 rgba(255,255,255,.45),0 0 0 2px #fff,0 0 0 0 rgba(var(--kg),0),0 3px 8px rgba(0,0,0,.45)}
+  50%{box-shadow:inset 0 -3px 0 rgba(0,0,0,.22),inset 0 2px 0 rgba(255,255,255,.45),0 0 0 2px #fff,0 0 0 6px rgba(var(--kg),.35),0 0 18px 5px rgba(var(--kg),.75)}}
+/* ya se usó: se voltea, queda gris y tachada */
+.ctk.used .ctk-d{transform:rotateY(360deg);filter:grayscale(1) brightness(.5);box-shadow:inset 0 0 0 2px rgba(255,255,255,.18)}
+.ctk.used .ctk-d::after{content:"";position:absolute;left:10%;right:10%;top:50%;height:3px;margin-top:-1.5px;border-radius:3px;background:#ff4d66;transform:rotate(-42deg);box-shadow:0 0 0 1.5px rgba(0,0,0,.35)}
+.ctk.used .ctk-t{opacity:.5}
+.ctk.used .ctk-t b{text-decoration:line-through;text-decoration-thickness:2px}
+.ctk.used .ctk-t small{color:#9aa3d6}
+@media (prefers-reduced-motion:reduce){.ctk .ctk-d{animation:none!important;transition:none}}
+
+/* --- debajo de cada equipo (pantalla grande y juego en vivo): ficha con su nombre abajo --- */
+.l2-cmds{display:flex;justify-content:center;gap:clamp(8px,1.4vw,16px)}
+.l2-cmds .ctk{--s:clamp(38px,4.4vw,54px);flex-direction:column;gap:4px}
+.l2-cmds .ctk-t{justify-items:center}
+.l2-cmds .ctk-t b{font-size:clamp(12px,1.35vw,15px);text-shadow:0 2px 0 rgba(0,0,0,.35)}
+.l2-cmds .ctk-t small{display:none}
+.l2-cmds .ctk:not(.can):not(.used) .ctk-d{filter:saturate(.75) brightness(.9)}
+
+/* --- barra de comodines en tu celular --- */
+.cmdbar .ctk{--s:36px;flex:1;max-width:136px;min-width:0;justify-content:center;padding:6px 8px;border-radius:14px;transition:background .3s,box-shadow .3s}
+.cmdbar .ctk-t b{font-size:15px}
+.cmdbar .ctk.can{background:rgba(var(--kg),.16);box-shadow:inset 0 0 0 1.5px rgba(var(--kg),.6)}
+.cmdbar .ctk:not(.can):not(.used) .ctk-t small{color:#9aa3d6}
 </style>
 </head>
 <body>
@@ -1693,6 +1732,16 @@ function raceRun(box,L,anim,onFirst,el){const lanes=[...box.querySelectorAll('.h
     if(d[i]<=el){l.classList.add('fin','still');return}
     setTimeout(()=>{l.classList.add('fin');if(i===0){hr.classList.add('flash');if(onFirst)onFirst();if(L[1]&&L[1].rt-L[0].rt<25)hr.classList.add('photo')}},d[i]-el)});
   setTimeout(()=>hr.classList.remove('run'),total-el);return{first:Math.max(0,d[0]-el),total:total-el}}
+
+/* ===================== COMODINES: fichas redondas con icono (iguales en todas las pantallas) ===================== */
+const CMDI={
+  p:`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.4a6.6 6.6 0 0 0-4 11.8c.8.6 1.3 1.4 1.3 2.3v.6h5.4v-.6c0-.9.5-1.7 1.3-2.3A6.6 6.6 0 0 0 12 2.4z" fill="#fff"/><path d="M9.4 15.6a4 4 0 0 1 .9-3.6" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" opacity=".55"/><path d="M9.6 19.3h4.8M10.4 21.6h3.2" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>`,
+  s:`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.8 9.2h3.8L11.6 5v14l-5-4.2H2.8z" fill="#fff" stroke="#fff" stroke-width="1.6" stroke-linejoin="round"/><path d="M15.4 8.8l5.4 6.4M20.8 8.8l-5.4 6.4" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/></svg>`,
+  c:`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18.4 8.6h1.4a2.2 2.2 0 0 1 2.2 2.2v5.2a2.2 2.2 0 0 1-2.2 2.2h-.8v2.6l-3.1-2.6h-4.1a2.2 2.2 0 0 1-2-1.3" fill="none" stroke="#fff" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"/><path d="M3.2 4.2h11.6a2.2 2.2 0 0 1 2.2 2.2v6a2.2 2.2 0 0 1-2.2 2.2H8.6l-3.8 3.1v-3.1H3.2A2.2 2.2 0 0 1 1 12.4v-6a2.2 2.2 0 0 1 2.2-2.2z" fill="#fff"/><g fill="currentColor"><circle cx="5.4" cy="9.4" r="1.25"/><circle cx="9" cy="9.4" r="1.25"/><circle cx="12.6" cy="9.4" r="1.25"/></g></svg>`};
+const CMDN={p:'Pista',s:'Silencio',c:'Junta'};
+/* o:{used,can,tag,attrs,label,sub} */
+function ctkHTML(k,o){o=o||{};const tag=o.tag||'span';return `<${tag} class="ctk ctk-${k}${o.used?' used':''}${o.can&&!o.used?' can':''}" ${o.attrs||''}><span class="ctk-d">${CMDI[k]}</span>`+
+  (o.label===false?'':`<span class="ctk-t"><b>${CMDN[k]}</b>${o.sub?`<small>${o.sub}</small>`:''}</span>`)+`</${tag}>`}
 
 /* núcleo de conexión compartido con la app de botones */
 const LSN={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v)}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
@@ -2589,7 +2638,7 @@ function cmdWhy(t,k){if(t!==0&&t!==1)return 'Primero escoge equipo';if(G.cmd[t][
 function cmdState(){return{u:[0,1].map(t=>CMDS.map(c=>G.cmd[t][c.k]?1:0)),can:[0,1].map(t=>CMDS.map(c=>cmdWhy(t,c.k)?0:1))}}
 /* tarjetas debajo de cada equipo */
 function drawCmds(){const st=cmdState();$$('.l2-cmds').forEach(box=>{const t=+box.dataset.t;
-  box.innerHTML=CMDS.map((c,j)=>`<button class="l2-cmd${st.u[t][j]?' used':''}${st.can[t][j]?' can':''}" type="button" data-t="${t}" data-k="${c.k}" aria-label="Comodín ${c.n} de ${esc(NAMES[t])}${st.u[t][j]?' (usado)':''}"><span class="l2-ci"><span class="l2-cf"><i>${c.i}</i><small>${c.n}</small></span><span class="l2-cb">USADO</span></span></button>`).join('')})}
+  box.innerHTML=CMDS.map((c,j)=>ctkHTML(c.k,{used:st.u[t][j],can:st.can[t][j],tag:'button',attrs:`type="button" data-t="${t}" data-k="${c.k}" aria-label="Comodín ${c.n} de ${esc(NAMES[t])}${st.u[t][j]?' (usado)':''}"`})).join('')})}
 let CMDK='';setInterval(()=>{const k=JSON.stringify(cmdState());if(k!==CMDK){CMDK=k;drawCmds()}},300);
 function cmdEvent(t,k,name,extra){CEV={id:++CEVN,t,k,name:name||'',extra:extra||''};const c=CMDS.find(x=>x.k===k);sfr('cmd',.9);
   const card=$(`.l2-cmds[data-t="${t}"] [data-k="${k}"]`);if(card&&!RM())card.animate([{transform:'scale(1)'},{transform:'scale(1.35) rotate(-8deg)',offset:.4},{transform:'scale(1)'}],{duration:600,easing:'cubic-bezier(.3,1.5,.5,1)'});
@@ -2643,7 +2692,7 @@ $('#jchok').addEventListener('click',()=>chatEnd(true));
 /* mensajes de los celulares */
 NH.on.cmdmsg=(pl,m)=>{if(m.t==='cmd')useCmd(pl.team,String(m.k),pl,m.pt);else if(m.t==='say')chatMsg(pl,m.text);else if(m.t==='chatok'&&R&&R.chat&&pl.team===R.chat.t)chatEnd(true)};
 /* tarjetas: quien dirige puede usarlas por un equipo */
-$$('.l2-cmds').forEach(b=>b.addEventListener('click',e=>{const c=e.target.closest('.l2-cmd');if(!c)return;ac();loadSounds();useCmd(+c.dataset.t,c.dataset.k,null)}));
+$$('.l2-cmds').forEach(b=>b.addEventListener('click',e=>{const c=e.target.closest('.ctk');if(!c)return;ac();loadSounds();useCmd(+c.dataset.t,c.dataset.k,null)}));
 drawCmds();
 
 }
