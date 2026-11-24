@@ -49,7 +49,7 @@ function Net(o){
 
 /* conexión directa entre la pantalla y cada celular (cuando el Wi-Fi lo permite): casi sin retraso.
    Se arregla por el servidor de mensajes; si no se logra, todo sigue por el servidor. */
-const ICE=LOCAL?[]:[{urls:['stun:stun.l.google.com:19302','stun:stun1.l.google.com:19302']},
+const ICE=LOCAL?[]:[{urls:['stun:stun.l.google.com:19302','stun:stun1.l.google.com:19302','stun:stun.cloudflare.com:3478']},
   {urls:['turn:openrelay.metered.ca:80','turn:openrelay.metered.ca:443','turn:openrelay.metered.ca:443?transport=tcp'],username:'openrelayproject',credential:'openrelayproject'}];
 const RTC_OK=typeof RTCPeerConnection==='function';
 function gathered(pc,ms){return new Promise(ok=>{if(pc.iceGatheringState==='complete')return ok();const t=later(ms,ok);pc.addEventListener('icegatheringstatechange',()=>{if(pc.iceGatheringState==='complete'){clearTimeout(t);ok()}})})}
@@ -241,11 +241,11 @@ function hello(){if(P.net)P.net.pub(ptp('h'),{t:'hello',u:P.uid,name:P.name,team
 function psend(m,q){if(dcOpen(P.dc)){try{P.dc.send(JSON.stringify(m));return}catch(e){}}if(P.net)P.net.pub(ptp('h'),{...m,u:P.uid},q||0)}
 function dropP(){try{P.pc&&P.pc.close()}catch(e){}P.pc=null;P.dc=null}
 async function playRTC(){if(!RTC_OK||P.pc||MODE!=='play')return;const pc=new RTCPeerConnection({iceServers:ICE});P.pc=pc;const dc=pc.createDataChannel('b',{ordered:true});
-  dc.onopen=()=>{if(P.pc!==pc)return;P.dc=dc;setStat('#pstat','Conectado directo','ok');later(800,async()=>{const k=await pathType(pc);if(P.dc===dc)setStat('#pstat',k==='relevo'?'Conectado por relevo':k==='casa'?'Conectado directo (Wi-Fi)':'Conectado directo','ok')})};dc.onclose=()=>{if(P.dc===dc){P.dc=null;setStat('#pstat','Conectado','ok');later(4000,()=>{if(P.pc===pc){dropP();playRTC()}})}};
+  dc.onopen=()=>{if(P.pc!==pc)return;P.dc=dc;P.rtcN=0;setStat('#pstat','Conectado directo','ok');later(800,async()=>{const k=await pathType(pc);if(P.dc===dc)setStat('#pstat',k==='relevo'?'Conectado por relevo':k==='casa'?'Conectado directo (Wi-Fi)':'Conectado directo','ok')})};dc.onclose=()=>{if(P.dc===dc){P.dc=null;setStat('#pstat','Conectado','ok');later(4000,()=>{if(P.pc===pc){dropP();playRTC()}})}};
   dc.onmessage=ev=>{let x;try{x=JSON.parse(ev.data)}catch(e){return}if(x&&typeof x==='object')playMsg('dc',x)};
   try{await pc.setLocalDescription(await pc.createOffer());await gathered(pc,2500);if(P.pc!==pc)return;psend({t:'rtc-offer',sdp:pc.localDescription.sdp},1)}catch(e){dropP();return}
-  /* si en 12 s no se abrió, se queda por el servidor */
-  later(12000,()=>{if(P.pc===pc&&!dcOpen(dc))dropP()})}
+  /* si en 12 s no se abrió, sigue por el servidor y lo vuelve a intentar más tarde (hasta 4 veces) */
+  later(12000,()=>{if(P.pc===pc&&!dcOpen(dc)){dropP();P.rtcN=(P.rtcN||0)+1;if(P.rtcN<=4)later(15000*P.rtcN,()=>{if(MODE==='play'&&P.found&&!P.pc&&!dcOpen(P.dc))playRTC()})}})}
 const myAv=()=>P.st&&P.team>=0?P.st.av[P.team]:'ajolote';
 function drawMe(){const t=P.team,v=$('#v-play');v.classList.toggle('t1',t===1);
   $('#me').innerHTML=(t>=0&&P.st?avSVG(P.st.av[t]):'')+`<span>${esc(P.name)}<small>${t>=0?NAMES[t]:'Sin equipo'}</small></span>`;
@@ -495,7 +495,7 @@ function akPrev(){const w=akWords($('#aski').value),box=$('#askprev'),old=AK.las
 function akTick(){const left=Math.max(0,AK.end-performance.now()),s=Math.ceil(left/1000);$('#askbar').style.transform=`scaleX(${(left/(AK.sec*1000)).toFixed(4)})`;
   if(String(s)!==$('#asksec').textContent){$('#asksec').textContent=s;const hot=s<=5&&!AK.sent;$('#ask').classList.toggle('hot',hot);if(hot&&s>0){vib(18);if(!RM())$('#asksec').animate([{transform:'scale(1.35)'},{transform:'scale(1)'}],{duration:300})}}
   if(left<=0)clearInterval(AK.T)}
-function showAsk(m){drawAskRev();clearTimeout(AK.hT);const s=$('#ask'),again=AK.id===m.a,wasDone=!s.hidden&&s.classList.contains('done');AK.id=m.a;AK.sent=false;AK.mine=false;AK.sec=Math.max(2,+m.sec||15);AK.end=isFinite(+m.end)&&isFinite(P.hoff)&&Math.abs(+m.end-P.hoff-performance.now()-AK.sec*1000)<3000?+m.end-P.hoff:performance.now()+AK.sec*1000;AK.last='';
+function showAsk(m){drawAskRev();{const h=$('#askhint');h.hidden=!m.hint;if(m.hint)h.textContent=m.hint}clearTimeout(AK.hT);const s=$('#ask'),again=AK.id===m.a,wasDone=!s.hidden&&s.classList.contains('done');AK.id=m.a;AK.sent=false;AK.mine=false;AK.sec=Math.max(2,+m.sec||15);AK.end=isFinite(+m.end)&&isFinite(P.hoff)&&Math.abs(+m.end-P.hoff-performance.now()-AK.sec*1000)<3000?+m.end-P.hoff:performance.now()+AK.sec*1000;AK.last='';
   hideRes();s.className='ask'+(m.steal?' steal':'');$('#askres').hidden=true;$('#askf').hidden=false;
   $('#askav').innerHTML=avSVG(myAv());$('#askt').textContent=m.steal?'¡A robar!':m.again?'¡Intenta con otra!':m.all?'¡Les toca contestar!':'¡Te toca contestar!';
   $('#asks').textContent=m.steal?(m.all?'Una sola oportunidad: el primero que escriba contesta por el equipo':'Una sola oportunidad: pónganse de acuerdo y tú la escribes'):m.all?'El primero que empiece a escribir contesta por el equipo':'¿Qué dijeron las 100 personas?';
@@ -519,7 +519,7 @@ function askMsg(m){if(m.a!==AK.id||$('#ask').hidden)return;const s=$('#ask');s.c
   if(m.t==='lock'){if(AK.mine)return;AK.sent=true;$('#aski').disabled=true;try{$('#aski').blur()}catch(e){}akRes('sent',`${m.by} está escribiendo`,'Contesta por el equipo. Si sabes la respuesta, ¡díctasela!');return}
   clearInterval(AK.T);clearTimeout(AK.hT);
   if(m.res==='hit'){akRes('hit','¡SÍ ESTÁ!',`${m.pts} ${m.pts===1?'persona lo dijo':'personas lo dijeron'}`,m.ans);vib([40,40,90]);later(200,()=>spk($('#askres b'),30,['#fff','#fff3c4','#35e08a',getComputedStyle(s).getPropertyValue('--tc')]));AK.hT=later(3000,hideAsk)}
-  else if(m.res==='dup'){akRes('dup','¡Esa ya salió!','Ahorita te dan otra oportunidad',m.ans);vib(60)}
+  else if(m.res==='dup'){akRes('dup','¡Esa ya salió!','Repetir cuenta como error ✕',m.ans);vib(60)}
   else if(m.res==='time'){akRes('time','¡Se acabó el tiempo!','Ni modo, cuenta como error');vib([60,40,60]);shake($('#askres b'));AK.hT=later(2800,hideAsk)}
   else{akRes('miss','No está en el tablero','Si sí contaba, la pantalla todavía la puede destapar',AK.txt?'“'+AK.txt+'”':'');vib([60,40,60]);shake($('#askres b'));AK.hT=later(3400,hideAsk)}}
 $('#aski').addEventListener('input',()=>{akPrev();const now=performance.now();clearTimeout(AK.tw);const go=()=>{AK.tl=performance.now();psend({t:'typing',a:AK.id,w:akWords($('#aski').value).map(x=>x.length).slice(0,8)})};
@@ -530,7 +530,8 @@ $('#ask').addEventListener('pointerdown',e=>{if(!AK.sent&&!e.target.closest('for
 /* ===================== INICIO ===================== */
 /* partida guardada en este aparato: se puede continuar */
 function savedGame(){try{const g=JSON.parse(localStorage.getItem('j-game')||'null'),c=JSON.parse(localStorage.getItem('j-cfg')||'{}')||{};
-  if(!g||g.ended||!Array.isArray(g.sc))return null;if(!(g.ri>0||g.sc[0]+g.sc[1]>0||g.fin>=0))return null;return{g,c}}catch(e){return null}}
+  if(!g||g.ended||!Array.isArray(g.sc))return null;let rd=null;try{rd=JSON.parse(localStorage.getItem('j-round')||'null')}catch(e){}
+  if(!(g.ri>0||g.sc[0]+g.sc[1]>0||g.fin>=0||rd&&rd.ri===g.ri))return null;return{g,c}}catch(e){return null}}
 function drawSaved(){const s=savedGame();$('#contcard').hidden=!s;$('#modesnote').hidden=!s;$('#createbtn').classList.toggle('star',!s);
   /* con partida guardada no se borra sola: al entrar pregunta si continuar o empezar de nuevo */
   $$('#modes a[href*="modo="]').forEach(a=>{const q=new URLSearchParams(a.getAttribute('href').split('?')[1]||'');if(s)q.delete('nueva');else q.set('nueva','1');a.setAttribute('href','juego.html?'+q)});if(!s)return;
@@ -549,5 +550,19 @@ $('#install').addEventListener('click',async()=>{if(!DEF)return;DEF.prompt();try
 if('serviceWorker' in navigator&&!LOCAL)navigator.serviceWorker.register('sw.js').catch(()=>{});
 $('#pname').value=P.name;
 {const m=location.hash.match(/^#j=([A-Za-z0-9]{4})(?:-(\d))?$/);if(m){$('#joinf').hidden=false;$('#code').value=m[1].toUpperCase();if(m[2]!=null)LINKBI=Math.min(+m[2],BROKERS.length-1);later(50,()=>$('#pname').focus())}}
-window.__bt={H,P,WP};
+/* ===================== SE ACTUALIZA SOLO =====================
+   Cada rato revisa si hay versión nueva; si la hay, recarga en un momento tranquilo y vuelve a entrar a la misma sala. */
+const UPD={new:false,T:0};
+const updOn=()=>!LOCAL||LS.get('upd-test',false);
+async function updCheck(){if(UPD.new||!updOn()||typeof APPV==='undefined')return;try{const r=await fetch('version.txt?t='+Date.now(),{cache:'no-store'});if(!r.ok)return;const v=(await r.text()).trim();if(v&&v!==APPV){UPD.new=true;updTry()}}catch(e){}}
+function updSafe(){if(MODE==='host')return H.phase==='lobby';if(!$('#ask').hidden||!$('#chat').hidden)return false;if(['arm','wait','go'].includes(P.phase))return false;if(WP.spin||WP.drag)return false;return true}
+function updTry(){if(!UPD.new)return;clearTimeout(UPD.T);if(!updSafe()){UPD.T=later(3000,updTry);return}
+  if(MODE==='play'&&P.code)try{sessionStorage.setItem('bt-auto',JSON.stringify({code:P.code,name:P.name,bi:P.bi,at:Date.now()}))}catch(e){}
+  if(MODE==='host'){toast('Hay versión nueva: se instala la próxima vez que abras el juego.');return}
+  toast('Actualizando a la versión nueva…');later(900,()=>location.reload())}
+setInterval(updCheck,90000);addEventListener('visibilitychange',()=>{if(!document.hidden)updCheck()});later(15000,updCheck);
+/* después de actualizarse, vuelve a entrar solo a la misma sala */
+{let a=null;try{a=JSON.parse(sessionStorage.getItem('bt-auto')||'null');sessionStorage.removeItem('bt-auto')}catch(e){}
+  if(a&&a.code&&Date.now()-a.at<600000)later(250,()=>playStart(a.code,a.name||P.name||'Jugador',a.bi))}
+window.__bt={H,P,WP,UPD,updCheck};
 }

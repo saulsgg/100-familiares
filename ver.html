@@ -1109,6 +1109,27 @@ body{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-r
 .j-saved.j-inplay{padding:10px 14px;background:rgba(255,255,255,.04);box-shadow:inset 0 0 0 2px rgba(255,255,255,.15)}
 .j-saved.j-inplay b{font-size:18px;color:#fff}
 
+/* pista en la ficha: texto simple, nunca volteado; al destapar esa ficha se quita */
+#board .tile .l2-hint{display:inline-flex;align-items:center;white-space:nowrap;line-height:1;backface-visibility:hidden;-webkit-backface-visibility:hidden;pointer-events:none}
+#board .tile.on .l2-hint{display:none}
+/* ===== la pantalla del juego en un celular vertical (quien dirige desde su cel) ===== */
+@media (max-width:600px){
+  body:not(.ver) .j-logo span{display:none}
+  body:not(.ver) .l2-score{grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:6px}
+  body:not(.ver) .l2-bank{grid-column:auto;grid-row:auto;min-width:62px;padding:4px 6px;border-radius:14px;align-self:stretch;align-content:center}
+  body:not(.ver) .l2-bank small{font-size:10px}body:not(.ver) .l2-bank b{font-size:26px}body:not(.ver) .j-bm{font-size:10px}
+  body:not(.ver) .l2-team{grid-template-columns:auto minmax(0,1fr);gap:5px;padding:5px 6px;border-radius:14px}
+  body:not(.ver) .l2-ava{width:32px}body:not(.ver) .l2-ts{font-size:24px}body:not(.ver) .l2-tn{display:block;overflow:hidden;font-size:12px;text-overflow:ellipsis;white-space:nowrap}
+  body:not(.ver) .l2-team .l2-turn{top:-11px;font-size:10px;padding:1px 7px}
+  body:not(.ver) .l2-cmds{gap:5px}body:not(.ver) .l2-cmds .ctk{--s:24px}body:not(.ver) .l2-cmds .ctk-t{display:none}
+  body:not(.ver) .l3-qhead{display:none}
+  body:not(.ver) .l3-qb{min-height:0;gap:.26em .42em;font-size:clamp(14px,4.4vw,21px)}
+  body:not(.ver) .tile{height:46px}
+  body:not(.ver) .j-say{min-height:0;padding:10px}
+  /* los botones de quien dirige siempre a la mano, abajo */
+  body:not(.ver) .l3-ctl{position:sticky;bottom:0;z-index:25;margin:10px -8px 0;padding:10px 8px max(8px,env(safe-area-inset-bottom));background:linear-gradient(180deg,rgba(7,10,36,0),rgba(7,10,36,.96) 28%)}
+}
+
 /* ===== foto finish: carrera de caballitos ===== */
 .hr{--hw:44px;position:relative;display:grid;gap:4px;margin:4px 0;padding:8px 8px 6px;border-radius:14px;background:repeating-linear-gradient(180deg,#1f7a3e 0 22%,#23894a 22% 44%);box-shadow:inset 0 0 0 2px rgba(255,255,255,.18);overflow:hidden;text-align:left;color:#fff}
 .hr-lane{display:grid;grid-template-columns:minmax(0,6.2em) 1fr 5.4em;align-items:center;gap:6px;min-height:calc(var(--hw)*.77);font:800 13px/1.1 Rubik,sans-serif}
@@ -1342,6 +1363,7 @@ body.ver{overflow-x:hidden}
 
 <script>
 {
+const APPV='botones-v22';
 const $=(s,r)=>(r||document).querySelector(s),$$=(s,r)=>[...(r||document).querySelectorAll(s)];
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const S={mute:false,music:'baja',gm:'j1',anime:true,order:'orden'};const view=()=>'tablero';let introOn=false;let flowTok=0;
@@ -1930,8 +1952,8 @@ try{parent.postMessage({t:'ver-listo'},'*')}catch(e){}
 const CMDSV=[{k:'p',i:'💡',n:'Pista'},{k:'s',i:'🤫',n:'Silencio'},{k:'c',i:'💬',n:'Junta'}];
 function drawCmdsV(c,old){$$('.l2-cmds').forEach(box=>{const t=+box.dataset.t;box.innerHTML=CMDSV.map((x,j)=>ctkHTML(x.k,{used:c.u[t][j],can:c.can[t][j],attrs:`data-k="${x.k}"`})).join('');
   if(old)CMDSV.forEach((x,j)=>{if(c.u[t][j]&&!old.u[t][j]&&!RM()){const e=$(`[data-k="${x.k}"]`,box);e.classList.remove('used');void e.offsetWidth;later(30,()=>e.classList.add('used'))}})})}
-function hintOnV(i,L,anim){const tl=tile(i);if(!tl||$('.l2-hint',tl))return;const h=document.createElement('span');h.className='l2-hint';$('.front',tl).appendChild(h);
-  if(!anim){h.textContent=L+'…';return}seeIt(tl);stage('aim',{el:tl});later(1400,stIdle);later(250,()=>flapText(h,L+'…'))}
+function hintOnV(i,L,anim){const tl=tile(i);if(!tl||$('.l2-hint',tl))return;const h=document.createElement('span');h.className='l2-hint';h.textContent=L+'…';$('.front',tl).appendChild(h);
+  if(!anim||RM())return;seeIt(tl);stage('aim',{el:tl});later(1400,stIdle);h.animate([{transform:'translateY(-50%) scale(.3)',opacity:0},{transform:'translateY(-50%) scale(1.25)',opacity:1,offset:.6},{transform:'translateY(-50%) scale(1)',opacity:1}],{duration:500,delay:250,easing:'cubic-bezier(.3,1.5,.5,1)',fill:'backwards'})}
 function cevFx(e){sfr('cmd',.9);const big=e.k==='p'?'💡 ¡PISTA!':e.k==='s'?'🤫 ¡SILENCIO!':'💬 ¡JUNTA DE EQUIPO!';
   const sub=e.k==='p'?`${losN(e.t,1)} usaron su pista: ${e.extra}`:e.k==='s'?`${losN(e.t,1)} silenciaron a ${e.extra}`:`${losN(e.t,1)} se ponen de acuerdo`;
   cinta(big,sub,e.k==='s'?'c-pink':e.t?'c-gold':'c-teal')}

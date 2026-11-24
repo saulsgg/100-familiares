@@ -386,3 +386,6 @@ a.card-btn{color:inherit;text-decoration:none}
 #cmdbar .cmdl{flex-basis:100%;padding:2px 0 0;text-align:center;font-size:11px}
 #cmdbar .ctk{flex:1 1 0}
 #v-play.ingame #chteam{display:none}
+/* con el chat o el recuadro para contestar abiertos, los avisos salen arriba para no tapar donde se escribe */
+body:has(#chat:not([hidden])) .toast,body:has(#ask:not([hidden])) .toast{top:max(14px,env(safe-area-inset-top));bottom:auto;transform:translate(-50%,-140%)}
+body:has(#chat:not([hidden])) .toast.on,body:has(#ask:not([hidden])) .toast.on{transform:translate(-50%,0)}
