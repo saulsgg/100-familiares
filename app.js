@@ -372,6 +372,13 @@ $('#askf').addEventListener('submit',e=>{e.preventDefault();akSend()});
 $('#ask').addEventListener('pointerdown',e=>{if(!AK.sent&&!e.target.closest('form,button'))later(0,()=>$('#aski').focus())});
 
 /* ===================== INICIO ===================== */
+/* partida guardada en este aparato: se puede continuar */
+function savedGame(){try{const g=JSON.parse(localStorage.getItem('j-game')||'null'),c=JSON.parse(localStorage.getItem('j-cfg')||'{}')||{};
+  if(!g||g.ended||!Array.isArray(g.sc))return null;if(!(g.ri>0||g.sc[0]+g.sc[1]>0||g.fin>=0))return null;return{g,c}}catch(e){return null}}
+function drawSaved(){const s=savedGame();$('#contcard').hidden=!s;$('#modesnote').hidden=!s;$('#createbtn').classList.toggle('star',!s);if(!s)return;
+  const g=s.g,c=s.c,nm=Array.isArray(c.names)&&c.names.length===2?c.names:['Turquesas','Dorados'],r=c.rounds==null?5:c.rounds,n=g.fin===g.ri?g.ri+2:g.ri+1;
+  $('#contsm').textContent=(r>0&&n>r?'Ya terminaron todas las rondas':`Van en la ronda ${n}${r>0?' de '+r:''}`)+` · ${nm[0]} ${g.sc[0]} · ${nm[1]} ${g.sc[1]}`}
+drawSaved();addEventListener('pageshow',drawSaved);
 $$('[data-go]').forEach(b=>b.addEventListener('click',()=>{ac();loadSounds();const g=b.dataset.go;if(g==='host'){hostStart();return}
   if(g==='create'){$('#joinf').hidden=true;const m=$('#modes');m.hidden=!m.hidden;if(!m.hidden){m.scrollIntoView({behavior:'smooth',block:'nearest'});if(!RM())m.animate([{opacity:0,transform:'translateY(10px)'},{opacity:1,transform:'none'}],{duration:260})}return}
   $('#modes').hidden=true;$('#joinf').hidden=false;($('#code').value?$('#pname'):$('#code')).focus()}));

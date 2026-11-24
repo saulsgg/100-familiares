@@ -268,3 +268,5 @@ a.card-btn{color:inherit;text-decoration:none}
 .modes{display:grid;justify-items:center;gap:10px;width:min(100%,560px)}
 .modes h2{margin:4px 0 0;font:400 24px var(--disp);text-align:center}
 .modes .card-btn{box-shadow:0 0 0 2px #ffd76a}
+.card-btn.cont{box-shadow:0 0 0 3px #35e08a,0 10px 30px rgba(53,224,138,.25)}
+.modes-note{margin:0;max-width:460px;color:var(--mute);font-weight:700;font-size:14px;text-align:center}
