@@ -257,7 +257,7 @@ function playMsg(topic,m){
   if(m.t==='view'){gvDraw(m);wphView(m);return}
   if(m.t==='wspin'){wphSpin(m);return}
   if(m.t==='kick'){playStop();toast('La pantalla del juego te sacó de la sala.');return}
-  if(m.t==='ask'){showAsk(m);return}if(m.t==='asked'||m.t==='judged'||m.t==='close'){askMsg(m);return}
+  if(m.t==='ask'){showAsk(m);return}if(m.t==='asked'||m.t==='judged'||m.t==='close'||m.t==='lock'){askMsg(m);return}
   if(m.t==='arm'){hideAsk();arm(m)}else if(m.t==='res')onRes(m);else if(m.t==='cancel'){clearPT();P.phase='idle';hideRes();showPad();padState('idle','Esperen la siguiente ronda','')}}
 function drawPick(){const st=P.st;$('#pteams').innerHTML=st?[0,1].map(t=>`<button type="button" data-t="${t}" style="--tc:${TCOL[t]}" aria-pressed="${P.team===t}"><i>${avSVG(st.av[t])}</i><b>${NAMES[t]}</b><small>${st.counts[t]} ${st.counts[t]===1?'jugador':'jugadores'}</small></button>`).join(''):'<p>Conectando…</p>'}
 function showPick(){P.picking=true;drawPick();$('#pick').hidden=false;$('#pad').hidden=true;gvShow()}
@@ -412,7 +412,7 @@ function akTick(){const left=Math.max(0,AK.end-performance.now()),s=Math.ceil(le
 function showAsk(m){clearTimeout(AK.hT);const s=$('#ask'),again=AK.id===m.a,wasDone=!s.hidden&&s.classList.contains('done');AK.id=m.a;AK.sent=false;AK.mine=false;AK.sec=Math.max(2,+m.sec||15);AK.end=performance.now()+AK.sec*1000;AK.last='';
   hideRes();s.className='ask'+(m.steal?' steal':'');$('#askres').hidden=true;$('#askf').hidden=false;
   $('#askav').innerHTML=avSVG(myAv());$('#askt').textContent=m.steal?'¡A robar!':m.again?'¡Intenta con otra!':m.all?'¡Les toca contestar!':'¡Te toca contestar!';
-  $('#asks').textContent=m.steal?'Una sola oportunidad: cualquiera del equipo puede escribir':m.all?'Cualquiera del equipo puede escribir; cuenta la primera':'¿Qué dijeron las 100 personas?';
+  $('#asks').textContent=m.steal?(m.all?'Una sola oportunidad: el primero que escriba contesta por el equipo':'Una sola oportunidad: pónganse de acuerdo y tú la escribes'):m.all?'El primero que empiece a escribir contesta por el equipo':'¿Qué dijeron las 100 personas?';
   $('#askq').textContent=m.q||'';const i=$('#aski');if(!again)i.value='';i.disabled=false;akPrev();
   clearInterval(AK.T);AK.T=setInterval(akTick,100);akTick();
   if(s.hidden){s.hidden=false;if(!RM())s.animate([{transform:'translateY(100%)'},{transform:'translateY(-2%)',offset:.75},{transform:'none'}],{duration:480,easing:'cubic-bezier(.2,.9,.3,1)'});pop($('#askav .l3-svg'),600);vib([30,40,30]);sf('went',.5)}
@@ -429,6 +429,8 @@ function akRes(cls,big,sub,extra){const r=$('#askres');$('#ask').classList.remov
 function askMsg(m){if(m.a!==AK.id||$('#ask').hidden)return;const s=$('#ask');s.classList.remove('sent','hit','miss','dup','time','other');
   if(m.t==='asked'){clearInterval(AK.T);AK.txt=m.text;if(!AK.sent){AK.sent=true;$('#aski').disabled=true;try{$('#aski').blur()}catch(e){}}akRes('sent',AK.mine?'¡Enviado!':`${m.by} contestó`,'Miren la pantalla grande…','“'+m.text+'”');return}
   if(m.t==='close'){clearInterval(AK.T);if(m.why)toast(m.why);hideAsk();return}
+  /* otro del equipo ya está escribiendo: a este se le bloquea */
+  if(m.t==='lock'){if(AK.mine)return;AK.sent=true;$('#aski').disabled=true;try{$('#aski').blur()}catch(e){}akRes('sent',`${m.by} está escribiendo`,'Contesta por el equipo. Si sabes la respuesta, ¡díctasela!');return}
   clearInterval(AK.T);clearTimeout(AK.hT);
   if(m.res==='hit'){akRes('hit','¡SÍ ESTÁ!',`${m.pts} ${m.pts===1?'persona lo dijo':'personas lo dijeron'}`,m.ans);vib([40,40,90]);later(200,()=>spk($('#askres b'),30,['#fff','#fff3c4','#35e08a',getComputedStyle(s).getPropertyValue('--tc')]));AK.hT=later(3000,hideAsk)}
   else if(m.res==='dup'){akRes('dup','¡Esa ya salió!','Ahorita te dan otra oportunidad',m.ans);vib(60)}
