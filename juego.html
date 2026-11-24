@@ -1036,6 +1036,7 @@ body{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-r
 .j-saved p{margin:0;font-weight:700;font-size:15px}
 .j-saved small{color:var(--mute);font-weight:700;font-size:13px}
 .j-saved div{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin-top:6px}
+.j-wsub{min-height:1.2em;margin:-4px 0 4px;color:var(--mute);font:800 clamp(14px,1.8vw,18px) Rubik,sans-serif;text-align:center}
 </style>
 </head>
 <body>
@@ -1127,6 +1128,7 @@ body{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-r
 <!-- ruleta -->
 <div class="l3-wov" id="wov" hidden role="dialog" aria-modal="true" aria-labelledby="wtit">
   <p class="l3-wt" id="wtit">¡Avienta la ruleta!</p>
+  <p class="j-wsub" id="wsub"></p>
   <div class="l3-wst" id="wst">
     <div class="l3-rim" id="wrim" data-ph="0"></div>
     <div class="l3-wsw" id="wsw">
@@ -1537,7 +1539,7 @@ function fastestBroker(){if(BROKERS.length<2)return Promise.resolve(0);return ne
 
 /* ===================== SALA: la pantalla del juego abre la partida y los celulares son los botones ===================== */
 const NH={net:null,code:'',bi:0,P:new Map(),mem:{},av:['ajolote','jaguar'],foul:true,r:0,phase:'idle',presses:[],res:null,first:0,early:null,armAt:0,d:0,lat:0,T:[],dT:0,pingT:0,resAt:0,info:null,
-  on:{players(){},status(){},press(){},result(){},late(){},msg(){},hello(){},local(){}}};
+  on:{players(){},status(){},press(){},result(){},late(){},msg(){},hello(){},local(){},wthrow(){}}};
 const NHtp=k=>NS+NH.code+'/'+k;
 function nhCode(){const A='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';let s='';for(let i=0;i<4;i++)s+=A[Math.floor(Math.random()*A.length)];return s}
 function nhOpen(){const code=LSN.get('bt-code',null)||nhCode();NH.code=code;NH.on.status('Buscando el servidor más rápido…','');
@@ -1575,6 +1577,7 @@ function nhMsg(topic,m){const uid=String(m.u||'').slice(0,40);if(!uid)return;
   if(m.t==='bye'){nhDrop(pl);NH.P.delete(uid);NH.on.players();nhState();return}
   if(m.t==='rtc-offer'){nhRTC(pl,m);return}
   if(m.t==='typing'||m.t==='answer'){NH.on.msg(pl,m);return}
+  if(m.t==='wthrow'){NH.on.wthrow(pl,m);return}
   if(m.t==='early')nhEarly(pl,m);else if(m.t==='press')nhPress(pl,m)}
 function nhPing(){if(!NH.net||!NH.net.up)return;const now=performance.now();let gone=false;
   NH.P.forEach((p,k)=>{if(!p.local&&now-(p.last||now)>9000){nhDrop(p);NH.P.delete(k);gone=true}});if(gone){NH.on.players();nhState()}
@@ -1716,16 +1719,16 @@ function pAng(e){const r=$('#wst').getBoundingClientRect();return Math.atan2(e.c
 function unsway(){const sw=$('#wsw');if(!sw.classList.contains('sway'))return;const cur=parseFloat(getComputedStyle(sw).rotate)||0;sw.classList.remove('sway');WH.th+=cur;$('#wspin').style.transform=`rotate(${WH.th}deg)`}
 function wGo(){WH.last=performance.now();if(!WH.raf)WH.raf=requestAnimationFrame(wLoop)}
 function wLoop(t){WH.raf=0;const dt=Math.min(.05,Math.max(.001,(t-WH.last)/1000));WH.last=t;
-  if(WH.spin&&!WH.drag){const a=Math.abs(WH.om),na=Math.max(0,a-(60+.5*a)*WH.fr*dt);WH.om=Math.sign(WH.om)*na;WH.th+=WH.om*dt;if(na<5){WH.om=0;WH.spin=false;wStop()}}
-  const pg=Math.floor(WH.th/45);if(pg!==WH.peg){const dir=Math.sign(pg-WH.peg);WH.peg=pg;const v=Math.abs(WH.om)||400;WH.fv+=-dir*Math.min(900,150+v*.7);if(t-WH.lastPeg>28){WH.lastPeg=t;sfr('peg',.7,.92+Math.random()*.16)}if(WH.spin)WH.om*=.994}
+  if(WH.spin&&!WH.drag){const s=wTrajAt(t);WH.om=s.om;WH.th=s.th;if(s.done){WH.om=0;WH.spin=false;wStop()}}
+  const pg=Math.floor(WH.th/45);if(pg!==WH.peg){const dir=Math.sign(pg-WH.peg);WH.peg=pg;const v=Math.abs(WH.om)||400;WH.fv+=-dir*Math.min(900,150+v*.7);if(t-WH.lastPeg>28){WH.lastPeg=t;sfr('peg',.7,.92+Math.random()*.16)}}
   WH.fv+=(-1100*WH.fa-20*WH.fv)*dt;WH.fa=Math.max(-42,Math.min(42,WH.fa+WH.fv*dt));
   $('#wspin').style.transform=`rotate(${WH.th}deg)`;$('#ptr').style.transform=`rotate(${WH.fa}deg)`;
   $('#wbl').style.opacity=Math.max(0,Math.min(.92,(Math.abs(WH.om)-450)/1300)).toFixed(2);
   if(WH.spin){WH.rimT+=dt*(1.5+Math.abs(WH.om)/120);const ph=Math.floor(WH.rimT)%3;if(ph!==WH.rimP){WH.rimP=ph;rimPh(ph)}}
   if(WH.drag||WH.spin||Math.abs(WH.fa)>.3||Math.abs(WH.fv)>2)WH.raf=requestAnimationFrame(wLoop);else $('#ptr').style.transform='rotate(0deg)'}
-function wThrow(om){WH.om=om;WH.fr=.85+Math.random()*.3;WH.spin=true;$('#wres').textContent='';$('#wauto').hidden=true;$('#warc').hidden=true;rimIdle(false);sfr('thr',.75);vib(20);wGo()}
+function wThrow(om){WH.om=om;WH.fr=.85+Math.random()*.3;WH.P=wTraj(WH.th,om,WH.fr);WH.t0=performance.now();WH.spin=true;wSpinB(om);$('#wres').textContent='';$('#wauto').hidden=true;$('#warc').hidden=true;rimIdle(false);sfr('thr',.75);vib(20);wGo()}
 function wAuto(){if(WH.spin||WH.res||WH.drag)return;unsway();wThrow((1500+Math.random()*1000)*(Math.random()<.85?1:-1))}
-function wStop(){const ang=((-WH.th%360)+360)%360,i=Math.floor(ang/45),m=SEG[i];F.m=m;WH.res=true;$('#wbl').style.opacity=0;
+function wStop(){const ang=((-WH.th%360)+360)%360,i=Math.floor(ang/45),m=SEG[i];F.m=m;WH.res=true;wStopped(m);$('#wbl').style.opacity=0;
   sfr('wx'+m,.9);vib(m>=3?[30,60,30]:30);
   /* la rebanada ganadora brilla (está dentro de la ruleta, así queda pegada a su lugar) */
   const gl=$('#wglow'),s=$('#wspin').clientWidth,dpr=Math.min(3,devicePixelRatio||1);gl.width=gl.height=Math.round(s*dpr);const x=gl.getContext('2d');x.setTransform(dpr,0,0,dpr,0,0);const R=s/2,a0=-Math.PI/2+i*Math.PI/4;
@@ -1744,7 +1747,7 @@ function wClose(){const m=F.m;if(!m)return;const w=$('#wov'),mult=$('#mult');mul
   if(RM())fin();else w.animate([{opacity:1},{opacity:0}],{duration:220}).onfinish=fin;
   if(R){R.m=m;bankShow()}T(950,qReveal)}
 function wInit(){const st=$('#wst');
-  st.addEventListener('pointerdown',e=>{if(WH.res||(WH.spin&&Math.abs(WH.om)>220))return;e.preventDefault();try{st.setPointerCapture(e.pointerId)}catch(_){}ac();loadSounds();unsway();WH.drag=true;WH.spin=false;WH.om=0;WH.aPrev=pAng(e);WH.smp=[{t:performance.now(),th:WH.th}];$('#warc').hidden=true;$('#wres').textContent='';wGo()});
+  st.addEventListener('pointerdown',e=>{if(WH.res||(WH.spin&&Math.abs(WH.om)>220))return;e.preventDefault();try{st.setPointerCapture(e.pointerId)}catch(_){}ac();loadSounds();unsway();WH.drag=true;const was=WH.spin;WH.spin=false;WH.om=0;WH.P=null;if(was)wSpinB(0);WH.aPrev=pAng(e);WH.smp=[{t:performance.now(),th:WH.th}];$('#warc').hidden=true;$('#wres').textContent='';wGo()});
   st.addEventListener('pointermove',e=>{if(!WH.drag)return;const a=pAng(e);let d=a-WH.aPrev;if(d>180)d-=360;if(d<-180)d+=360;WH.aPrev=a;WH.th+=d;const n=performance.now();WH.smp.push({t:n,th:WH.th});while(WH.smp.length>2&&n-WH.smp[0].t>110)WH.smp.shift()});
   const up=()=>{if(!WH.drag)return;WH.drag=false;const s=WH.smp,a=s[0],b=s[s.length-1],dt=Math.max(16,b.t-a.t)/1000;let om=(b.th-a.th)/dt;
     if(Math.abs(om)<260||performance.now()-b.t>160){const r=$('#wres');r.textContent='¡Más fuerte! ¡Aviéntala!';r.style.color='#fff';bump(r,1.15);$('#warc').hidden=false;return}
@@ -1971,7 +1974,7 @@ function startRound(skip){ac();loadSounds();closeAll();
   if(skip&&R.m){R.phase='q';ctl('q');T(500,qReveal);return}
   $('#mult').hidden=true;nhInfo(`Ronda ${G.ri+1}`,scoreLine());
   if(!CFG.wheel){R.m=1;R.phase='q';ctl('q');bankShow();T(700,qReveal);return}
-  ctl('wheel');wOpen()}
+  ctl('wheel');wOpen();wheelWho()}
 /* después de los botones: el equipo que ganó contesta y corre el reloj */
 function ctlStart(t){if(!R)return;R.ctl=t;R.phase='play';R.order=orderFor(t,F.wuid);R.ai=0;setTurn(t);ctl('play');nhInfo(`Contestan ${losN(t)}`,scoreLine());
   note('Toquen la ficha de la respuesta correcta, o ✕ Error. Al tercer error, el otro equipo puede robar.');T(450,turnStart)}
@@ -2127,7 +2130,8 @@ function sayV(){const s=$('#say');if(s.hidden)return null;const cls=['hit','miss
   return{who:$('#sayn').textContent,cls,txt:cls==='typing'?'':SAYT,w:cls==='typing'?SAYW:''}}
 function viewMsg(){const v={t:'view',on:CEL,rn:G.ri+1,rr:CFG.rounds,sc:G.sc.slice()};
   if(R){const shown=R.phase!=='wheel';v.q=shown?R.q.q:'';v.n=R.n;v.rev=R.rev.map((x,i)=>x?[i,R.q.a[i][0],R.q.a[i][1]]:null).filter(Boolean);v.bank=R.bank;v.m=R.m||1;v.x=R.x;v.ph=R.phase;v.ctl=R.ctl;
-    v.ck={run:CK.run,left:CK.left,tot:CK.tot};v.say=sayV()}
+    v.ck={run:CK.run,left:CK.left,tot:CK.tot};v.say=sayV();
+    if(R.phase==='wheel'){v.wsp=R.spinner||'';v.wspn=R.spinName||'';v.wth=WH.spin?null:Math.round(WH.th*1000)/1000;v.wid=WSN;v.wres=WH.res?F.m:0}}
   return v}
 function viewTick(){const v=viewMsg(),k=JSON.stringify(v);if(k===LASTV)return;LASTV=k;NH.P.forEach(p=>{if(!p.local)nhTo(p,v)})}
 setInterval(viewTick,250);
@@ -2222,6 +2226,32 @@ function showEnd(){if(!R)return;R.phase='end';ctl('end');setTurn(-1);const[a,b]=
   later(300,()=>{sfr('top1',.9);confetti()});later(1400,()=>sfr('pts',.8));if(w>=0){bump($('#tm'+w),1.12);stage('team',{el:$('#tm'+w),c:TCOL[w]});later(2500,stIdle)}
   G.ended=true;saveG();nhInfo(w<0?'¡Empate!':`🏆 ¡Ganaron ${losN(w)}!`,scoreLine());note('¡Se acabó la partida! Toquen “Otra partida” para jugar de nuevo (el marcador empieza en cero).')}
 applyNames();applySecs();rnLabel();drawCfg();
+
+/* ===================== RULETA COMPARTIDA: se ve y se avienta desde los celulares ===================== */
+/* el giro se calcula paso a paso igual en la pantalla y en cada celular: todos ven caer el mismo número */
+const WH_H=1/240;let WSN=0;
+function wTraj(th0,om0,fr){const P=[th0];let th=th0,om=om0,peg=Math.floor(th0/45);
+  for(let k=0;k<240*40;k++){const a=Math.abs(om),na=Math.max(0,a-(60+.5*a)*fr*WH_H);om=Math.sign(om)*na;th+=om*WH_H;const pg=Math.floor(th/45);if(pg!==peg){peg=pg;om*=.994}P.push(th);if(na<5)break}
+  return P}
+function wTrajAt(t){const P=WH.P;if(!P)return{th:WH.th,om:0,done:true};const e=Math.max(0,(t-WH.t0)/1000)/WH_H,i=Math.floor(e);
+  if(i>=P.length-1)return{th:P[P.length-1],om:0,done:true};const f=e-i;return{th:P[i]+(P[i+1]-P[i])*f,om:(P[i+1]-P[i])/WH_H,done:false}}
+/* avisar a los celulares que empezó (o se detuvo) el giro */
+function wSpinB(om){const m={t:'wspin',id:++WSN,th0:WH.th,om,fr:WH.fr||1};NH.P.forEach(p=>{if(!p.local)nhTo(p,m,1)})}
+/* a quién le toca girar: se turnan los jugadores, un equipo y luego el otro */
+function pickSpinner(){const L=nhPlayers().filter(p=>p.team>=0);if(!L.length)return null;const a=L.filter(p=>p.team===0),b=L.filter(p=>p.team===1),o=[];
+  for(let i=0;i<Math.max(a.length,b.length);i++){if(a[i])o.push(a[i]);if(b[i])o.push(b[i])}return o[G.ri%o.length]}
+function wheelWho(){if(!R)return;const p=pickSpinner();R.spinner=p?p.uid:'';R.spinName=p?p.name:'';R.spinRemote=false;
+  $('#wtit').textContent=p?(p.local?`¡Te toca girar, ${p.name}!`:`¡Le toca girar a ${p.name}!`):'¡Avienta la ruleta!';
+  $('#wsub').textContent=p&&!p.local?'Desde su celular… o aviéntenla aquí':'';
+  if(p)nhInfo(p.local?`Ronda ${G.ri+1}: gira ${p.name} en la pantalla`:`Ronda ${G.ri+1}: le toca girar a ${p.name}`,scoreLine());
+  if(p&&!p.local)note(`${p.name} avienta la ruleta desde su celular. Si tarda, aviéntenla aquí con el dedo.`)}
+/* un celular aventó la ruleta */
+function onWThrow(pl,m){if(!R||R.phase!=='wheel'||$('#wov').hidden||WH.res||WH.drag||(WH.spin&&Math.abs(WH.om)>220)||pl.uid!==R.spinner)return;
+  let om=+m.om;if(!(Math.abs(om)>=260&&Math.abs(om)<30000))return;om=Math.sign(om)*Math.min(2600,Math.max(1000,Math.abs(om)))*(.9+Math.random()*.2);
+  R.spinRemote=true;unsway();$('#warc').hidden=true;$('#wsub').textContent=`¡${pl.name} la aventó!`;wThrow(om)}
+NH.on.wthrow=onWThrow;
+/* al caer: si giró un celular, se sigue solo */
+function wStopped(m){if(R&&R.spinRemote)T(2800,()=>{if(R&&R.phase==='wheel'&&!$('#wov').hidden&&WH.res)wClose()})}
 
 }
 </script>

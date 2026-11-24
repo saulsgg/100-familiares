@@ -270,3 +270,21 @@ a.card-btn{color:inherit;text-decoration:none}
 .modes .card-btn{box-shadow:0 0 0 2px #ffd76a}
 .card-btn.cont{box-shadow:0 0 0 3px #35e08a,0 10px 30px rgba(53,224,138,.25)}
 .modes-note{margin:0;max-width:460px;color:var(--mute);font-weight:700;font-size:14px;text-align:center}
+
+/* ===== la ruleta en el celular ===== */
+.wph{position:fixed;inset:0;z-index:44;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:max(16px,env(safe-area-inset-top)) 16px max(16px,env(safe-area-inset-bottom));overflow:hidden;overflow:clip;
+  background:radial-gradient(110% 70% at 50% 40%,#2a1f7a,#121746 55%,#070a24)}
+.wph::before{content:"";position:absolute;inset:-50%;background:repeating-conic-gradient(from 0deg at 50% 50%,rgba(255,255,255,.05) 0 10deg,transparent 10deg 20deg);animation:wphr 40s linear infinite;pointer-events:none}
+@keyframes wphr{to{transform:rotate(360deg)}}
+.wph>*{position:relative}
+.wph h2{margin:0;font:400 clamp(26px,8vw,36px)/1.05 var(--disp);text-align:center;text-shadow:0 3px 0 rgba(0,0,0,.35)}
+.wph-s{margin:0;color:var(--mute);font-weight:800;font-size:15px;text-align:center}
+.wph-w{position:relative;width:min(84vw,52vh,420px);aspect-ratio:1;margin-top:clamp(18px,7vw,34px);touch-action:none}
+.wph-rim{position:absolute;inset:-5%;border-radius:50%;background:radial-gradient(circle,#0b0f3a 64%,transparent 64.5%),conic-gradient(#fff0a8,#ffc42e,#c47a00,#ffde7a,#ffc42e,#fff0a8);box-shadow:0 10px 30px rgba(0,0,0,.5)}
+.wph-rim::after{content:"";position:absolute;inset:2.5%;border-radius:50%;background:repeating-conic-gradient(#fff6cf 0 3deg,transparent 3deg 15deg);-webkit-mask:radial-gradient(circle,transparent 66%,#000 66.5%,#000 70%,transparent 70.5%);mask:radial-gradient(circle,transparent 66%,#000 66.5%,#000 70%,transparent 70.5%);opacity:.85}
+#wphc{position:absolute;inset:0;width:100%;height:100%;border-radius:50%;will-change:transform}
+.wph-ptr{position:absolute;left:50%;top:-9%;width:12%;transform:translateX(-50%);filter:drop-shadow(0 3px 0 rgba(0,0,0,.35));pointer-events:none}
+.wph-hand{position:absolute;right:4%;bottom:6%;font-size:clamp(40px,12vw,58px);pointer-events:none;animation:wphh 1.3s ease-in-out infinite;filter:drop-shadow(0 4px 0 rgba(0,0,0,.35))}
+@keyframes wphh{0%{transform:translate(0,0) rotate(0)}50%{transform:translate(-40px,-60px) rotate(-18deg)}100%{transform:translate(0,0) rotate(0)}}
+.wph-r{min-height:1.3em;margin:6px 0 0;font:400 clamp(22px,7vw,32px)/1.1 var(--disp);text-align:center;color:#fff}
+.wph-r.x1{color:#9cc0ff}.wph-r.x2,.wph-r.x3{color:#ff7ab8}.wph-r.x4{color:#ffd76a}
