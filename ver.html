@@ -1043,6 +1043,38 @@ body{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-r
 @keyframes jreadyt{from{transform:translateX(-50%) scale(1)}to{transform:translateX(-50%) scale(1.15)}}
 .xslot.next{animation:jnext .8s ease-in-out infinite;box-shadow:inset 0 0 0 3px rgba(255,51,85,.9),0 0 16px rgba(255,51,85,.6)}
 @keyframes jnext{50%{box-shadow:inset 0 0 0 3px rgba(255,51,85,.25),0 0 4px rgba(255,51,85,.2)}}
+/* súper giro de la ruleta */
+.j-wfx{position:absolute;left:50%;top:50%;z-index:9;margin:0;opacity:0;pointer-events:none;white-space:nowrap;font:400 clamp(34px,7vw,72px)/1 var(--disp);color:#fff;transform:translate(-50%,-50%);text-shadow:0 5px 0 #7a0a3c,0 0 24px rgba(255,46,136,.9)}
+.j-wfx.sup{background:linear-gradient(180deg,#fff7b0,#ffc42e 45%,#ff6a00);-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:none;filter:drop-shadow(0 5px 0 #7a2a00) drop-shadow(0 0 22px rgba(255,140,0,.9))}
+#wst.fast::after,#wst.fire::after{content:"";position:absolute;inset:-6%;z-index:-1;border-radius:50%;pointer-events:none;background:conic-gradient(from 0deg,transparent 0 10%,rgba(255,255,255,.5) 12%,transparent 16% 35%,rgba(255,255,255,.45) 37%,transparent 41% 60%,rgba(255,255,255,.5) 62%,transparent 66% 85%,rgba(255,255,255,.45) 87%,transparent 91%);animation:wlines .35s linear infinite}
+#wst.fire::after{inset:-10%;background:conic-gradient(from 0deg,#ff2e00,#ffc42e,#ff6a00,#ff2e88,#ffc42e,#ff2e00);filter:blur(10px);opacity:.85;animation:wlines .5s linear infinite,wfire .25s ease-in-out infinite alternate}
+@keyframes wlines{to{transform:rotate(360deg)}}
+@keyframes wfire{to{opacity:.5;transform:scale(1.04)}}
+#wst.fast,#wst.fire{isolation:isolate}
+/* premio */
+.j-pz{display:inline-flex;align-items:center;gap:4px;max-width:min(46vw,360px);padding:5px 12px;border-radius:999px;background:#ff2e88;color:#fff;font:800 14px Rubik,sans-serif;box-shadow:0 3px 0 #9e0f55}
+.j-pz b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:800}
+.j-prz input{width:100%;min-height:42px;padding:8px 14px;border:0;border-radius:12px;background:#fff8ec;color:var(--cink);font:700 16px Rubik,sans-serif}
+.j-przs{display:flex;flex-wrap:wrap;gap:6px;width:100%}
+.j-przs button{min-height:34px;padding:4px 12px;border:0;border-radius:99px;background:#1e2569;color:#fff;font:700 13px Rubik,sans-serif;box-shadow:inset 0 0 0 2px rgba(255,46,136,.5);cursor:pointer}
+/* ceremonia del final */
+.j-fin{position:fixed;inset:0;z-index:70;display:grid;place-items:start center;padding:16px;overflow:auto;background:radial-gradient(120% 80% at 50% 0%,color-mix(in srgb,var(--tc) 35%,#121746),#070a24 70%)}
+.j-fin-in{display:grid;justify-items:center;gap:8px;width:min(100%,640px);margin-block:auto;padding:10px 0 20px;text-align:center}
+.j-fincr .j-crown{width:clamp(70px,12vw,110px);filter:drop-shadow(0 6px 0 rgba(0,0,0,.3));animation:jcrown 1.6s ease-in-out infinite}
+@keyframes jcrown{50%{transform:translateY(-6px) rotate(-4deg)}}
+.j-finav{display:flex;justify-content:center;gap:10px}
+.j-finav .l3-svg{width:clamp(90px,18vw,140px);height:auto;filter:drop-shadow(0 8px 0 rgba(0,0,0,.3))}
+.j-fin.tie .j-finav .l3-svg{width:clamp(70px,13vw,100px)}
+.j-fin h2{margin:0;font:400 clamp(34px,7vw,64px)/1 var(--disp);color:#fff;text-shadow:0 5px 0 rgba(0,0,0,.35),0 0 30px color-mix(in srgb,var(--tc) 70%,transparent)}
+.j-finsc{margin:0;color:var(--mute);font-weight:800;font-size:clamp(15px,2.4vw,20px)}
+.j-finpz{padding:10px 18px;border-radius:18px;background:linear-gradient(180deg,#ff5aa5,#d4116b);color:#fff;font:800 clamp(16px,2.6vw,22px) Rubik,sans-serif;box-shadow:0 0 0 3px #fff,0 10px 24px rgba(0,0,0,.4)}
+.j-finpz b{font:400 clamp(22px,3.6vw,30px) var(--disp)}
+.j-finmt{margin:10px 0 0;color:#ffd76a;font:400 clamp(18px,3vw,24px) var(--disp)}
+.j-meds{width:100%}
+.j-meds .l2-med{text-align:left}
+.j-mav{display:block;width:44px;height:44px}.j-mav .l3-svg{width:100%;height:100%}
+.j-fin-btns{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin-top:12px}
+.j-meds .l2-md .dk{background:radial-gradient(circle at 35% 30%,#2f3aa0,#121746 72%);box-shadow:0 0 0 3px #ffc42e,0 0 0 6px var(--mc),0 6px 14px rgba(0,0,0,.45)}
 
 /* pantalla del jugador: sin botones de quien dirige y pensada para celular */
 body.ver{overflow-x:hidden}
@@ -1077,6 +1109,7 @@ body.ver{overflow-x:hidden}
     <div class="j-logo"><b>100</b><span>Familiares</span></div>
     <span class="l3-rnd">Ronda <b id="rn">1</b></span>
     <span class="l3-mult" id="mult" hidden>Vale <b id="multv">×2</b></span>
+    <span class="j-pz" id="pzchip" hidden>🎁 <b id="pzt"></b></span>
     <span class="j-sp"></span>
   </header>
 
@@ -1113,6 +1146,17 @@ body.ver{overflow-x:hidden}
   <div class="xslots" id="xslots" aria-label="Errores"><div class="xslot"></div><div class="xslot"></div><div class="xslot"></div></div>
   <div class="l3-xbig" id="xbig" aria-hidden="true">✕</div>
 
+</div>
+<div class="j-fin" id="fin" hidden role="dialog" aria-modal="true" aria-labelledby="finw">
+  <div class="j-fin-in">
+    <div class="j-fincr" id="fincr"></div>
+    <div class="j-finav" id="finav"></div>
+    <h2 id="finw">¡Ganaron!</h2>
+    <p class="j-finsc" id="finsc"></p>
+    <div class="j-finpz" id="finpz" hidden>🎁 Se llevan: <b id="finpzt"></b></div>
+    <p class="j-finmt" id="finmt">Medallas de la partida</p>
+    <div class="l2-meds j-meds" id="meds"></div>
+  </div>
 </div>
 <div class="ban" id="ban" aria-hidden="true"><div class="dim"></div><div class="rib" id="rib"><b id="ribB"></b><small id="ribS"></small></div></div>
 <div class="toast" id="toast" role="status"></div>
@@ -1496,9 +1540,30 @@ function ckTimeout(){clearInterval(CK.id);CK.run=false;CK.done=true;CK.big=true;
 function ckStop(kind){if(!CK.run)return;clearInterval(CK.id);CK.run=false;CK.x=kind==='x';ckDraw(kind==='ok'?'ok':'out')}
 
 
+/* ===================== FINAL: GANADOR, PREMIO Y MEDALLAS (igual en la pantalla grande y en cada celular) ===================== */
+const CROWN='<svg class="j-crown" viewBox="0 0 100 70" aria-hidden="true"><path d="M8 60 14 16l22 22L50 6l14 32 22-22 6 44z" fill="#ffc42e" stroke="#fff3c4" stroke-width="3" stroke-linejoin="round"/><circle cx="14" cy="14" r="6" fill="#ff2e88"/><circle cx="50" cy="6" r="6" fill="#14b8a6"/><circle cx="86" cy="14" r="6" fill="#8b5cf6"/><rect x="8" y="58" width="84" height="10" rx="4" fill="#e0a200"/></svg>';
+let FINRUN=0;
+function finShow(f){const run=++FINRUN,box=$('#fin'),w=f.w,[a,b]=f.sc;box.hidden=false;box.classList.toggle('tie',w<0);box.style.setProperty('--tc',w>=0?TCOL[w]:'#ff2e88');
+  $('#fincr').innerHTML=w>=0?CROWN:'';$('#finav').innerHTML=w>=0?avSVG(AV[w]):`${avSVG(AV[0])}${avSVG(AV[1])}`;
+  $('#finw').textContent=w<0?'¡Empate!':`¡Ganaron ${losN(w)}!`;$('#finsc').textContent=`${NAMES[0]} ${a} · ${NAMES[1]} ${b}`;
+  const pz=$('#finpz');pz.hidden=!(f.prize&&w>=0);$('#finpzt').textContent=f.prize||'';
+  const list=$('#meds');list.innerHTML='';$('#finmt').hidden=!f.meds.length;
+  if(!RM()){$('.j-fin-in',box).animate([{opacity:0,transform:'scale(.85) translateY(30px)'},{opacity:1,transform:'none'}],{duration:500,easing:'cubic-bezier(.2,.9,.3,1.1)'});
+    $('#finav').animate([{transform:'scale(0) rotate(-30deg)'},{transform:'scale(1.25) rotate(8deg)',offset:.6},{transform:'none'}],{duration:800,delay:200,fill:'backwards',easing:'cubic-bezier(.3,1.5,.5,1)'})}
+  sfr('medf',.8);
+  if(f.prize&&w>=0)later(900,()=>{if(run!==FINRUN)return;if(!RM())pz.animate([{opacity:0,transform:'scale(.4) rotate(-6deg)'},{opacity:1,transform:'scale(1.12) rotate(2deg)',offset:.6},{opacity:1,transform:'none'}],{duration:600,easing:'cubic-bezier(.3,1.5,.5,1)'});sparks(pz,18,true);sfr('pts',.7)});
+  f.meds.forEach((m,k)=>later(1500+k*1300,()=>{if(run!==FINRUN)return;const el=document.createElement('div');el.className='l2-med on';
+    el.innerHTML=`<div class="l2-md" style="--mc:${m.c}"><i class="rb"></i><span class="dk">${m.ic}</span></div><div class="l2-mt"><b>${esc(m.t)}</b><small>${esc(m.d)}</small></div><span class="j-mav">${m.tm>=0?avSVG(AV[m.tm]):''}</span>`;
+    list.appendChild(el);sfr('med',.85);el.style.opacity=1;el.scrollIntoView({block:'nearest',behavior:RM()?'auto':'smooth'});
+    if(!RM()){el.animate([{opacity:0,transform:'translateX(60px) scale(.9)'},{opacity:1,transform:'translateX(-6px) scale(1.02)',offset:.6},{opacity:1,transform:'none'}],{duration:520,easing:'cubic-bezier(.2,.9,.3,1)'});
+      $('.dk',el).animate([{transform:'translateY(-40px) rotateY(900deg) scale(.6)'},{transform:'translateY(4px) rotateY(60deg) scale(1.1)',offset:.75},{transform:'none'}],{duration:900,easing:'cubic-bezier(.2,.8,.3,1)'})}
+    later(700,()=>sparks($('.dk',el),12,true))}));
+  later(1700+f.meds.length*1300,()=>{if(run!==FINRUN)return;sfr('medf',.9);confetti();stage('win',{ms:5000});if(!RM())$('#finav').animate([{transform:'rotate(0)'},{transform:'rotate(360deg) scale(1.15)'},{transform:'none'}],{duration:900,easing:'cubic-bezier(.3,1.4,.5,1)'})})}
+function finHide(){FINRUN++;$('#fin').hidden=true}
+
 /* ===================== EL JUEGO EN VIVO EN EL CELULAR DE CADA JUGADOR ===================== */
 /* recibe lo que pasa en la pantalla del juego y lo anima igual, sin botones de quien dirige */
-let V=null,VQ=null,VREV=new Set(),VXS=0,VAW=0,VPH='',VSAY=null,SC=[0,0],FLY=0;
+let VFIN=0,V=null,VQ=null,VREV=new Set(),VXS=0,VAW=0,VPH='',VSAY=null,SC=[0,0],FLY=0;
 const HEAD='ENCUESTAMOS A 100 PERSONAS…';
 const tile=i=>$(`#board .tile[data-i="${i}"]`);
 const XSVG='<svg viewBox="0 0 100 100" aria-hidden="true"><path d="M24 24 76 76M76 24 24 76"/></svg>';
@@ -1583,6 +1648,9 @@ function apply(v){const first=!V;
   /* dos errores: se preparan para robar */
   const wn=v.warn==null?-1:v.warn;$$('.l2-team').forEach((e,k)=>{e.classList.toggle('ready',k===wn);if(k===wn)$('.l2-turn',e).textContent='¡Prepárense!'});const s3=$$('#xslots .xslot')[2];if(s3)s3.classList.toggle('next',wn>=0);
   if(wn>=0&&(!V||V.warn!==wn)&&!first){cinta(`¡PREPÁRENSE, ${NAMES[wn].toUpperCase()}!`,'Una ✕ más y pueden robar los puntos',wn?'c-gold':'c-teal');sfr('grow',.5);bump($('#tm'+wn),1.12)}
+  /* premio y ceremonia del final */
+  const pz=v.pz||'';$('#pzchip').hidden=!pz;$('#pzt').textContent=pz;
+  if(v.fin&&!VFIN){VFIN=1;const f=v.fin;if(first)finShow(f);else later(2700,()=>{if(V&&V.fin)finShow(f)})}else if(!v.fin&&VFIN){VFIN=0;finHide()}
   saySync(v.say||null,v);
   ckSync(v.ck,xs>(V?V.xs||0:0)||(v.say&&(v.say.cls==='miss'||v.say.cls==='time')));
   VPH=v.ph||'';V=v}

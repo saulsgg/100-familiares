@@ -70,7 +70,7 @@ function fastestBroker(){if(BROKERS.length<2)return Promise.resolve(0);return ne
 let AC=null,OUT=null,loading=null;const BUF={};
 const FILES=['lr','ya','bz0','bz1','fin','rec','went','ok1','top1','pts','flap2','peg','thr','wx1','wx2','wx3','wx4'];
 /* sonidos de la pantalla del juego (se cargan cuando el juego se ve en el celular) */
-const FILES2=['pa','flap','qok','cinta_4','tic','tac','cd1','cd2','cd3','cd4','cd5','grow','tmo'];
+const FILES2=['pa','flap','qok','cinta_4','tic','tac','cd1','cd2','cd3','cd4','cd5','grow','tmo','med','medf'];if(!FILES.includes('grow'))FILES.push('grow');
 function ac(){try{if(!AC){AC=new(window.AudioContext||window.webkitAudioContext)();const c=AC.createDynamicsCompressor();c.threshold.value=-8;c.ratio.value=12;c.connect(AC.destination);OUT=AC.createGain();OUT.connect(c)}if(AC.state==='suspended')AC.resume();return true}catch(e){return false}}
 function loadSounds(){if(loading)return loading;if(!ac())return Promise.resolve();loading=Promise.all(FILES.map(f=>fetch('sounds/'+f+'.mp3').then(r=>{if(!r.ok)throw 0;return r.arrayBuffer()}).then(b=>new Promise((ok,ko)=>AC.decodeAudioData(b,ok,ko))).then(b=>{BUF[f]=b}).catch(()=>{})));return loading}
 function loadOne(n){if(BUF[n]||BUF['_'+n]||!ac())return;BUF['_'+n]=1;fetch('sounds/'+n+'.mp3').then(r=>{if(!r.ok)throw 0;return r.arrayBuffer()}).then(b=>new Promise((ok,ko)=>AC.decodeAudioData(b,ok,ko))).then(b=>{BUF[n]=b}).catch(()=>{delete BUF['_'+n]})}
@@ -246,7 +246,7 @@ function drawMe(){const t=P.team,v=$('#v-play');v.classList.toggle('t1',t===1);
 function playMsg(topic,m){
   if(topic.endsWith('/up')){if(m.t==='up'&&!P.found)hello();return}
   P.lastHost=performance.now();
-  if(m.t==='ping'){psend({t:'pong',ts:m.ts});return}
+  if(m.t==='ping'){psend({t:'pong',ts:m.ts,pt:performance.now()});return}
   if(m.t==='who'){hello();return}
   if(m.t==='rtc-answer'){if(P.pc&&typeof m.sdp==='string'&&P.pc.signalingState==='have-local-offer')P.pc.setRemoteDescription({type:'answer',sdp:m.sdp}).catch(()=>dropP());return}
   if(m.t==='state'){const firstFound=!P.found,prevT=P.team;P.found=true;setNames(m.names);if(m.info&&m.info.text)P.info=m.info;if(Array.isArray(m.av))preAnimals(m.av);clearTimeout(P.probeT);P.st=m;P.foul=!!m.foul;if(m.team===0||m.team===1)P.team=m.team;else if(m.team===-1)P.team=-1;
@@ -257,6 +257,7 @@ function playMsg(topic,m){
   if(m.t==='view'){gvDraw(m);wphView(m);return}
   if(m.t==='wspin'){wphSpin(m);return}
   if(m.t==='warn'){warnMe(+m.team);return}
+  if(m.t==='fin'){finMe(m);return}
   if(m.t==='kick'){playStop();toast('La pantalla del juego te sacó de la sala.');return}
   if(m.t==='ask'){showAsk(m);return}if(m.t==='asked'||m.t==='judged'||m.t==='close'||m.t==='lock'){askMsg(m);return}
   if(m.t==='arm'){hideAsk();arm(m)}else if(m.t==='res')onRes(m);else if(m.t==='cancel'){clearPT();P.phase='idle';hideRes();showPad();padState('idle','Esperen la siguiente ronda','')}}
@@ -266,20 +267,22 @@ function showPad(){P.picking=false;$('#pick').hidden=true;$('#pad').hidden=false
 function padState(cls,msg,sub){$('#pad').className='pad '+cls;$('#v-play').dataset.pad=cls;$('#pmsg').textContent=msg;if(sub!=null)$('#psub').textContent=sub}
 function plamp(k,c){const l=$$('#plamps i')[k];l.className=c;if(!RM())l.animate([{transform:'scale(1.3)'},{transform:'scale(1)'}],{duration:220})}
 function clearPT(){P.T.forEach(clearTimeout);P.T=[];clearTimeout(P.q);P.q=0}
-function arm(m){clearPT();hideRes();P.r=m.r;P.rt=0;P.lateUntil=0;P.foul=!!m.foul;P.phase='wait';P.lock=0;P.yaAt=performance.now()+m.d;
+function arm(m){clearPT();hideRes();const now0=performance.now(),base=typeof m.at==='number'&&m.at-now0>m.d*.3&&m.at-now0<m.d+3000?m.at-m.d-now0:0;
+  P.r=m.r;P.rt=0;P.lateUntil=0;P.foul=!!m.foul;P.phase='wait';P.lock=0;P.yaAt=now0+base+m.d;
   if(P.team<0){showPick();return}showPad();$$('#plamps i').forEach(l=>{l.className='';l.style.removeProperty('--wc')});
   padState('wait','Prepárense…',P.foul?'Si tocas antes del ¡YA!, tu equipo pierde el turno':'Esperen la luz verde');
-  m.lights.forEach((ms,k)=>P.T.push(later(ms,()=>{if(P.phase==='wait'){plamp(k,'r');sf('lr',.35)}})));
-  P.T.push(later(m.d,()=>{if(P.phase!=='wait')return;P.phase='go';P.yaAt=performance.now();$$('#plamps i').forEach(l=>l.className='g');padState('go','¡YA!','¡Toca el botón!');sf('ya',.7);vib(70);
-    requestAnimationFrame(f=>{if(P.phase==='go'&&f>P.yaAt&&f-P.yaAt<200)P.yaAt=f})}))}
+  m.lights.forEach((ms,k)=>P.T.push(later(Math.max(0,base+ms),()=>{if(P.phase==='wait'){plamp(k,'r');sf('lr',.35)}})));
+  P.T.push(later(Math.max(0,base+m.d),()=>{if(P.phase!=='wait')return;P.phase='go';P.yaAt=performance.now();$$('#plamps i').forEach(l=>l.className='g');padState('go','¡YA!','¡Toca el botón!');sf('ya',.7);vib(70)}))}
 /* menos de 0.1 s después del ¡YA! nadie reacciona: eso es adivinar */
-const MIN_RT=100;
+const MIN_RT=80;
 function press(ts){const pn=performance.now(),now=ts>0&&ts<=pn&&pn-ts<300?ts:pn,dome=$('#dome');
+  /* si el dedo tocó justo antes del ¡YA! (aunque el celular lo procese después), cuenta como antes */
+  if(P.phase==='go'&&now<P.yaAt-5){P.phase='wait';if(!P.foul){P.phase='go';P.lock=now+400;animal(myAv(),.7);vib(25);shake(dome);$('#psub').textContent='¡Muy pronto! Espera tantito y vuelve a tocar';return}}
   if(P.phase==='go'&&!P.foul&&(P.lock>now||now-P.yaAt<MIN_RT)){if(P.lock<=now){P.lock=now+400;animal(myAv(),.7)}vib(25);shake(dome);$('#psub').textContent='¡Muy pronto! Espera tantito y vuelve a tocar';return}
   if(P.phase==='go'){
     P.phase='sent';P.rt=now-P.yaAt;psend({t:'press',r:P.r,rt:P.rt},1);tick();vib(30);padState('sent','¡Listo!',`Tu tiempo: ${sec(P.rt)}`);spk(dome,22,['#fff','#fff3c4',getComputedStyle($('#v-play')).getPropertyValue('--tc')]);return}
   if(P.phase==='wait'){
-    if(P.foul){P.phase='early';psend({t:'early',r:P.r,before:Math.max(0,P.yaAt-now)},1);animal(myAv(),1);vib([60,40,60]);padState('early','¡Te adelantaste!','Esperen el resultado…');shake(dome);return}
+    if(P.foul){P.phase='early';psend({t:'early',r:P.r,before:Math.max(0,P.yaAt-now)},1);animal(myAv(),1);vib([60,40,60]);padState('early','¡Te adelantaste!',`Tocaste ${sec(Math.max(0,P.yaAt-now))} antes del ¡YA! · esperen el resultado`);shake(dome);return}
     if(P.lock>now)return;P.lock=now+400;animal(myAv(),.7);vib(25);shake(dome);$('#psub').textContent='¡Todavía no! Espera la luz verde';return}
   if(P.phase==='res'&&now<P.lateUntil){P.lateUntil=0;P.rt=now-P.yaAt;psend({t:'press',r:P.r,rt:P.rt},1);tick();vib(30);const ps=$$('#pres p');if(ps.length)ps[ps.length-1].textContent=`Tu tiempo: ${sec(P.rt)}`;return}
   if(P.phase==='idle'){tick();if(!RM())dome.animate([{transform:'scale(1)'},{transform:'scale(.95)'},{transform:'scale(1)'}],{duration:180})}}
@@ -346,6 +349,22 @@ function gvDraw(v){const old=GV;GV=v;gvShow();verSend(v);if(!v.on)return;const s
     e.textContent=sy.cls==='typing'?`${sy.who} está escribiendo…`:sy.cls==='hit'?`✓ ${sy.who}: “${sy.txt}” ¡Sí está!`:sy.cls==='miss'?`✕ ${sy.who}: “${sy.txt}” no está`:sy.cls==='dup'?`${sy.who}: “${sy.txt}” ya salió`:sy.cls==='time'?`¡Se le acabó el tiempo a ${sy.who}!`:`${sy.who} contestó: “${sy.txt}”`}else e.hidden=true;
   if(snd&&old&&!old.q&&v.q)sf('flap2',.5)}
 
+/* final: tus medallas y el premio */
+let FINT=0;
+function finMe(m){if(!P.found||P.team<0)return;clearTimeout(FINT);loadOne('med');loadOne('medf');
+  /* en modo celulares primero se ve la ceremonia completa en la pantalla del juego */
+  const wait=gvOn()?2700+(+m.n||0)*1300+3500:2600;
+  FINT=later(wait,()=>{const won=m.w===P.team,tie=m.w<0,mine=Array.isArray(m.mine)?m.mine:[];
+    $('#finphav').innerHTML=avSVG(myAv());$('#finpht').textContent=tie?'¡Empate!':won?'🏆 ¡GANARON!':'¡Buen juego!';
+    $('#finphs').textContent=`${NAMES[0]} ${m.sc[0]} · ${NAMES[1]} ${m.sc[1]}`;$('#finphpz').hidden=!(won&&m.prize);$('#finphpzt').textContent=m.prize||'';
+    $('#finphmt').textContent=mine.length?(mine.length===1?'Tu medalla':'Tus medallas'):'Esta vez no te tocó medalla. ¡A la próxima!';
+    $('#finphm').innerHTML=mine.map(x=>`<div class="finph-med" style="--mc:${esc(x.c||'#ffc42e')}"><span class="dk">${esc(x.ic)}</span><div><b>${esc(x.t)}${x.team?' <small>(tu equipo)</small>':''}</b><small>${esc(x.d)}</small></div></div>`).join('');
+    const s=$('#finph');s.className='finph'+(won?' won':tie?' tie':'');s.hidden=false;
+    if(!RM()){s.animate([{opacity:0},{opacity:1}],{duration:300});$$('.finph-med',s).forEach((e,k)=>e.animate([{opacity:0,transform:'translateX(40px) scale(.9)'},{opacity:1,transform:'none'}],{duration:480,delay:500+k*450,fill:'backwards',easing:'cubic-bezier(.2,.9,.3,1)'}))}
+    vib(won?[60,40,60,40,200]:[60]);if(!gvOn()||!$('#gvf').offsetParent){sf(mine.length?'med':'medf',.8);if(won)later(500,()=>sf('medf',.8))}
+    $$('.finph-med',s).forEach((e,k)=>later(600+k*450,()=>spk($('.dk',e),14,['#fff','#fff3c4','#ffc42e'])))})}
+$('#finphok').addEventListener('click',()=>{$('#finph').hidden=true});
+
 /* dos errores: aviso para que el otro equipo se prepare a robar */
 let WARNT=0;
 function warnMe(t){if(!P.found||P.team<0)return;const mine=P.team===t;vib(mine?[90,60,90,60,160]:[60,40,60]);
@@ -393,7 +412,13 @@ function wphView(v){const s=$('#wph'),show=v.ph==='wheel'&&P.found&&P.team>=0&&(
   if(v.wres&&!WP.res&&!WP.spin){WP.res=v.wres;wphRes(v.wres,false)}}
 function wphSpin(m){WP.id=m.id;if(!m.om){WP.spin=false;WP.P=null;WP.th=m.th0;wphRot();return}
   WP.P=wTraj(m.th0,m.om,m.fr);WP.t0=WP.flickAt&&performance.now()-WP.flickAt<2000?WP.flickAt:performance.now();WP.flickAt=0;WP.pred=null;WP.spin=true;WP.res=0;$('#wphr').className='wph-r';$('#wphr').textContent='';$('#wphh').hidden=true;
-  if(!$('#wph').hidden&&WP.on&&!WP.me)sf('thr',.6);wphGo()}
+  if(!$('#wph').hidden&&WP.on&&!WP.me)sf('thr',.6);wphGo();if(!$('#wph').hidden)wphFx(m.om)}
+/* ¡súper giro! cuando la avientan muy fuerte */
+function wphFx(om){const a=Math.abs(om),k=a>=2400?['¡SÚPER GIRO!','sup']:a>=2000?['¡Qué fuerza!','fast']:null;if(!k)return;const el=$('#wphfx'),w=$('#wphw');
+  el.textContent=k[0];el.className='wph-fx '+k[1];w.classList.remove('fire','fast');void w.offsetWidth;w.classList.add(k[1]==='sup'?'fire':'fast');vib(k[1]==='sup'?[40,30,40,30,120]:[40,30,60]);
+  if(WP.on||WP.me){sfR('grow',.6,k[1]==='sup'?1.25:1.05);if(k[1]==='sup')later(120,()=>sf('top1',.55))}
+  if(!RM()){el.animate([{opacity:0,transform:'translate(-50%,-50%) scale(.2) rotate(-25deg)'},{opacity:1,transform:'translate(-50%,-50%) scale(1.2) rotate(6deg)',offset:.55},{opacity:1,transform:'translate(-50%,-50%) scale(1) rotate(-4deg)',offset:.8},{opacity:0,transform:'translate(-50%,-70%) scale(1.1) rotate(-4deg)'}],{duration:2100,easing:'cubic-bezier(.2,.9,.3,1)',fill:'forwards'});shake(w)}
+  later(2600,()=>w.classList.remove('fire','fast'))}
 /* aventarla con el dedo (solo a quien le toca) */
 function wphAng(e){const r=$('#wphc').getBoundingClientRect();return Math.atan2(e.clientY-(r.top+r.height/2),e.clientX-(r.left+r.width/2))*180/Math.PI}
 $('#wphw').addEventListener('pointerdown',e=>{if(!WP.me||WP.spin||WP.res)return;e.preventDefault();try{$('#wphw').setPointerCapture(e.pointerId)}catch(_){}ac();loadSounds();
