@@ -1781,7 +1781,9 @@ function nhMsg(topic,m){const uid=String(m.u||'').slice(0,40);if(!uid)return;
   if(m.t==='team'&&(m.team===0||m.team===1||m.team===-1)){pl.team=m.team;NH.mem[uid]=m.team;NH.on.players();nhState();return}
   if(m.t==='pong'){const v=performance.now()-(+m.ts||0);if(v>=0&&v<20000){pl.rtts=(pl.rtts||[]).concat(v).slice(-6);pl.ping=Math.round(Math.min(...pl.rtts));
     /* diferencia entre el reloj del celular y el de esta pantalla (con la medida de menos retraso) */
-    if(typeof m.pt==='number'&&isFinite(m.pt)){pl.offs=(pl.offs||[]).concat([[v,(+m.ts)+v/2-m.pt]]).slice(-8);let b=pl.offs[0];pl.offs.forEach(o=>{if(o[0]<b[0])b=o});pl.off=b[1]}}NH.on.players();return}
+    if(typeof m.pt==='number'&&isFinite(m.pt)){pl.offs=(pl.offs||[]).concat([[v,(+m.ts)+v/2-m.pt]]).slice(-8);let b=pl.offs[0];pl.offs.forEach(o=>{if(o[0]<b[0])b=o});pl.off=b[1];
+      /* el celular necesita saber la diferencia para ir al mismo paso que esta pantalla */
+      if(pl.offSent==null||Math.abs(pl.offSent-pl.off)>2){pl.offSent=pl.off;nhTo(pl,{t:'off',off:Math.round(pl.off*10)/10},1)}}}NH.on.players();return}
   if(m.t==='bye'){nhDrop(pl);NH.P.delete(uid);NH.on.players();nhState();return}
   if(m.t==='rtc-offer'){nhRTC(pl,m);return}
   if(m.t==='typing'||m.t==='answer'){NH.on.msg(pl,m);return}
@@ -2058,7 +2060,7 @@ function ckReset(){clearInterval(CK.id);CK.run=false;CK.done=false;CK.big=false;
 function last5(left){const k=6-left;if(SEL.l5==='hb'){sfr('hb',.8);sfr('grow',.35,1+(k-1)*.08);return}sfr('cd'+(SEL.l5==='down'?6-k:k),.85);sfr('grow',.22,SEL.l5==='down'?1.3-(k-1)*.08:1+(k-1)*.08)}
 function ckStart(){setStep('clock');clearInterval(CK.id);CK.left=CK.tot;CK.run=true;CK.done=false;CK.big=false;CK.x=false;hand(0,true);ckDraw('run');sfr('tic',.6);
   note(`Tiene ${CK.tot} segundos para contestar. Toquen la ficha si le atina, o ✕ Error.`);
-  CK.id=setInterval(()=>{CK.left--;hand(CK.tot-CK.left);
+  CK.nx=performance.now()+1000;CK.id=setInterval(()=>{CK.nx=performance.now()+1000;CK.left--;hand(CK.tot-CK.left);
     if(CK.left>0){if(CK.left<=5){last5(CK.left);if(!RM())$('#hotv').animate([{opacity:0},{opacity:.3+(5-CK.left)*.17},{opacity:0}],{duration:850,easing:'ease-out'})}else sfr(CK.left%2?'tic':'tac',.55)}
     else{ckTimeout();return}
     ckDraw('run',true)},1000)}
@@ -2315,7 +2317,7 @@ function openAsk(t,steal,again){let ps=teamPhones(t);if(!ps.length)return null;l
   else if(steal){if(!R.thief||!ps.some(p=>p.uid===R.thief))R.thief=ps[G.ri%ps.length].uid;tg=[NH.P.get(R.thief)]}
   else{const o=(R.order||[]).filter(u=>ps.some(p=>p.uid===u));ps.forEach(p=>{if(!o.includes(p.uid))o.push(p.uid)});R.order=o;tg=[NH.P.get(o[R.ai%o.length])]}
   ASK={id:++ASKN,uids:tg.map(p=>p.uid),t,steal,open:true,name:all?NAMES[t]:tg[0].name,writer:tg.length===1?tg[0].uid:null};
-  const m={t:'ask',a:ASK.id,q:R.q.q,sec:CK.tot,steal:!!steal,all,team:t,again:!!again};tg.forEach(p=>nhTo(p,m,1));
+  const m={t:'ask',a:ASK.id,q:R.q.q,sec:CK.tot,end:CK.run&&CK.nx?CK.nx+(CK.left-1)*1000:performance.now()+CK.tot*1000,steal:!!steal,all,team:t,again:!!again};tg.forEach(p=>nhTo(p,m,1));
   nhInfo(steal?`¡Roban ${losN(t)}!`:all?`Contestan ${losN(t)}`:`Contesta ${tg[0].name}`,steal?(all?'Tienen una sola oportunidad':`Escribe ${tg[0].name}: tienen una sola oportunidad`):scoreLine());
   showSay(t,all?`${losN(t,1)}`:tg[0].name,all?'están pensando':'está escribiendo');return ASK}
 function closeAsk(why){if(!ASK)return false;const A=ASK;ASK=null;A.uids.forEach(u=>{const p=NH.P.get(u);if(p)nhTo(p,{t:'close',a:A.id,why:why||''},1)});return true}
@@ -2350,7 +2352,7 @@ function judge(A){if(ASK!==A||!R)return;ASK=null;const r=matchAns(A.text);
 /* se acabó el tiempo y no mandaron nada */
 function onTimeUp(){if(!ASK||!R)return;const A=ASK;ASK=null;tellAsk(A,{res:'time'});sayState('time','¡SE ACABÓ EL TIEMPO!');if(!A.steal)R.ai++;T(1500,strike)}
 NH.on.msg=onAskMsg;
-NH.on.hello=p=>{if(ASK&&ASK.open&&R&&ASK.uids.includes(p.uid)){nhTo(p,{t:'ask',a:ASK.id,q:R.q.q,sec:Math.max(2,CK.left),steal:ASK.steal,all:ASK.uids.length>1,team:ASK.t},1);if(ASK.writer&&ASK.writer!==p.uid)nhTo(p,{t:'lock',a:ASK.id,by:ASK.name},1)}};
+NH.on.hello=p=>{if(ASK&&ASK.open&&R&&ASK.uids.includes(p.uid)){nhTo(p,{t:'ask',a:ASK.id,q:R.q.q,sec:Math.max(2,CK.left),end:CK.run&&CK.nx?CK.nx+(CK.left-1)*1000:undefined,steal:ASK.steal,all:ASK.uids.length>1,team:ASK.t},1);if(ASK.writer&&ASK.writer!==p.uid)nhTo(p,{t:'lock',a:ASK.id,by:ASK.name},1)}};
 window.__ja=()=>({ask:ASK&&{id:ASK.id,uids:ASK.uids,open:ASK.open,steal:ASK.steal},ai:R&&R.ai,order:R&&R.order,ck:CK.run,grace:R&&R.grace,phase:R&&R.phase,x:R&&R.x});
 
 /* ===================== MODO CELULARES: el juego se ve en cada celular ===================== */
@@ -2364,12 +2366,13 @@ function sayV(){const s=$('#say');if(s.hidden)return null;const cls=['hit','miss
   return{who:$('#sayn').textContent,cls,txt:cls==='typing'?'':SAYT,w:cls==='typing'?SAYW:''}}
 function viewMsg(){const v={t:'view',on:CEL,rn:G.ri+1,rr:CFG.rounds,sc:G.sc.slice(),av:AV,names:NAMES,pz:CFG.prize||''};
   if(R){const shown=R.phase!=='wheel';v.q=shown?R.q.q:'';v.n=R.n;v.rev=R.rev.map((x,i)=>x?[i,R.q.a[i][0],R.q.a[i][1]]:null).filter(Boolean);v.bank=R.bank;v.m=R.m||1;v.x=R.x;v.xs=R.xs||0;v.aw=R.aw||null;v.warn=R.warn&&R.phase==='play'?1-R.ctl:-1;v.fin=R.phase==='end'?R.fin||null:null;v.cmd=cmdState();v.hints=R.hints?Object.entries(R.hints).map(([i,l])=>[+i,l]):[];v.chat=R.chat?{t:R.chat.t,left:Math.max(0,Math.ceil((R.chat.end-performance.now())/1000))}:null;v.cev=CEV;v.ph=R.phase;v.ctl=R.ctl;
-    v.ck={run:CK.run,left:CK.left,tot:CK.tot,pause:!!R.chat};v.say=sayV();
+    v.ck={run:CK.run,left:CK.left,tot:CK.tot,pause:!!R.chat,nx:CK.run&&CK.nx?Math.round(CK.nx):0};v.say=sayV();
     if(R.phase==='wheel'){v.wsp=R.spinner||'';v.wspn=R.spinName||'';v.wth=WH.spin?null:Math.round(WH.th*1000)/1000;v.wid=WSN;v.wres=WH.res?F.m:0}}
   return v}
-function viewTick(){const v=viewMsg(),k=JSON.stringify(v);if(k===LASTV)return;LASTV=k;NH.P.forEach(p=>{if(!p.local)nhTo(p,v)})}
-setInterval(viewTick,250);
-{const h0=NH.on.hello;NH.on.hello=p=>{h0(p);nhTo(p,viewMsg(),1)}}
+/* se manda en cuanto algo cambia (se revisa 20 veces por segundo) con la hora de esta pantalla, para que cada celular vaya al mismo paso */
+function viewTick(){const v=viewMsg(),k=JSON.stringify(v);if(k===LASTV)return;LASTV=k;v.hts=performance.now();NH.P.forEach(p=>{if(!p.local)nhTo(p,v)})}
+setInterval(viewTick,50);
+{const h0=NH.on.hello;NH.on.hello=p=>{h0(p);if(p.off!=null)nhTo(p,{t:'off',off:p.off},1);const v=viewMsg();v.hts=performance.now();nhTo(p,v,1)}}
 /* mensajes para el jugador de esta pantalla */
 NH.on.local=m=>{if(m.t==='ask')myAsk(m);else if((m.t==='close'||m.t==='asked'||m.t==='judged'||m.t==='lock')&&m.a===MYA){myHide();if(m.t==='lock')toast(`${m.by} está escribiendo por el equipo.`)}};
 function myAsk(m){MYA=m.a;const f=$('#myans'),i=$('#myansi');f.hidden=false;i.value='';i.disabled=false;$('#myanst').textContent=m.steal?'¡A robar! Escribe la respuesta':`¡Te toca, ${ME.name}! Escribe tu respuesta`;
@@ -2395,6 +2398,9 @@ $('#mename').addEventListener('change',()=>{if(ME){const n=$('#mename').value.tr
 let WL=null;async function wake(){try{if('wakeLock' in navigator&&!WL&&document.visibilityState==='visible'){WL=await navigator.wakeLock.request('screen');WL.addEventListener('release',()=>{WL=null})}}catch(e){}}
 document.addEventListener('visibilitychange',wake);document.addEventListener('pointerdown',wake,{once:true});
 meSync();drawOpts();
+/* cuando pasa algo importante se avisa a los celulares en ese mismo instante (sin esperar la siguiente revisión) */
+{const now=f=>function(...a){const r=f.apply(this,a);viewTick();return r};
+  reveal=now(reveal);strike=now(strike);startSteal=now(startSteal);award=now(award);qReveal=now(qReveal);turnStart=now(turnStart);showEnd=now(showEnd);showSay=now(showSay);sayState=now(sayState);hideSay=now(hideSay)}
 
 /* ===================== SALA: equipos y ajustes ===================== */
 /* el inicio manda el modo: pantalla grande o cada quien en su celular */
@@ -2616,7 +2622,7 @@ function hintOn(i,L){const tl=$(`#board .tile[data-i="${i}"]`);if(!tl||$('.l2-hi
   stage('aim',{el:tl});later(1400,stIdle);later(250,()=>{flapText(h,L+'…');pop(tl,'💡 ¡Pista!','l2-gd')})}
 /* junta de equipo: el reloj se pausa, chat solo para ese equipo, luego sigue donde se quedó */
 function ckResume(){if(CK.run||CK.left<=0)return;CK.run=true;$('#clk').classList.remove('paused');ckDraw('run');
-  CK.id=setInterval(()=>{CK.left--;hand(CK.tot-CK.left);
+  CK.nx=performance.now()+1000;CK.id=setInterval(()=>{CK.nx=performance.now()+1000;CK.left--;hand(CK.tot-CK.left);
     if(CK.left>0){if(CK.left<=5){last5(CK.left);if(!RM())$('#hotv').animate([{opacity:0},{opacity:.3+(5-CK.left)*.17},{opacity:0}],{duration:850,easing:'ease-out'})}else sfr(CK.left%2?'tic':'tac',.55)}
     else{ckTimeout();return}ckDraw('run',true)},1000)}
 function teamTo(t,m){NH.P.forEach(p=>{if(p.team===t&&!p.local)nhTo(p,m,1)})}
@@ -2625,7 +2631,7 @@ function chatStart(t,who){const id=Date.now();R.chat={t,id,end:performance.now()
   teamTo(t,{t:'chat',on:1,id,sec:CHAT_S,who});nhInfo(`💬 ${losN(t,1)} están en junta`,'El reloj está en pausa');
   cmdEvent(t,'c',who);jchatShow();R.chatT=setInterval(()=>{if(!R||!R.chat||R.chat.id!==id)return;const left=Math.max(0,Math.ceil((R.chat.end-performance.now())/1000));$('#jcht').textContent=left;if(left<=0)chatEnd(true)},250)}
 function chatEnd(resume){if(!R||!R.chat)return;const C=R.chat;R.chat=null;clearInterval(R.chatT);teamTo(C.t,{t:'chat',on:0,id:C.id});$('#jchat').hidden=true;$('#clk').classList.remove('paused');
-  if(resume&&ASK&&ASK.open){ASK.uids.forEach(u=>{const p=NH.P.get(u);if(p)nhTo(p,{t:'askresume',a:ASK.id,sec:CK.left},1)});ckResume();toast('Se acabó la junta: ¡sigue el reloj!');nhInfo(`Contesta${ASK.uids.length>1?'n '+losN(ASK.t):' '+ASK.name}`,scoreLine())}}
+  if(resume&&ASK&&ASK.open){ckResume();const end=CK.nx+(CK.left-1)*1000;ASK.uids.forEach(u=>{const p=NH.P.get(u);if(p)nhTo(p,{t:'askresume',a:ASK.id,sec:CK.left,end},1)});toast('Se acabó la junta: ¡sigue el reloj!');nhInfo(`Contesta${ASK.uids.length>1?'n '+losN(ASK.t):' '+ASK.name}`,scoreLine())}}
 function chatMsg(pl,text){if(!R||!R.chat||pl.team!==R.chat.t)return;text=String(text||'').replace(/[\u0000-\u001f<>]/g,'').replace(/\s+/g,' ').trim().slice(0,80);if(!text)return;
   const m={t:'chatm',id:R.chat.id,from:pl.name,uid:pl.uid,text};R.chat.msgs.push(m);teamTo(R.chat.t,m);jchatDraw()}
 /* en esta pantalla: si quien juega aquí es de ese equipo, ve y escribe en la junta; si no, solo ve que están platicando */

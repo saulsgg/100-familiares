@@ -255,6 +255,7 @@ function playMsg(topic,m){
   if(topic.endsWith('/up')){if(m.t==='up'&&!P.found)hello();return}
   P.lastHost=performance.now();
   if(m.t==='ping'){psend({t:'pong',ts:m.ts,pt:performance.now()});return}
+  if(m.t==='off'){if(isFinite(+m.off))P.hoff=+m.off;return}
   if(m.t==='who'){hello();return}
   if(m.t==='rtc-answer'){if(P.pc&&typeof m.sdp==='string'&&P.pc.signalingState==='have-local-offer')P.pc.setRemoteDescription({type:'answer',sdp:m.sdp}).catch(()=>dropP());return}
   if(m.t==='state'){const firstFound=!P.found,prevT=P.team;P.found=true;setNames(m.names);if(m.info&&m.info.text)P.info=m.info;if(Array.isArray(m.av))preAnimals(m.av);clearTimeout(P.probeT);P.st=m;P.foul=!!m.foul;if(m.team===0||m.team===1)P.team=m.team;else if(m.team===-1)P.team=-1;
@@ -271,7 +272,7 @@ function playMsg(topic,m){
   if(m.t==='cmdwait'){toast('🤫 Silenciando…');return}
   if(m.t==='hint'){if(m.a===AK.id){const h=$('#askhint');h.textContent=m.text;h.hidden=false;if(!RM())h.animate([{transform:'scale(.6)',opacity:0},{transform:'scale(1.08)',opacity:1,offset:.6},{transform:'none'}],{duration:420})}return}
   if(m.t==='askpause'){askPause(m.a);return}
-  if(m.t==='askresume'){askResume(m.a,+m.sec);return}
+  if(m.t==='askresume'){askResume(m.a,+m.sec,+m.end);return}
   if(m.t==='chat'){if(m.on)chatOpen(m);else chatClose(m);return}
   if(m.t==='chatm'){chatAdd(m);return}
   if(m.t==='kick'){playStop();toast('La pantalla del juego te sacó de la sala.');return}
@@ -342,13 +343,14 @@ const gvOn=()=>!!(GV&&GV.on&&P.found&&P.team>=0&&!P.picking);
 function gvShow(){const on=gvOn();$('#gv').hidden=!on;$('#v-play').classList.toggle('gvon',on);
   if(on){const f=$('#gvf');if(!f.dataset.on){f.dataset.on=1;f.src='ver.html';FILES2.forEach(loadOne)}}drawCmdBar()}
 let VERok=false;
-function verSend(v){const f=$('#gvf');if(VERok&&f.contentWindow)try{f.contentWindow.postMessage({t:'view',v},'*')}catch(e){}}
+/* _d convierte la hora de la pantalla del juego a hora real (así el juego en vivo puede ir exactamente al mismo paso) */
+function verSend(v){const f=$('#gvf');if(isFinite(P.hoff))v._d=performance.timeOrigin-P.hoff;if(VERok&&f.contentWindow)try{f.contentWindow.postMessage({t:'view',v},'*')}catch(e){}}
 /* sonidos que pide la pantalla del juego en vivo */
 function sfR(n,vol,rate){if(!AC||!BUF[n])return;try{const s=AC.createBufferSource(),g=AC.createGain();s.buffer=BUF[n];s.playbackRate.value=rate||1;g.gain.value=vol==null?.85:vol;s.connect(g);g.connect(OUT);s.start()}catch(e){}}
 addEventListener('message',e=>{const f=$('#gvf');if(!f||e.source!==f.contentWindow)return;const d=e.data||{};
   if(d.t==='ver-listo'){VERok=true;if(GV)verSend(GV);return}
   if(d.t==='snd'&&gvOn()&&typeof d.n==='string'){if(d.n==='boing')boing();else{if(!BUF[d.n])loadOne(d.n);sfR(d.n,+d.vol||.85,+d.rate||1)}}});
-function gvDraw(v){const old=GV;GV=v;gvShow();verSend(v);drawCmdBar();if(!v.on)return;const snd=false;
+function gvDraw(v){const old=GV;GV=v;gvShow();verSend(v);drawCmdBar();$('#v-play').classList.toggle('ingame',!!v.ph);if(!$('#ask').hidden)drawAskRev();if(!v.on)return;const snd=false;
   [0,1].forEach(t=>{$('#gvs'+t).textContent=v.sc[t];if(P.st)$('#gva'+t).innerHTML=avSVG(P.st.av[t]);
     const turn=v.ph==='steal'?1-v.ctl:v.ctl;$('#gvt'+t).classList.toggle('on',(v.ph==='play'||v.ph==='steal')&&turn===t);
     if(old&&old.sc[t]<v.sc[t]){sf('pts',.8);if(!RM())$('#gvt'+t).animate([{transform:'scale(1)'},{transform:'scale(1.12)'},{transform:'scale(1)'}],{duration:500,easing:'cubic-bezier(.3,1.6,.5,1)'})}});
@@ -379,9 +381,12 @@ function drawCmdBar(){const b=$('#cmdbar'),show=!!(GV&&GV.cmd&&P.found&&P.team>=
 function cmdTap(e){const b=e.target.closest('.cmdb');if(!b)return;ac();loadSounds();if(b.classList.contains('used')){toast('Ese comodín ya lo usaron en esta partida');return}
   psend({t:'cmd',k:b.dataset.k,pt:performance.now()},1);tick();if(!RM())b.animate([{transform:'scale(1)'},{transform:'scale(.88)'},{transform:'scale(1)'}],{duration:220})}
 $('#cmdbar').addEventListener('click',cmdTap);$('#askcmd').addEventListener('click',cmdTap);
+/* en el recuadro para contestar: las que ya salieron en el tablero (para no repetir) */
+function drawAskRev(){const b=$('#askrev'),r=GV&&Array.isArray(GV.rev)?GV.rev.slice().sort((x,y)=>x[0]-y[0]):[];b.hidden=!r.length;
+  const h=r.length?'<small>Ya salieron:</small>'+r.map(([i,t])=>`<span>${i+1}. ${esc(String(t))}</span>`).join(''):'';if(b._h!==h){b._h=h;b.innerHTML=h}}
 /* el reloj del recuadro se pausa durante la junta */
 function askPause(a){if(a!==AK.id||AK.paused)return;AK.paused=true;AK.rest=Math.max(0,AK.end-performance.now());clearInterval(AK.T);$('#ask').classList.add('paused');$('#asksec').textContent='⏸'}
-function askResume(a,sec){if(a!==AK.id)return;AK.paused=false;$('#ask').classList.remove('paused');AK.end=performance.now()+(sec>0?sec*1000:AK.rest||0);clearInterval(AK.T);AK.T=setInterval(akTick,100);akTick()}
+function askResume(a,sec,end){if(a!==AK.id)return;AK.paused=false;$('#ask').classList.remove('paused');AK.end=isFinite(end)&&isFinite(P.hoff)?end-P.hoff:performance.now()+(sec>0?sec*1000:AK.rest||0);clearInterval(AK.T);AK.T=setInterval(akTick,100);akTick()}
 /* junta de equipo: chat solo para tu equipo */
 const CH={id:0,end:0,T:0};
 function chatOpen(m){CH.id=m.id;CH.end=performance.now()+(+m.sec||30)*1000;$('#chatm').innerHTML='';$('#chatq').textContent=GV&&GV.q?GV.q:'';$('#chatt').textContent='💬 Junta de equipo';
@@ -489,7 +494,7 @@ function akPrev(){const w=akWords($('#aski').value),box=$('#askprev'),old=AK.las
 function akTick(){const left=Math.max(0,AK.end-performance.now()),s=Math.ceil(left/1000);$('#askbar').style.transform=`scaleX(${(left/(AK.sec*1000)).toFixed(4)})`;
   if(String(s)!==$('#asksec').textContent){$('#asksec').textContent=s;const hot=s<=5&&!AK.sent;$('#ask').classList.toggle('hot',hot);if(hot&&s>0){vib(18);if(!RM())$('#asksec').animate([{transform:'scale(1.35)'},{transform:'scale(1)'}],{duration:300})}}
   if(left<=0)clearInterval(AK.T)}
-function showAsk(m){clearTimeout(AK.hT);const s=$('#ask'),again=AK.id===m.a,wasDone=!s.hidden&&s.classList.contains('done');AK.id=m.a;AK.sent=false;AK.mine=false;AK.sec=Math.max(2,+m.sec||15);AK.end=performance.now()+AK.sec*1000;AK.last='';
+function showAsk(m){drawAskRev();clearTimeout(AK.hT);const s=$('#ask'),again=AK.id===m.a,wasDone=!s.hidden&&s.classList.contains('done');AK.id=m.a;AK.sent=false;AK.mine=false;AK.sec=Math.max(2,+m.sec||15);AK.end=isFinite(+m.end)&&isFinite(P.hoff)&&Math.abs(+m.end-P.hoff-performance.now()-AK.sec*1000)<3000?+m.end-P.hoff:performance.now()+AK.sec*1000;AK.last='';
   hideRes();s.className='ask'+(m.steal?' steal':'');$('#askres').hidden=true;$('#askf').hidden=false;
   $('#askav').innerHTML=avSVG(myAv());$('#askt').textContent=m.steal?'¡A robar!':m.again?'¡Intenta con otra!':m.all?'¡Les toca contestar!':'¡Te toca contestar!';
   $('#asks').textContent=m.steal?(m.all?'Una sola oportunidad: el primero que escriba contesta por el equipo':'Una sola oportunidad: pónganse de acuerdo y tú la escribes'):m.all?'El primero que empiece a escribir contesta por el equipo':'¿Qué dijeron las 100 personas?';

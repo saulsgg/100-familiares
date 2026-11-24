@@ -1164,25 +1164,72 @@ body.ver{overflow-x:hidden}
 .ver .j-wrap{padding:6px 8px 20px}
 .ver .l3-clk{pointer-events:none}
 .ver .tile{cursor:default}
-@media (max-width:600px){
-  .ver .j-top{margin-bottom:10px;gap:6px}
-  .ver .j-logo b{font-size:24px}.ver .j-logo span{display:none}
-  .ver .l3-rnd,.ver .l3-mult{font-size:14px;padding:4px 10px}
-  /* marcador en una sola fila: equipo · en juego · equipo */
-  .ver .l2-score{grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:6px;margin:2px 0 8px}
-  .ver .l2-bank{grid-column:auto;grid-row:auto;min-width:64px;padding:6px 6px;border-radius:14px;align-self:stretch;align-content:center}
-  .ver .l2-bank small{font-size:10px}.ver .l2-bank b{font-size:28px}.ver .j-bm{font-size:10px}
-  .ver .l2-team{grid-template-columns:auto minmax(0,1fr);gap:5px;padding:6px 6px;border-radius:14px}
-  .ver .l2-ava{width:34px}.ver .l2-ts{font-size:26px}.ver .l2-tn{display:block;overflow:hidden;font-size:12px;text-overflow:ellipsis;white-space:nowrap}
-  .ver .l2-team .l2-turn{top:-12px;font-size:11px}
-  .ver .j-wrap .l3-qp{margin-top:34px}
-  .ver .tile{height:clamp(44px,6.4vh,64px)}
-}
-/* el marcador siempre a la vista */
-.ver .l2-score{position:sticky;top:0;z-index:30;margin-left:-8px;margin-right:-8px;padding:6px 8px;background:linear-gradient(180deg,rgba(7,10,36,.96) 75%,rgba(7,10,36,0))}
 .ver .j-chm{display:none}
 .ver .j-chat{left:50%;right:auto;bottom:12px;transform:translateX(-50%)}
 .ver .l2-cmd{cursor:default}
+/* el marcador siempre a la vista (pantallas medianas) */
+.ver .l2-score{position:sticky;top:0;z-index:30;margin-left:-8px;margin-right:-8px;padding:6px 8px;background:linear-gradient(180deg,rgba(7,10,36,.96) 75%,rgba(7,10,36,0))}
+
+/* ===== celular vertical: todo en una sola pantalla, sin scroll =====
+   arriba: ronda · vale · ✕✕✕ · reloj — marcador — pregunta — tablero (se ajusta al alto que quede) */
+@media (max-width:600px){
+  html,body.ver{height:100%}
+  body.ver{overflow:hidden}
+  .ver .j-wrap{display:flex;flex-direction:column;gap:7px;height:100dvh;max-height:100dvh;padding:6px 8px 8px;overflow:hidden}
+  /* barra de arriba */
+  .ver .j-top{flex:none;min-height:46px;margin:0!important;padding-right:150px;gap:5px;flex-wrap:nowrap;overflow:hidden}
+  .ver .j-logo{display:none}
+  .ver .l3-rnd,.ver .l3-mult,.ver .j-pz{flex:none;font-size:13px;padding:4px 9px;white-space:nowrap}
+  .ver .j-pz{max-width:34vw;overflow:hidden;text-overflow:ellipsis}
+  .ver .xslots{position:fixed;top:13px;right:66px;z-index:9;margin:0;gap:4px}
+  .ver .xslot{width:24px;border-radius:7px;border-width:2px}
+  .ver .xslot.next{box-shadow:0 0 10px rgba(255,77,102,.8)}
+  .ver .l3-clk{position:fixed;top:4px!important;right:6px;transform:scale(.62);transform-origin:100% 0}
+  /* marcador */
+  .ver .l2-score{flex:none;position:relative;top:auto;margin:0;padding:0;background:none;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:6px}
+  .ver .l2-bank{grid-column:auto;grid-row:auto;min-width:62px;padding:4px 6px;border-radius:14px;align-self:stretch;align-content:center}
+  .ver .l2-bank small{font-size:10px}.ver .l2-bank b{font-size:26px}.ver .j-bm{font-size:10px}
+  .ver .l2-team{grid-template-columns:auto minmax(0,1fr);gap:5px;padding:5px 6px;border-radius:14px}
+  .ver .l2-ava{width:32px}.ver .l2-ts{font-size:24px}.ver .l2-tn{display:block;overflow:hidden;font-size:12px;text-overflow:ellipsis;white-space:nowrap}
+  .ver .l2-team .l2-turn{top:-11px;font-size:10px;padding:1px 7px}
+  /* comodines de cada equipo: solo los iconos (los tuyos se usan abajo, en tu celular) */
+  .ver .l2-tw{gap:3px}
+  .ver .l2-cmds{gap:3px}
+  .ver .l2-cmd{width:24px;aspect-ratio:1}
+  .ver .l2-cmd .l2-cf,.ver .l2-cmd .l2-cb{border-radius:7px}
+  .ver .l2-cmd .l2-cf i{font-size:14px}
+  .ver .l2-cmd .l2-cf small{display:none}
+  .ver .l2-cmd .l2-cb{font-size:0}
+  .ver .l2-cmd .l2-cb::after{content:'✕';font-size:12px;color:#7d84b8}
+  /* pregunta */
+  .ver .j-wrap .l3-qp{flex:none;margin:0!important;padding:8px 8px 9px;border-radius:16px}
+  .ver .l3-qhead{display:none}
+  .ver .l3-qb{min-height:0;gap:.26em .42em;font-size:clamp(14px,4.4vw,21px)}
+  .ver .l3-qb .l2-w{gap:2px}
+  .ver .j-say{min-height:0;padding:8px 10px;gap:4px}
+  .ver .j-sayq{margin:0;padding-right:0;font-size:12px;text-align:center}
+  .ver .j-sayw{padding-right:0;justify-content:center;flex-wrap:wrap;font-size:clamp(18px,5.4vw,24px)}
+  .ver .j-sayav{width:36px;height:36px}
+  .ver .j-saytx{min-height:0;margin-top:4px}
+  /* tablero: las fichas se reparten el alto que queda */
+  .ver .marq{flex:1 1 0;min-height:0;display:flex;flex-direction:column;padding:9px;border-radius:18px}
+  .ver .board{flex:1 1 0;min-height:0;grid-auto-flow:row;grid-template-columns:minmax(0,1fr);grid-template-rows:none;grid-auto-rows:minmax(0,62px);align-content:center;gap:5px;padding:5px;border-radius:12px}
+  .ver .tile{height:auto;min-height:0}
+  .ver .num{font-size:clamp(16px,5vw,24px);height:1.45em}
+  .ver #board .l2-c{font-size:clamp(11px,3.5vw,16px)}
+  .ver #board .back .l2-flw{gap:3px 5px;padding:0 6px}
+  .ver .ap{min-width:2.1em;font-size:clamp(18px,5.4vw,26px)}
+  .ver #board .tile .l2-hint{font-size:16px;right:6px}
+}
+/* celulares muy bajitos: un poco más compacto */
+@media (max-width:600px) and (max-height:620px){
+  .ver .j-top{min-height:40px}
+  .ver .l3-clk{transform:scale(.54)}
+  .ver .xslots{top:10px;right:58px}
+  .ver .l2-ava{width:26px}.ver .l2-ts{font-size:20px}
+  .ver .l2-cmds{display:none}
+  .ver .board{gap:4px;padding:4px}
+}
 </style>
 </head>
 <body class="ver">
@@ -1680,7 +1727,7 @@ function ckReset(){clearInterval(CK.id);CK.run=false;CK.done=false;CK.big=false;
 function last5(left){const k=6-left;if(SEL.l5==='hb'){sfr('hb',.8);sfr('grow',.35,1+(k-1)*.08);return}sfr('cd'+(SEL.l5==='down'?6-k:k),.85);sfr('grow',.22,SEL.l5==='down'?1.3-(k-1)*.08:1+(k-1)*.08)}
 function ckStart(){setStep('clock');clearInterval(CK.id);CK.left=CK.tot;CK.run=true;CK.done=false;CK.big=false;CK.x=false;hand(0,true);ckDraw('run');sfr('tic',.6);
   note(`Tiene ${CK.tot} segundos para contestar. Toquen la ficha si le atina, o ✕ Error.`);
-  CK.id=setInterval(()=>{CK.left--;hand(CK.tot-CK.left);
+  CK.nx=performance.now()+1000;CK.id=setInterval(()=>{CK.nx=performance.now()+1000;CK.left--;hand(CK.tot-CK.left);
     if(CK.left>0){if(CK.left<=5){last5(CK.left);if(!RM())$('#hotv').animate([{opacity:0},{opacity:.3+(5-CK.left)*.17},{opacity:0}],{duration:850,easing:'ease-out'})}else sfr(CK.left%2?'tic':'tac',.55)}
     else{ckTimeout();return}
     ckDraw('run',true)},1000)}
@@ -1724,7 +1771,7 @@ function qIdle(){F.qshown=false;$('#qhead').innerHTML=cellsHTML(HEAD,true);$('#q
 function qShowNow(q){$('#qhead').innerHTML=cellsHTML(HEAD);$('#qb').innerHTML=cellsHTML(q);F.qshown=true;$('#qp').classList.add('lit')}
 function qReveal(q){F.qshown=false;$('#qhead').innerHTML=cellsHTML(HEAD,true);$('#qb').innerHTML=cellsHTML(q,true);$('#qp').classList.remove('lit');
   sfr('pa',.8);const hs=[...HEAD.replace(/ /g,'')];$$('#qhead .l2-c').forEach((c,k)=>flipCell(c,hs[k],2+k%3,150+k*30,true));
-  const words=q.toUpperCase().split(' '),t0=RM()?0:QI_T0.pa;let end=0;
+  const words=q.toUpperCase().split(' '),t0=RM()?0:Math.max(0,QI_T0.pa-VLAG);let end=0;
   $$('#qb .l2-w').forEach((w,wi)=>{const ch=[...words[wi]];$$('.l2-c',w).forEach((c,k)=>{end=Math.max(end,flipCell(c,ch[k],3+Math.floor(Math.random()*3),t0+wi*WD+k*38,true))})});
   T(end+160,()=>{F.qshown=true;sfr('flap2',.55);sfr('qok',.45);const p=$('#qp');p.classList.remove('lit');void p.offsetWidth;p.classList.add('lit')})}
 /* tablero */
@@ -1734,8 +1781,8 @@ function drawBoard(n){const b=$('#board');b.style.setProperty('--rows',Math.ceil
 function seeIt(el){if(!el)return;const r=el.getBoundingClientRect();if(r.top<0||r.bottom>innerHeight)el.scrollIntoView({block:'center',behavior:RM()?'auto':'smooth'})}
 function revealT(i,text,pts,how){const t=tile(i);if(!t)return;t.classList.add('on');if(how!=='now')seeIt(t);
   if(how==='now'){$('.l2-flw',t).innerHTML=cellsHTML(text);$('.ap',t).innerHTML=cellsHTML(String(pts));return}
-  if(!RM()){t.animate([{transform:'scale(1)'},{transform:'scale(1.1)',offset:.2},{transform:'scale(1)'}],{duration:900,easing:'cubic-bezier(.3,1.4,.5,1)'});$('.in',t).animate([{transform:'rotateX(0deg)'},{transform:'rotateX(-540deg)'}],{duration:820,easing:'cubic-bezier(.25,.75,.3,1.08)'})}
-  later(360,()=>{flapText($('.l2-flw',t),text);flapText($('.ap',t),String(pts),true)});
+  const lg=Math.min(VLAG,340);if(!RM()){t.animate([{transform:'scale(1)'},{transform:'scale(1.1)',offset:.2},{transform:'scale(1)'}],{duration:900,easing:'cubic-bezier(.3,1.4,.5,1)'}).currentTime=lg;$('.in',t).animate([{transform:'rotateX(0deg)'},{transform:'rotateX(-540deg)'}],{duration:820,easing:'cubic-bezier(.25,.75,.3,1.08)'}).currentTime=lg}
+  later(360-lg,()=>{flapText($('.l2-flw',t),text);flapText($('.ap',t),String(pts),true)});
   if(how==='quiet'){play(SY.dest);return}
   sfr(i===0?'top1':'ok1',.85);stage(i===0?'top':'hit',{el:t});later(400,()=>sparks(t,i===0?30:16,i===0));later(1600,stIdle)}
 function drawX(x){$$('#xslots .xslot').forEach((s,i)=>{if(i<x){if(!s.firstChild)s.innerHTML=`<div class="xt in">${XSVG}</div>`}else s.innerHTML=''})}
@@ -1763,16 +1810,27 @@ function saySync(s,v){const t=v.ph==='steal'?1-v.ctl:Math.max(0,v.ctl);
   else if(p.cls!==s.cls){if($('#say').hidden)showSay(t,s.who,'',v.q);if(p.cls!=='said'&&s.txt)$('#saytx').innerHTML=cellsHTML(s.txt);$('#sayn').textContent=s.who;sayState(s.cls,SAYTXT[s.cls]||'');
     if(s.cls==='miss'){$('#say').classList.add('grace');if(!RM())$('#saybar i').animate([{transform:'scaleX(1)'},{transform:'scaleX(0)'}],{duration:3200,easing:'linear'})}}
   VSAY=s}
-/* reloj al mismo paso que la pantalla grande */
+/* reloj al mismo paso que la pantalla grande: cada segundo cae en el mismo instante que allá */
+let VD=null,VLAG=0;
+function ckTickFx(){if(CK.left>0){if(CK.left<=5){last5(CK.left);if(!RM())$('#hotv').animate([{opacity:0},{opacity:.3+(5-CK.left)*.17},{opacity:0}],{duration:850,easing:'ease-out'})}else sfr(CK.left%2?'tic':'tac',.55);ckDraw('run',true)}}
+function ckAlign(left,nxL,fresh){let now=performance.now();while(nxL<=now&&left>0){left--;nxL+=1000}
+  if(CK.run&&CK.left===left&&Math.abs((CK.nxL||0)-nxL)<45)return;
+  clearInterval(CK.id);const was=CK.run;CK.run=true;CK.done=false;CK.big=false;CK.x=false;CK.left=left;CK.nxL=nxL;hand(CK.tot-left,true);ckDraw('run');if(!was&&fresh&&left===CK.tot)sfr('tic',.6);
+  if(left<=0){ckTimeout();return}
+  const tk=()=>{CK.left--;hand(CK.tot-CK.left);if(CK.left<=0){ckTimeout();return}ckTickFx();CK.nxL+=1000;CK.id=setTimeout(tk,Math.max(0,CK.nxL-performance.now()))};
+  CK.id=setTimeout(tk,Math.max(0,nxL-now))}
 function ckSync(c,stopX){if(!c)return;
   if(c.pause){if(CK.run){clearInterval(CK.id);CK.run=false}$('#clk').classList.add('paused');return}$('#clk').classList.remove('paused');
   if(c.tot&&c.tot!==CK.tot&&!CK.run){CK.tot=c.tot;ckBuild();$('#cbulbs').style.setProperty('--n',CK.tot);ckReset()}
+  if(c.run&&c.nx&&VD!=null){ckAlign(c.left,c.nx+VD,!CK.run);return}
   if(c.run&&!CK.run){ckStart();if(c.left<CK.tot){CK.left=c.left;hand(CK.tot-CK.left,true);ckDraw('run')}}
   else if(!c.run&&CK.run){if(c.left<=0)ckTimeout();else ckStop(stopX?'x':'ok')}
   else if(c.run&&CK.run&&Math.abs(CK.left-c.left)>1){CK.left=c.left;hand(CK.tot-CK.left,true);ckDraw('run')}
   else if(!c.run&&!CK.run&&c.left===c.tot&&(CK.done||CK.left!==CK.tot)&&!CK.big)ckReset()}
 /* cada mensaje de la pantalla del juego */
 function apply(v){const first=!V;
+  /* hora de la pantalla grande → hora de este celular, y cuánto tardó en llegar este mensaje */
+  VD=isFinite(v._d)?v._d-performance.timeOrigin:null;VLAG=VD!=null&&isFinite(v.hts)?Math.max(0,Math.min(700,performance.now()-(v.hts+VD))):0;
   if(Array.isArray(v.names))v.names.forEach((n,t)=>{if(n&&NAMES[t]!==n){NAMES[t]=n;$$('.l2-tn')[t].textContent=n}});
   if(Array.isArray(v.av)&&(first||v.av.join()!==AV.join())){AV=v.av.slice();[0,1].forEach(t=>$('#av'+t).innerHTML=avSVG(AV[t]))}
   $('#rn').textContent=(v.rn||1)+(v.rr?' de '+v.rr:'');

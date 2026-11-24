@@ -365,3 +365,23 @@ a.card-btn{color:inherit;text-decoration:none}
 .av-new{animation:avnew .9s cubic-bezier(.3,1.5,.5,1) both}
 @keyframes avnew{0%{transform:scale(.2) rotate(-25deg);opacity:0}60%{transform:scale(1.2) rotate(6deg);opacity:1}100%{transform:none}}
 @media (prefers-reduced-motion:reduce){.av-new{animation:none}}
+
+/* ===== en partida (celular vertical): todo más delgado para que el juego tenga más espacio ===== */
+#v-play.ingame .gv-ch{display:none}
+#v-play.gvon .me{font-size:17px}
+#v-play.gvon .me .l3-svg{width:30px;height:30px}
+#v-play.gvon .me small{font-size:12px}
+#v-play.gvon #pstat{padding:4px 10px;font-size:11px}
+#v-play.gvon .cmdbar:not(.ask-cmd){flex-wrap:nowrap;gap:6px;margin:6px 0 0}
+#v-play.gvon .cmdbar:not(.ask-cmd) .cmdl{display:none}
+#v-play.gvon .cmdbar:not(.ask-cmd) .cmdb{flex:1;max-width:130px;min-width:0;display:flex;align-items:center;justify-content:center;gap:6px;padding:8px;border-radius:12px}
+#v-play.gvon .cmdbar:not(.ask-cmd) .cmdb i{font-size:18px}
+#v-play.gvon .cmdbar:not(.ask-cmd) .cmdb span{font-size:15px}
+#v-play.gvon .cmdbar:not(.ask-cmd) .cmdb small{display:none}
+#v-play.gvon .cmdb.used span{text-decoration:line-through}
+@media (max-width:600px){#v-play.gvon{padding-top:max(8px,env(safe-area-inset-top));padding-bottom:max(8px,env(safe-area-inset-bottom))}#v-play.gvon .gv{margin-top:6px}}
+/* las que ya salieron, dentro del recuadro para contestar */
+.ask-rev{display:flex;flex-wrap:wrap;justify-content:center;gap:5px 6px;max-height:4.6em;overflow:hidden;font:800 13px/1.2 Rubik,sans-serif}
+.ask-rev small{flex-basis:100%;text-align:center;color:var(--mute);font-size:12px}
+.ask-rev span{padding:4px 9px;border-radius:8px;background:#16308f;box-shadow:inset 0 0 0 1px #9cc0ff;color:#fff}
+.ask.done .ask-rev{display:none}
