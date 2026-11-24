@@ -69,6 +69,8 @@ function fastestBroker(){if(BROKERS.length<2)return Promise.resolve(0);return ne
 /* ===================== SONIDO ===================== */
 let AC=null,OUT=null,loading=null;const BUF={};
 const FILES=['lr','ya','bz0','bz1','fin','rec','went','ok1','top1','pts','flap2','peg','thr','wx1','wx2','wx3','wx4'];
+/* sonidos de la pantalla del juego (se cargan cuando el juego se ve en el celular) */
+const FILES2=['pa','flap','qok','cinta_4','tic','tac','cd1','cd2','cd3','cd4','cd5','grow','tmo'];
 function ac(){try{if(!AC){AC=new(window.AudioContext||window.webkitAudioContext)();const c=AC.createDynamicsCompressor();c.threshold.value=-8;c.ratio.value=12;c.connect(AC.destination);OUT=AC.createGain();OUT.connect(c)}if(AC.state==='suspended')AC.resume();return true}catch(e){return false}}
 function loadSounds(){if(loading)return loading;if(!ac())return Promise.resolve();loading=Promise.all(FILES.map(f=>fetch('sounds/'+f+'.mp3').then(r=>{if(!r.ok)throw 0;return r.arrayBuffer()}).then(b=>new Promise((ok,ko)=>AC.decodeAudioData(b,ok,ko))).then(b=>{BUF[f]=b}).catch(()=>{})));return loading}
 function loadOne(n){if(BUF[n]||BUF['_'+n]||!ac())return;BUF['_'+n]=1;fetch('sounds/'+n+'.mp3').then(r=>{if(!r.ok)throw 0;return r.arrayBuffer()}).then(b=>new Promise((ok,ko)=>AC.decodeAudioData(b,ok,ko))).then(b=>{BUF[n]=b}).catch(()=>{delete BUF['_'+n]})}
@@ -313,8 +315,16 @@ let GV=null;
 function boing(){if(!AC)return;try{const t=AC.currentTime+.02,s=AC.createOscillator(),g=AC.createGain(),l=AC.createOscillator(),lg=AC.createGain();s.type='sine';s.frequency.setValueAtTime(380,t);s.frequency.exponentialRampToValueAtTime(90,t+.55);
   l.frequency.value=12;lg.gain.value=11;l.connect(lg);lg.connect(s.frequency);g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(.42,t+.01);g.gain.exponentialRampToValueAtTime(.001,t+.62);s.connect(g);g.connect(OUT);s.start(t);l.start(t);s.stop(t+.7);l.stop(t+.7)}catch(e){}}
 const gvOn=()=>!!(GV&&GV.on&&P.found&&P.team>=0&&!P.picking);
-function gvShow(){const on=gvOn();$('#gv').hidden=!on;$('#v-play').classList.toggle('gvon',on)}
-function gvDraw(v){const old=GV;GV=v;gvShow();if(!v.on)return;const snd=!!old&&old.on&&old.rn===v.rn&&old.q===v.q;
+function gvShow(){const on=gvOn();$('#gv').hidden=!on;$('#v-play').classList.toggle('gvon',on);
+  if(on){const f=$('#gvf');if(!f.dataset.on){f.dataset.on=1;f.src='ver.html';FILES2.forEach(loadOne)}}}
+let VERok=false;
+function verSend(v){const f=$('#gvf');if(VERok&&f.contentWindow)try{f.contentWindow.postMessage({t:'view',v},'*')}catch(e){}}
+/* sonidos que pide la pantalla del juego en vivo */
+function sfR(n,vol,rate){if(!AC||!BUF[n])return;try{const s=AC.createBufferSource(),g=AC.createGain();s.buffer=BUF[n];s.playbackRate.value=rate||1;g.gain.value=vol==null?.85:vol;s.connect(g);g.connect(OUT);s.start()}catch(e){}}
+addEventListener('message',e=>{const f=$('#gvf');if(!f||e.source!==f.contentWindow)return;const d=e.data||{};
+  if(d.t==='ver-listo'){VERok=true;if(GV)verSend(GV);return}
+  if(d.t==='snd'&&gvOn()&&typeof d.n==='string'){if(d.n==='boing')boing();else{if(!BUF[d.n])loadOne(d.n);sfR(d.n,+d.vol||.85,+d.rate||1)}}});
+function gvDraw(v){const old=GV;GV=v;gvShow();verSend(v);if(!v.on)return;const snd=false;
   [0,1].forEach(t=>{$('#gvs'+t).textContent=v.sc[t];if(P.st)$('#gva'+t).innerHTML=avSVG(P.st.av[t]);
     const turn=v.ph==='steal'?1-v.ctl:v.ctl;$('#gvt'+t).classList.toggle('on',(v.ph==='play'||v.ph==='steal')&&turn===t);
     if(old&&old.sc[t]<v.sc[t]){sf('pts',.8);if(!RM())$('#gvt'+t).animate([{transform:'scale(1)'},{transform:'scale(1.12)'},{transform:'scale(1)'}],{duration:500,easing:'cubic-bezier(.3,1.6,.5,1)'})}});

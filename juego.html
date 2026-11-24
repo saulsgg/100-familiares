@@ -1837,7 +1837,7 @@ function hand(g,instant){const h=$('#chand');if(instant){h.style.transition='non
 function ckDraw(st,tick){const c=$('#clk'),hot=CK.run&&CK.left>0&&CK.left<=5;
   ['idle','run','out','ok'].forEach(k=>c.classList.toggle(k,k===st));c.classList.toggle('hot',hot);c.dataset.l=hot?CK.left:'';
   c.style.setProperty('--g',hot?TG[CK.left]:CK.big?2.05:1);
-  const gone=CK.tot-CK.left;$$('#cbulbs i').forEach((b,k)=>{const off=st==='out'||(st==='run'||st==='ok')&&k<gone;if(off&&!b.classList.contains('off')&&tick&&!RM())b.animate([{transform:`rotate(${(k+.5)*24}deg) translateY(-440%) scale(1.9)`,opacity:1},{transform:`rotate(${(k+.5)*24}deg) translateY(-440%) scale(1)`,opacity:.13}],{duration:260,easing:'ease-out'});b.classList.toggle('off',off)});
+  const gone=CK.tot-CK.left;$$('#cbulbs i').forEach((b,k)=>{const off=st==='out'||(st==='run'||st==='ok')&&k<gone;if(off&&!b.classList.contains('off')&&tick&&!RM())b.animate([{transform:`rotate(${(k+.5)*360/CK.tot}deg) translateY(-440%) scale(1.9)`,opacity:1},{transform:`rotate(${(k+.5)*360/CK.tot}deg) translateY(-440%) scale(1)`,opacity:.13}],{duration:260,easing:'ease-out'});b.classList.toggle('off',off)});
   const n=$('#cn'),v=st==='idle'?String(CK.tot):st==='out'?(CK.x?'✕':'0'):st==='ok'?'✓':String(CK.left);if(n.textContent!==v){n.textContent=v;if(hot&&!RM()){n.classList.remove('pop');void n.offsetWidth;n.classList.add('pop')}}
   c.setAttribute('aria-label',st==='run'?`Quedan ${CK.left} segundos`:st==='out'?'Se acabó el tiempo. Toca para empezar otra vez':`Iniciar el reloj de ${CK.tot} segundos`)}
 function ckReset(){clearInterval(CK.id);CK.run=false;CK.done=false;CK.big=false;CK.x=false;CK.left=CK.tot;hand(0,true);ckDraw('idle')}
@@ -1921,7 +1921,7 @@ function reveal(i,quiet){if(!R||R.rev[i])return;R.rev[i]=true;
   if(R.phase==='steal'){T(1400,()=>award(1-R.ctl,'¡Se robaron los puntos!'));return}
   if(R.rev.slice(0,R.n).filter(Boolean).length>=R.n){T(1400,()=>award(R.ctl,'¡Encontraron todas!'));return}
   T(1900,turnStart)}
-function strike(){if(!R||(R.phase!=='play'&&R.phase!=='steal'))return;
+function strike(){if(!R||(R.phase!=='play'&&R.phase!=='steal'))return;R.xs=(R.xs||0)+1;
   if(clearGrace()&&R.phase==='play')R.ai++;if(ASK){const st=ASK.steal;closeAsk('Marcaron error en la pantalla');if(!st)R.ai++}later(1500,hideSay);if(CK.run)ckStop('x');play(SY.err);redFlash();stage('err');vib(60);
   if(!RM()){$('#xbig').animate([{opacity:0,transform:'scale(2.4) rotate(-14deg)'},{opacity:1,transform:'scale(.95) rotate(3deg)',offset:.3},{opacity:1,transform:'scale(1)',offset:.75},{opacity:0,transform:'scale(.9)'}],{duration:1100,easing:'ease-out'});shakeEl($('#marq'),14)}
   later(1400,stIdle);
@@ -1932,7 +1932,7 @@ function strike(){if(!R||(R.phase!=='play'&&R.phase!=='steal'))return;
 function startSteal(){if(!R||R.phase!=='play')return;R.phase='steal';const o=1-R.ctl;setTurn(o,true);ckReset();ctl('steal');document.body.classList.add('steal');MUS.sync();
   cinta('¡ROBO!',`${losN(o,1)} tienen una sola oportunidad`,'c-pink');nhInfo(`¡Robo! Contestan ${losN(o)}`,scoreLine());
   note(`Si ${losN(o)} atinan, toquen la ficha; si no, toquen “Falló el robo”.`);T(2600,turnStart)}
-function award(t,why){if(!R||R.phase==='done')return;G.fin=G.ri;saveG();closeAsk();clearGrace();later(1500,hideSay);R.phase='done';ckStop('ok');document.body.classList.remove('steal');MUS.sync();const pts=R.bank*R.m;setTurn(-1);ctl('done');
+function award(t,why){if(!R||R.phase==='done')return;G.fin=G.ri;saveG();closeAsk();clearGrace();later(1500,hideSay);R.phase='done';ckStop('ok');document.body.classList.remove('steal');MUS.sync();const pts=R.bank*R.m;R.aw={id:Date.now(),t,pts,why};setTurn(-1);ctl('done');
   if(pts>0){flyChip($('#bv'),$('#ts'+t),'+'+pts,t?'gold':'teal',800,()=>{G.sc[t]+=pts;saveG();scoreShow();bump($('#tm'+t),1.08);sfr('pts',.85);stage('team',{el:$('#tm'+t),c:TCOL[t]});later(1800,stIdle)})}
   R.bank=0;later(200,bankShow);
   cinta(pts>0?`¡+${pts} para ${NAMES[t]}!`:why,pts>0?why:'',t?'c-gold':'c-teal');
@@ -2128,8 +2128,8 @@ function meSync(){const ok=ME&&ME.name&&(ME.team===0||ME.team===1);
 /* lo que ve cada celular: pregunta, tablero, marcador, reloj y quién contesta */
 function sayV(){const s=$('#say');if(s.hidden)return null;const cls=['hit','miss','dup','time'].find(c=>s.classList.contains(c))||(s.classList.contains('typing')?'typing':'said');
   return{who:$('#sayn').textContent,cls,txt:cls==='typing'?'':SAYT,w:cls==='typing'?SAYW:''}}
-function viewMsg(){const v={t:'view',on:CEL,rn:G.ri+1,rr:CFG.rounds,sc:G.sc.slice()};
-  if(R){const shown=R.phase!=='wheel';v.q=shown?R.q.q:'';v.n=R.n;v.rev=R.rev.map((x,i)=>x?[i,R.q.a[i][0],R.q.a[i][1]]:null).filter(Boolean);v.bank=R.bank;v.m=R.m||1;v.x=R.x;v.ph=R.phase;v.ctl=R.ctl;
+function viewMsg(){const v={t:'view',on:CEL,rn:G.ri+1,rr:CFG.rounds,sc:G.sc.slice(),av:AV,names:NAMES};
+  if(R){const shown=R.phase!=='wheel';v.q=shown?R.q.q:'';v.n=R.n;v.rev=R.rev.map((x,i)=>x?[i,R.q.a[i][0],R.q.a[i][1]]:null).filter(Boolean);v.bank=R.bank;v.m=R.m||1;v.x=R.x;v.xs=R.xs||0;v.aw=R.aw||null;v.ph=R.phase;v.ctl=R.ctl;
     v.ck={run:CK.run,left:CK.left,tot:CK.tot};v.say=sayV();
     if(R.phase==='wheel'){v.wsp=R.spinner||'';v.wspn=R.spinName||'';v.wth=WH.spin?null:Math.round(WH.th*1000)/1000;v.wid=WSN;v.wres=WH.res?F.m:0}}
   return v}
