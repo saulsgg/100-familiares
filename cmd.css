@@ -36,3 +36,45 @@ button.ctk:active .ctk-d{transform:scale(.88)}
 .cmdbar .ctk-t b{font-size:15px}
 .cmdbar .ctk.can{background:rgba(var(--kg),.16);box-shadow:inset 0 0 0 1.5px rgba(var(--kg),.6)}
 .cmdbar .ctk:not(.can):not(.used) .ctk-t small{color:#9aa3d6}
+/* ===== juntas: reloj redondo, animalitos platicando ===== */
+.ring{position:relative;display:inline-grid;place-items:center;flex:none;width:46px;height:46px}
+.ring svg{position:absolute;inset:0;width:100%;height:100%;transform:rotate(-90deg)}
+.ring .rg-bg{fill:#0b0f3a;stroke:rgba(255,255,255,.14);stroke-width:4}
+.ring .rg-fg{fill:none;stroke:var(--tc,#ffd76a);stroke-width:4;stroke-linecap:round;stroke-dasharray:100;transition:stroke-dashoffset .3s linear,stroke .3s}
+.ring b{position:relative;font:400 20px 'Lilita One','Rubik',sans-serif;color:#fff}
+.ring.hot .rg-fg{stroke:#ff4d6d}.ring.hot b{color:#ff9fb0;animation:rgHot .5s ease-in-out infinite alternate}
+@keyframes rgHot{to{transform:scale(1.18)}}
+.j-tks{display:flex;flex-wrap:wrap;gap:8px 10px;justify-content:center}
+.tk{position:relative;display:grid;justify-items:center;gap:2px;width:58px}
+.tk>i{display:block;width:46px;height:46px;border-radius:50%;box-shadow:0 0 0 3px var(--tc,#ffd76a);background:#0b0f3a;transition:transform .2s}
+.tk>i svg{width:100%;height:100%}
+.tk small{max-width:58px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font:800 11px Rubik,sans-serif;color:#dfe4ff}
+.tk.ty>i{transform:translateY(-3px);box-shadow:0 0 0 3px #fff,0 0 14px var(--tc,#ffd76a)}
+.tk-d{position:absolute;top:-6px;right:-2px;display:flex;gap:2px;padding:4px 5px;border-radius:99px;background:#fff}
+.tk-d i{width:5px;height:5px;border-radius:50%;background:#2b1840;animation:tkDot 1s ease-in-out infinite}
+.tk-d i:nth-child(2){animation-delay:.15s}.tk-d i:nth-child(3){animation-delay:.3s}
+@keyframes tkDot{0%,60%,100%{transform:none;opacity:.4}30%{transform:translateY(-3px);opacity:1}}
+.tk-c{position:absolute;top:28px;right:-6px;font-size:20px;font-style:normal;animation:tkHand .9s ease-in-out infinite alternate}
+@keyframes tkHand{to{transform:rotate(-16deg) translateY(-2px)}}
+.j-hud{position:fixed;left:14px;bottom:14px;z-index:63;display:grid;gap:8px;width:min(92vw,330px);padding:12px 14px;border-radius:20px;background:linear-gradient(180deg,#1e2569,#121746);color:#fff;box-shadow:0 0 0 3px var(--tc,#ffd76a),0 18px 40px rgba(0,0,0,.55)}
+.j-hudh{display:flex;align-items:center;gap:10px}.j-hudh>b{flex:1;font:400 19px/1.1 'Lilita One','Rubik',sans-serif}
+.j-hudx{margin:0;text-align:center;font:800 13px Rubik,sans-serif;color:#b9c1f5}
+.j-hud.wait{box-shadow:0 0 0 3px var(--tc,#ffd76a),0 0 30px var(--tc,#ffd76a),0 18px 40px rgba(0,0,0,.55)}
+.lite .tk-d i,.lite .tk-c,.lite .ring.hot b{animation:none!important}
+/* reacciones */
+.rx{position:fixed;bottom:4%;z-index:90;display:grid;justify-items:center;pointer-events:none;will-change:transform,opacity}
+.rx b{font-size:clamp(34px,5vw,64px);line-height:1;filter:drop-shadow(0 4px 10px rgba(0,0,0,.45))}
+.rx i{display:block;width:clamp(22px,2.4vw,34px);height:clamp(22px,2.4vw,34px);margin-top:-6px;border-radius:50%;box-shadow:0 0 0 2px var(--tc,#fff);background:#0b0f3a}
+.rx i svg{width:100%;height:100%}
+.ver .rx b{font-size:34px}
+/* ruleta: ¡débil! y ¡la rompiste! */
+.wbrk{position:absolute;inset:0;z-index:6;pointer-events:none}
+.wbrk svg{width:100%;height:100%;overflow:visible}
+.wbrk path{fill:none;stroke:#fff;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;filter:drop-shadow(0 0 2px #000) drop-shadow(0 0 4px #ff2e88);stroke-dasharray:160;stroke-dashoffset:160;animation:wbrkDraw .5s cubic-bezier(.3,.7,.4,1) forwards}
+@keyframes wbrkDraw{to{stroke-dashoffset:0}}
+.wbrk-fl{position:absolute;inset:-20%;z-index:7;border-radius:50%;background:radial-gradient(circle,#fff 0,rgba(255,240,200,.85) 30%,rgba(255,80,120,.4) 55%,transparent 72%);pointer-events:none}
+.wbrk-sh{position:absolute;left:50%;top:50%;z-index:8;width:13%;height:13%;clip-path:polygon(50% 0,100% 85%,10% 100%);pointer-events:none}
+.j-wfx.brk,.wph-fx.brk{background:linear-gradient(180deg,#fff 0,#ffd0e0 35%,#ff2e88 70%,#a0003c);-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:none;filter:drop-shadow(0 4px 0 #3a0018) drop-shadow(0 0 20px rgba(255,46,136,.95));white-space:normal;width:92%;text-align:center;line-height:1.05}
+.wph-fx.brk{font-size:clamp(26px,9vw,44px)}
+.j-wfx.deb,.wph-fx.deb{color:#dfe4ff;text-shadow:0 3px 0 #1a1f55,0 0 14px rgba(120,140,255,.6)}
+.j-wfx.deb{font-size:clamp(26px,4.5vw,48px)}.wph-fx.deb{font-size:clamp(22px,7vw,36px)}

@@ -439,3 +439,58 @@ body:has(#chat:not([hidden])) .toast.on,body:has(#ask:not([hidden])) .toast.on{t
 .sheet-card>b{font:400 24px var(--disp);text-align:center}.sheet-card p{margin:0;font-size:15px;line-height:1.4}.sheet-card .mute{color:var(--mute)}
 .sheet-card ul{margin:0;padding-left:20px;display:grid;gap:6px;font-size:15px;line-height:1.35}
 .lite-btn{opacity:.75;font-size:12px}
+
+/* tu animalito */
+.myav{display:flex;align-items:center;gap:12px;width:100%;max-width:340px;margin:0 auto 14px;padding:8px 14px 8px 8px;border:0;border-radius:18px;background:rgba(255,255,255,.07);color:#fff;text-align:left;box-shadow:inset 0 0 0 2px rgba(255,255,255,.12)}
+.myav i{flex:none;display:block;width:58px;height:58px}.myav i svg{width:100%;height:100%}
+.myav span{display:grid;gap:2px}.myav b{font:400 20px var(--disp)}.myav small{color:var(--mute);font-weight:700;font-size:12px}
+#me{cursor:pointer}
+/* ===== chat de junta (más bonito): burbujas con animalito, escribiendo…, rápidas, reloj redondo, se hace chiquito ===== */
+.chat{max-height:72dvh;gap:7px;box-shadow:0 -2px 0 3px var(--tc),0 -20px 50px rgba(0,0,0,.6)}
+.chat-h{gap:10px}.chat-h b{flex:1;font:400 22px var(--disp)}
+.chat-min{flex:none;width:36px;height:36px;border:0;border-radius:50%;background:rgba(255,255,255,.1);color:#fff;font-size:18px;transition:transform .2s}
+.chat.min .chat-min{transform:rotate(180deg)}
+.chat-sub{margin:0;color:#c9cff8;font-weight:700;font-size:13px;line-height:1.3}
+.chat-rev{margin:0;padding:6px 10px;border-radius:10px;background:rgba(0,0,0,.25);color:#ffe9a8;font-weight:700;font-size:12px;line-height:1.35}
+.chat.robo .chat-q{display:none}
+.chat-m{gap:8px;min-height:90px}
+.chat-m .bub{display:flex;align-items:flex-end;gap:6px;justify-self:start;max-width:88%}
+.chat-m .bub>i{flex:none;display:block;width:30px;height:30px}.chat-m .bub>i svg{width:100%;height:100%}
+.chat-m .bub p{margin:0;padding:7px 12px 8px;border-radius:16px 16px 16px 4px;background:rgba(255,255,255,.1);font-size:16px;line-height:1.3;box-shadow:inset 3px 0 0 var(--tc)}
+.chat-m .bub p b{display:block;color:var(--tc);font-size:12px}
+.chat-m .bub.me{justify-self:end}.chat-m .bub.me p{border-radius:16px 16px 4px 16px;background:color-mix(in srgb,var(--tc) 42%,#121746);box-shadow:none}
+.chat-m .sys{justify-self:center;max-width:94%;color:var(--mute);font-weight:700;font-size:13px;text-align:center}
+.chat-ty{min-height:16px;margin:-2px 0 0 4px;color:#b9c1f5;font-weight:700;font-size:12px;font-style:italic}
+.chat-qk{display:flex;gap:6px}.chat-qk button{flex:1;min-height:40px;border:0;border-radius:12px;background:rgba(255,255,255,.09);color:#fff;font:800 14px Rubik,sans-serif}
+.chat-btns{display:flex;flex-wrap:wrap;gap:8px}.chat-btns>*{flex:1 1 140px}
+.chat-claim{min-height:46px;border:0;border-radius:14px;background:linear-gradient(180deg,#ff8ab1,#ff4d8d);color:#3a0018;font:800 15px Rubik,sans-serif;box-shadow:inset 0 -3px 0 rgba(0,0,0,.22)}
+.chat-claim.on{background:linear-gradient(180deg,#7dffc5,#20c784);color:#003a1f}
+.chat .ring{width:44px;height:44px}
+.chat.min{max-height:none;gap:4px;padding-top:10px}
+.chat.min>:not(.chat-h):not(.chat-sub):not(.chat-ty){display:none!important}
+.chat.min .chat-sub{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#fff;font-size:14px}
+.chat.min .chat-h b{font-size:18px}
+.mutek[aria-pressed=true],#mutek[aria-pressed=true]{opacity:.9;background:rgba(255,77,109,.3)}
+.chat-m .bub p{max-width:none;justify-self:auto}
+.pbar #pstat{flex:0 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;margin-left:auto}
+.pbar .me{flex:0 1 auto;min-width:0}.pbar .admk{margin-left:0}
+
+/* reacciones */
+.rxbar{position:fixed;right:12px;bottom:calc(max(12px,env(safe-area-inset-bottom)) + 84px);z-index:40;display:flex;align-items:center;gap:8px}
+.rxk{width:50px;height:50px;border:0;border-radius:50%;background:#0b0f3a;font-size:26px;box-shadow:0 0 0 2px rgba(255,255,255,.2),0 8px 20px rgba(0,0,0,.45)}
+.rxk[aria-expanded=true]{box-shadow:0 0 0 3px #ffd76a,0 8px 20px rgba(0,0,0,.45)}
+.rxp{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:4px;max-width:calc(100vw - 90px);padding:6px;border-radius:18px;background:#0b0f3a;box-shadow:0 0 0 2px rgba(255,255,255,.2),0 8px 20px rgba(0,0,0,.45)}
+.rxp[hidden]{display:none}.rxp button{width:42px;height:42px;border:0;border-radius:12px;background:rgba(255,255,255,.07);font-size:24px}
+body:has(#chat:not([hidden])) .rxbar,body:has(#ask:not([hidden])) .rxbar,body:has(#avsheet:not([hidden])) .rxbar{display:none}
+
+/* espectadores, cómo se juega, foto de ganadores */
+#v-play.spec #dome,#v-play.spec #plamps,#v-play.spec #cmdbar{display:none!important}
+.pick-x{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin-top:14px}
+.tut{position:fixed;inset:0;z-index:72;display:grid;place-items:center;padding:16px;background:rgba(5,8,30,.86)}
+.tut-card{display:grid;justify-items:center;gap:10px;width:min(92vw,380px);padding:18px 18px 16px;border-radius:24px;background:linear-gradient(180deg,#232c86,#121746);box-shadow:0 0 0 3px #3fe0cc,0 20px 60px rgba(0,0,0,.6);text-align:center}
+.tut-bar{width:100%;height:6px;border-radius:99px;background:rgba(0,0,0,.35);overflow:hidden}.tut-bar i{display:block;height:100%;background:linear-gradient(90deg,#3fe0cc,#ffc42e);transform-origin:left;transform:scaleX(0);transition:transform .1s linear}
+.tut-ic{font-size:64px;line-height:1.1}.tut-card>b{font:400 28px var(--disp)}.tut-card>p{margin:0;min-height:4.2em;font-size:16px;line-height:1.4;color:#dfe4ff}
+.tut-nav{display:flex;align-items:center;gap:14px;color:var(--mute);font-weight:800;font-size:13px}.tut-nav button{min-width:48px}
+.finph-ph{display:grid;justify-items:center;gap:8px;margin:6px 0}
+.finph-pic{display:grid;justify-items:center;gap:8px}.finph-pic img{display:block;width:min(70vw,260px);border-radius:6px;box-shadow:0 10px 30px rgba(0,0,0,.6);transform:rotate(-2deg)}
+.finph-pb{display:flex;gap:8px}.finph-pic small{max-width:300px;color:var(--mute);font-size:12px;font-weight:700;text-align:center}

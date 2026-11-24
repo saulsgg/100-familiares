@@ -136,30 +136,52 @@ function avSVG(id,cls){const a=AVM[id]||AVS3[0];return `<svg class="${cls||'l3-s
 /* ===================== FOTO FINISH: CARRERA DE CABALLITOS =====================
    Cada jinete es la barra de tiempo: el que tocó más rápido llega primero a la meta.
    L: lista ordenada del más rápido al más lento [{name,team,rt}], av: animalito de cada equipo, col: color de cada equipo */
-const HORSE=`<svg class="hr-h" viewBox="0 0 64 40" aria-hidden="true"><g stroke="#2b1840" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-  <g class="hr-la" fill="none" stroke-width="3.4"><path d="M41 24 L48 30 L50 37"/><path d="M37 25 L39 37"/><path d="M18 24 L12 30 L7 35"/><path d="M22 25 L22 37"/></g>
-  <g class="hr-lb" fill="none" stroke-width="3.4"><path d="M41 24 L36 31 L38 37"/><path d="M37 25 L32 30 L33 36"/><path d="M18 24 L23 31 L22 37"/><path d="M22 25 L27 31 L26 36"/></g>
-  <path d="M15 17 q-9 -1 -13 9 q7 -3 12 -4z" fill="#4a2a14"/>
-  <ellipse cx="29" cy="20" rx="15.5" ry="8" fill="#b06a3c"/>
-  <path d="M39 18 q4 -10 10 -13 l6 6 q-6 4 -8 11z" fill="#b06a3c"/>
-  <path d="M49 4 q9 -2 13 7 q1 3 -2 4 l-10 -2z" fill="#b06a3c"/><path d="M50 5 l1 -5 l3 4z" fill="#b06a3c"/>
-  <path d="M41 16 q3 -8 8 -11" fill="none" stroke="#4a2a14" stroke-width="3"/>
-  <rect x="21" y="11" width="13" height="10" rx="2.5" fill="currentColor"/></g>
-  <circle cx="53.5" cy="7.5" r="1.3" fill="#2b1840"/></svg>`;
-function raceHTML(L,av,col,me){return `<div class="hr" role="img" aria-label="Carrera: ${L.map((p,i)=>`${i+1}. ${String(p.name).replace(/[<>"&]/g,'')}`).join(', ')}">`+
-  L.map((p,i)=>`<div class="hr-lane${me&&p.uid===me?' me':''}" style="--c:${col[p.team]}"><span class="hr-nm">${avSVG(av[p.team],'hr-av')}<span>${String(p.name).replace(/[<>&]/g,'')}</span></span>`+
-    `<span class="hr-trk"><span class="hr-go"><i class="hr-tr"></i><span class="hr-run">${HORSE}<i class="hr-jk">${avSVG(av[p.team],'hr-avj')}</i></span></span><u class="hr-meta"></u></span>`+
-    `<span class="hr-t"><em>${i+1}°</em>${(p.rt/1000).toFixed(2)} s</span></div>`).join('')+`<span class="hr-flash"></span><span class="hr-photo">📸 ¡Por una nariz!</span></div>`}
+/* ===================== FOTO FINISH: carrera de caballos =====================
+   Caballos que galopan (4 cuadros), polvo, cerca y meta; si fue muy pareja, cámara lenta.
+   Tocar un carril mientras corren: ¡arre! (solo de adorno, no cambia nada). */
+const COATS=[['#b06a3c','#4a2a14'],['#6b3f22','#24120a'],['#d9d3ca','#8d8578'],['#3b2a26','#140c0a'],['#e3b15c','#9a6a20'],['#9a5f3a','#3a2212']];
+const HLEG={/* cuadros del galope: [mano lejana, pata lejana, mano cercana, pata cercana] */
+  f1:['46 28L49 37L45 42','24 28L28 38L31 45','48 28L52 36L47 40','26 28L31 37L35 44'],
+  f2:['46 28L52 36L55 43','24 28L20 37L16 45','48 28L56 34L62 38','26 28L19 36L12 41'],
+  f3:['46 28L57 35L63 39','24 28L15 35L9 40','48 28L58 33L65 35','26 28L16 33L8 36'],
+  f4:['46 28L52 35L58 39','24 28L28 36L30 42','48 28L50 38L50 47','26 28L24 37L22 46'],
+  fs:['46 28L46 38L46 47','24 28L23 38L23 47','49 28L49 38L49 47','27 28L26 38L26 47']};
+const hLeg=(p,c)=>{const e=p.split(/L|\s/).slice(-2);return `<path d="M${p}" fill="none" stroke="#2b1840" stroke-width="5.6"/><path d="M${p}" fill="none" stroke="${c}" stroke-width="3.2"/><circle cx="${e[0]}" cy="${e[1]}" r="2.1" fill="#2b1840"/>`};
+function horseSVG(i){const[c,m]=COATS[i%COATS.length];const fr=(k,a,b)=>Object.keys(HLEG).map(f=>`<g class="hr-f ${f}">${hLeg(HLEG[f][a],k)}${hLeg(HLEG[f][b],k)}</g>`).join('');
+  return `<svg class="hr-h" viewBox="0 0 80 50" aria-hidden="true"><g stroke-linecap="round" stroke-linejoin="round">
+  <path class="hr-tail" d="M21 21q-11-3-17 6q-3 5-2 11q4-7 10-9q6-2 10-4z" fill="${m}" stroke="#2b1840" stroke-width="2"/>
+  ${fr(m,0,1)}
+  <g stroke="#2b1840" stroke-width="2"><path d="M19 23q0-10 14-11h13q8 0 10 6l4 8q-2 6-10 7H30q-11 0-11-10z" fill="${c}"/>
+  <path d="M50 19q3-10 9-14l6 5q-5 5-7 13z" fill="${c}"/><path d="M58 5q10-3 16 6q2 4-1 6q-3 1-6-1l-8-2z" fill="${c}"/><path d="M60 6l1-5l4 4z" fill="${c}"/>
+  <path class="hr-mane" d="M51 15q3-8 9-12" fill="none" stroke="${m}" stroke-width="3.6"/>
+  <rect x="31" y="11" width="14" height="10" rx="2.5" fill="currentColor"/></g>
+  <circle cx="67" cy="8.5" r="1.4" fill="#2b1840"/><circle cx="74.6" cy="13.2" r=".9" fill="#2b1840"/>
+  ${fr(c,2,3)}</g></svg>`}
+function raceHTML(L,av,col,me){const A=p=>p.av&&AVM[p.av]?p.av:av[p.team];
+  return `<div class="hr" role="img" aria-label="Carrera: ${L.map((p,i)=>`${i+1}. ${String(p.name).replace(/[<>"&]/g,'')}`).join(', ')}">`+
+  L.map((p,i)=>`<div class="hr-lane${me&&p.uid===me?' me':''}" style="--c:${col[p.team]}"><span class="hr-nm">${avSVG(A(p),'hr-av')}<span>${String(p.name).replace(/[<>&]/g,'')}</span></span>`+
+    `<span class="hr-trk"><i class="hr-gate"></i><span class="hr-go"><i class="hr-tr"></i><span class="hr-run"><i class="hr-dust"></i>${horseSVG(i)}<i class="hr-jk">${avSVG(A(p),'hr-avj')}</i></span></span><u class="hr-meta"></u></span>`+
+    `<span class="hr-t"><em>${i+1}°</em>${(p.rt/1000).toFixed(2)} s</span></div>`).join('')+`<span class="hr-flash"></span><span class="hr-slowt">📸 FOTO FINISH</span><span class="hr-photo">¡Por una nariz!</span></div>`}
 /* arranca la carrera (el: ms que ya pasaron, para seguirla si llega alguien tarde); regresa {first,total} en ms */
 function raceRun(box,L,anim,onFirst,el){const lanes=[...box.querySelectorAll('.hr-lane')],hr=box.querySelector('.hr');if(!hr||!L.length||lanes.length!==L.length)return{first:0,total:0};el=isFinite(el)&&el>0?el:0;
   const d=L.map(p=>Math.round(1000+Math.min(1800,Math.max(0,p.rt-L[0].rt)*4))),total=Math.max(...d);
   if(!anim||el>=total||matchMedia('(prefers-reduced-motion:reduce)').matches){lanes.forEach(l=>l.classList.add('fin','still'));return{first:0,total:0}}
+  /* cámara lenta si los dos primeros llegaron casi juntos */
+  const SL=1500,RT=.2,ts=d[0]*.78,slow=L.length>1&&L[1].rt-L[0].rt<45&&el<ts-80&&!document.documentElement.classList.contains('lite');
+  const ex=f=>!slow||f<=ts?0:f<=ts+SL*RT?(f-ts)/RT-(f-ts):SL-SL*RT;
   hr.classList.add('run');
-  lanes.forEach((l,i)=>{const o={duration:d[i],easing:'cubic-bezier(.35,0,.65,1)',fill:'forwards'};
-    [l.querySelector('.hr-run').animate([{left:'0%'},{left:'100%'}],o),l.querySelector('.hr-tr').animate([{width:'0%'},{width:'100%'}],o)].forEach(a=>a.currentTime=Math.min(el,d[i]));
+  lanes.forEach((l,i)=>{const o={duration:d[i],easing:'cubic-bezier(.35,0,.65,1)',fill:'forwards'},a=l.querySelector('.hr-run').animate([{left:'0%'},{left:'100%'}],o),b=l.querySelector('.hr-tr').animate([{width:'0%'},{width:'100%'}],o);
+    [a,b].forEach(x=>x.currentTime=Math.min(el,d[i]));
     if(d[i]<=el){l.classList.add('fin','still');return}
-    setTimeout(()=>{l.classList.add('fin');if(i===0){hr.classList.add('flash');if(onFirst)onFirst();if(L[1]&&L[1].rt-L[0].rt<25)hr.classList.add('photo')}},d[i]-el)});
-  setTimeout(()=>hr.classList.remove('run'),total-el);return{first:Math.max(0,d[0]-el),total:total-el}}
+    a.finished.then(()=>{l.classList.add('fin');if(i===0){hr.classList.add('flash');if(onFirst)onFirst();if(L[1]&&L[1].rt-L[0].rt<25)hr.classList.add('photo')}}).catch(()=>{})});
+  if(slow)setTimeout(()=>{if(!hr.isConnected)return;hr.classList.add('slow');const all=()=>{try{return hr.getAnimations({subtree:true})}catch(e){return[]}};all().forEach(x=>{try{x.playbackRate=RT}catch(e){}});
+    setTimeout(()=>{hr.classList.remove('slow');all().forEach(x=>{try{x.playbackRate=1}catch(e){}})},SL)},ts-el);
+  /* ¡arre!: tocar tu carril mientras corren */
+  hr.addEventListener('pointerdown',e=>{const l=e.target.closest('.hr-lane');if(!l||!hr.classList.contains('run')||l.classList.contains('fin'))return;const now=performance.now();if(now-(l._ch||0)<260)return;l._ch=now;
+    const r=l.querySelector('.hr-run'),b=document.createElement('i');b.className='hr-cheer';b.textContent=['¡Arre!','🔥','💨','¡Vamos!'][Math.floor(Math.random()*4)];r.appendChild(b);
+    b.animate([{opacity:0,transform:'translate(-50%,0) scale(.5)'},{opacity:1,transform:'translate(-50%,-14px) scale(1.1)',offset:.3},{opacity:0,transform:'translate(-50%,-30px) scale(1)'}],{duration:700}).onfinish=()=>b.remove();
+    const h=r.querySelector('.hr-h');if(h)h.animate([{translate:'0 0'},{translate:'0 -7px'},{translate:'0 0'}],{duration:240,easing:'ease-out'});try{navigator.vibrate&&navigator.vibrate(8)}catch(_){}});
+  setTimeout(()=>hr.classList.remove('run'),total-el+ex(total));return{first:Math.max(0,d[0]-el+ex(d[0])),total:total-el+ex(total)}}
 
 /* ===================== COMODINES: fichas redondas con icono (iguales en todas las pantallas) ===================== */
 const CMDI={
@@ -184,3 +206,61 @@ liteApply();addEventListener('storage',e=>{if(e.key==='lite'||e.key==='lite-auto
   const f=t=>{const d=t-last;last=t;if(!document.hidden&&d<500){n++;if(d>34)slow++}
     if(t-t0>4000){if(n>40&&slow/n>.45){LITE.bad++;if(LITE.bad>=2&&LITE.mode==='auto'&&!LITE.on){try{localStorage.setItem('lite-auto','1')}catch(e){}liteApply();liteNote()}}else LITE.bad=0;n=0;slow=0;t0=t}
     if(!LITE.on)requestAnimationFrame(f)};requestAnimationFrame(f)})();
+
+/* ===================== JUNTAS: reloj redondo y "quién está platicando" (pantalla, vista del celular y celular) ===================== */
+const avEsc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function ringHTML(id){return `<span class="ring" ${id?`id="${id}"`:''} hidden><svg viewBox="0 0 36 36" aria-hidden="true"><circle class="rg-bg" cx="18" cy="18" r="15.5"/><circle class="rg-fg" cx="18" cy="18" r="15.5" pathLength="100"/></svg><b></b></span>`}
+/* left/tot en segundos; left=null lo esconde */
+function ringSet(el,left,tot){if(!el)return;if(left==null||!(tot>0)){el.hidden=true;return}el.hidden=false;const f=Math.max(0,Math.min(1,left/tot));
+  el.querySelector('.rg-fg').style.strokeDashoffset=(100-100*f).toFixed(1);el.querySelector('b').textContent=Math.max(0,Math.ceil(left-.05));el.classList.toggle('hot',left<=5.05)}
+/* fila de animalitos del equipo: quién escribe (puntitos) y quién dijo "yo la digo" (✋) */
+function talkAvs(box,ps,ty,cl){if(!box)return;ty=ty||[];const k=ps.map(p=>p.u+p.av+(ty.includes(p.u)?'t':'')+(cl===p.u?'c':'')).join();if(box.dataset.k===k)return;box.dataset.k=k;
+  box.innerHTML=ps.map(p=>`<span class="tk${ty.includes(p.u)?' ty':''}${cl===p.u?' cl':''}"><i>${avSVG(p.av)}</i><small>${avEsc(p.n)}</small>${ty.includes(p.u)?'<em class="tk-d" aria-label="escribiendo"><i></i><i></i><i></i></em>':''}${cl===p.u?'<em class="tk-c" aria-label="la va a decir">✋</em>':''}</span>`).join('')}
+/* el cuadrito "se ponen de acuerdo para robar" (en la pantalla nunca se ven los mensajes: la ve el otro equipo) */
+function hudPanel(h){const p=document.getElementById('jhud');if(!p)return;if(!h){if(!p.hidden)p.hidden=true;return}
+  if(p.hidden){p.hidden=false;if(!(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches))p.animate([{opacity:0,transform:'translateY(30px) scale(.9)'},{opacity:1,transform:'none'}],{duration:420,easing:'cubic-bezier(.3,1.4,.5,1)'})}
+  p.style.setProperty('--tc',TCOL[h.t]||TCOL[0]);p.classList.toggle('wait',h.left!=null);
+  const tt=document.getElementById('jhudn');if(tt.textContent!==h.title)tt.textContent=h.title;
+  const x=document.getElementById('jhudx'),sx=h.n?`💬 ${h.n} ${h.n===1?'mensaje':'mensajes'}`:'💬 Platicando en sus celulares…';if(x.textContent!==sx)x.textContent=sx;
+  talkAvs(document.getElementById('jhudav'),h.ps||[],h.ty,h.cl);ringSet(document.getElementById('jhudr'),h.left,h.tot)}
+
+/* ===================== REACCIONES (solo emojis): salen flotando en la pantalla y en la vista del celular ===================== */
+const REACT=['😂','😱','👏','🔥','😮','🤦','❤️','🎉'];
+let RXN=0;
+function reactFx(e){const em=REACT[e.e|0];if(!em||!document.body)return;if(RXN>=14)return;RXN++;
+  const lite=document.documentElement.classList.contains('lite'),d=document.createElement('div');d.className='rx';d.setAttribute('aria-hidden','true');
+  d.style.left=(6+Math.random()*82).toFixed(1)+'%';if(e.tm===0||e.tm===1)d.style.setProperty('--tc',TCOL[e.tm]);
+  d.innerHTML=`<b>${em}</b>`+(e.av&&AVM[e.av]&&!lite?`<i>${avSVG(e.av)}</i>`:'');document.body.appendChild(d);
+  const rm=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches,H=innerHeight*(.45+Math.random()*.2),sw=(Math.random()*40-20).toFixed(0);
+  const a=d.animate(rm?[{opacity:0},{opacity:1,offset:.15},{opacity:1,offset:.8},{opacity:0}]:[{opacity:0,transform:'translate(0,0) scale(.4)'},{opacity:1,transform:`translate(${sw/2}px,-${H*.15}px) scale(1.15)`,offset:.12},{opacity:1,transform:`translate(${-sw}px,-${H*.55}px) scale(1)`,offset:.55},{opacity:0,transform:`translate(${sw}px,-${H}px) scale(.9)`}],{duration:rm?1800:2600+Math.random()*700,easing:'cubic-bezier(.3,.6,.4,1)'});
+  a.onfinish=()=>{d.remove();RXN--}}
+
+/* ===================== RULETA: 5 niveles de fuerza =====================
+   La fuerza se mide con lo rápido que giró el dedo al soltarla (en por lo menos 60 ms, para que un jalón chiquito no cuente como súper giro). */
+const WLV=[{k:'deb',n:'¡Uy, qué débil! 😴',s:'débil',min:0},{k:'nor',n:'',s:'normal',min:600},{k:'fast',n:'¡Qué fuerza!',s:'¡qué fuerza!',min:1600},{k:'sup',n:'¡SÚPER GIRO!',s:'¡súper giro!',min:2700},{k:'brk',n:'¡ROMPISTE LA RULETA!',s:'¡rompió la ruleta!',min:4000}];
+function wLevel(raw){let l=0;WLV.forEach((x,i)=>{if(raw>=x.min)l=i});return l}
+/* qué tan rápido gira de verdad la ruleta según el nivel */
+function wLvOm(lv,raw){const r=Math.random();return lv===0?880+r*220:lv===1?1150+Math.max(0,Math.min(1,(raw-600)/1000))*720+r*90:lv===2?1980+r*360:lv===3?2440+r*240:2760+r*80}
+/* ¡crash! (ruido que se apaga + golpe grave) */
+function crashSnd(ctx,out){try{const t=ctx.currentTime,n=Math.floor(ctx.sampleRate*.9),b=ctx.createBuffer(1,n,ctx.sampleRate),d=b.getChannelData(0);for(let i=0;i<n;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/n,2.4);
+  const s=ctx.createBufferSource();s.buffer=b;const f=ctx.createBiquadFilter();f.type='lowpass';f.frequency.setValueAtTime(6000,t);f.frequency.exponentialRampToValueAtTime(320,t+.85);const g=ctx.createGain();g.gain.value=.9;
+  const o=ctx.createOscillator(),og=ctx.createGain();o.type='triangle';o.frequency.setValueAtTime(150,t);o.frequency.exponentialRampToValueAtTime(38,t+.5);og.gain.setValueAtTime(.6,t);og.gain.exponentialRampToValueAtTime(.001,t+.6);
+  s.connect(f);f.connect(g);g.connect(out);o.connect(og);og.connect(out);s.start(t);o.start(t);o.stop(t+.65)}catch(e){}}
+/* la ruleta se cuartea, explota en pedazos y se vuelve a armar (sigue girando por dentro) */
+function wBreakFx(stage,wheel,o){o=o||{};const rm=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches,lite=document.documentElement.classList.contains('lite');
+  const c=document.createElement('div');c.className='wbrk';c.setAttribute('aria-hidden','true');
+  c.innerHTML='<svg viewBox="0 0 100 100"><path d="M50 50L36 30L22 9L15 1M50 50L67 33L84 20L97 13M50 50L60 70L76 92M50 50L28 55L8 60L1 67M36 30L25 33M67 33L73 41M60 70L52 81M28 55L22 70M84 20L88 8"/></svg>';stage.appendChild(c);
+  if(o.shake)o.shake(8);
+  setTimeout(()=>{if(o.snd)o.snd();if(o.shake)o.shake(26);
+    const fl=document.createElement('div');fl.className='wbrk-fl';stage.appendChild(fl);
+    if(rm){fl.animate([{opacity:.9},{opacity:0}],{duration:500}).onfinish=()=>fl.remove();return}
+    fl.animate([{opacity:0},{opacity:1,offset:.15},{opacity:0}],{duration:650}).onfinish=()=>fl.remove();
+    o.boom=wheel.animate([{scale:'1',opacity:1,filter:'none'},{scale:'1.2',opacity:1,filter:'brightness(2.4)',offset:.22},{scale:'.3',opacity:0,filter:'blur(8px) brightness(2)'}],{duration:520,easing:'cubic-bezier(.3,.7,.4,1)',fill:'forwards'});
+    c.animate([{opacity:1},{opacity:0}],{duration:280,fill:'forwards'});
+    const cols=['#ff2e88','#ffc42e','#3fe0cc','#8b5cf6','#ff8a1a','#fff8ec'],N=lite?7:16;
+    for(let i=0;i<N;i++){const p=document.createElement('i');p.className='wbrk-sh';p.style.background=cols[i%cols.length];const ang=Math.PI*2*i/N+Math.random()*.4,dist=(.55+Math.random()*.4)*stage.clientWidth;
+      stage.appendChild(p);p.animate([{transform:'translate(-50%,-50%) rotate(0) scale(1)',opacity:1},{transform:`translate(calc(-50% + ${Math.cos(ang)*dist}px),calc(-50% + ${Math.sin(ang)*dist}px)) rotate(${(Math.random()*720-360).toFixed(0)}deg) scale(.6)`,opacity:0}],{duration:850+Math.random()*350,easing:'cubic-bezier(.2,.8,.3,1)'}).onfinish=()=>p.remove()}
+    if(o.sparks)o.sparks()},650);
+  setTimeout(()=>{c.remove();if(rm){if(o.done)o.done();return}if(o.boom)o.boom.cancel();
+    wheel.animate([{scale:'.3',opacity:0,filter:'blur(8px)',rotate:'-45deg'},{scale:'1.12',opacity:1,filter:'none',rotate:'6deg',offset:.7},{scale:'1',opacity:1,filter:'none',rotate:'0deg'}],{duration:780,easing:'cubic-bezier(.3,1.4,.5,1)'});
+    if(o.done)o.done()},1500)}

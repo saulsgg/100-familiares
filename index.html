@@ -59,6 +59,7 @@
     <p class="err" id="joinerr" role="alert"></p>
   </form>
   <button type="button" class="ghost sm" data-go="host">Probar los botones</button>
+  <button type="button" class="ghost sm" data-tut="1">❓ ¿Cómo se juega? <small>(20 s)</small></button>
   <button type="button" id="install" class="ghost">Instalar la app en este aparato</button>
   <button type="button" class="ghost sm lite-btn" id="litebtn">🐢 Modo ligero: <b id="litev">Auto</b></button>
 </main>
@@ -88,7 +89,6 @@
     <button type="button" class="ghost" id="lobbyb" hidden>Ver jugadores</button>
     <div class="rule" id="rule"><span>Si alguien toca antes del ¡YA!:</span><button type="button" data-r="foul" aria-pressed="true">Pierde el turno</button><button type="button" data-r="soft" aria-pressed="false">Solo espera tantito</button></div>
   </footer>
-  <div class="sheet" id="avsheet" hidden><div class="sheet-in"><h2 id="avtitle">Animalito</h2><div class="avg" id="avg"></div><button type="button" class="ghost" id="avclose">Listo</button></div></div>
 </main>
 
 <!-- ============ JUGADOR ============ -->
@@ -96,6 +96,7 @@
   <header class="pbar">
     <span class="me" id="me"></span>
     <span class="pill" id="pstat">Conectando…</span>
+    <button type="button" class="admk" id="mutek" aria-label="Silenciar este celular" aria-pressed="false">🔊</button>
     <button type="button" class="admk" id="admk" aria-label="Modo anfitrión">🔑</button>
   </header>
   <section class="gv" id="gv" hidden aria-label="El juego">
@@ -116,8 +117,10 @@
     <button type="button" class="ghost sm gv-ch" id="gvch">Cambiar de equipo</button>
   </section>
   <section class="pick" id="pick" hidden>
+    <button type="button" class="myav" id="myavb" aria-label="Escoger tu animalito"><i id="myavi"></i><span><b>Tu animalito</b><small>Tócalo para cambiarlo</small></span></button>
     <h2>¿De qué equipo eres?</h2>
     <div class="pteams" id="pteams"></div>
+    <div class="pick-x"><button type="button" class="ghost sm" id="pspec">👀 Solo quiero ver</button><button type="button" class="ghost sm" data-tut="1">❓ ¿Cómo se juega? <small>(20 s)</small></button></div>
   </section>
   <section class="pad" id="pad" hidden>
     <div class="plamps" id="plamps"><i></i><i></i><i></i></div>
@@ -137,13 +140,17 @@
     <div class="pin-card"><b id="pinh">🔑 Modo anfitrión</b><p id="pinmsg">Escribe tu PIN</p><div class="pin-dots" id="pindots" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
       <div class="pin-pad" id="pinpad"></div><button type="button" class="ghost sm" id="pinx">Cancelar</button></div>
   </section>
-  <section class="chat" id="chat" hidden role="dialog" aria-modal="true" aria-labelledby="chatt">
-    <header class="chat-h"><b id="chatt">💬 Junta de equipo</b><span class="chat-sec"><span id="chats">30</span> s</span></header>
-    <div class="chat-bar" aria-hidden="true"><i id="chatbar"></i></div>
+  <section class="chat" id="chat" hidden role="dialog" aria-labelledby="chatt">
+    <header class="chat-h"><button type="button" class="chat-min" id="chatmin" aria-label="Hacer chiquito el chat" aria-expanded="true">▾</button><b id="chatt">💬 Junta de equipo</b>
+      <span class="ring" id="chatring" hidden><svg viewBox="0 0 36 36" aria-hidden="true"><circle class="rg-bg" cx="18" cy="18" r="15.5"/><circle class="rg-fg" cx="18" cy="18" r="15.5" pathLength="100"/></svg><b></b></span></header>
+    <p class="chat-sub" id="chatsub"></p>
     <p class="chat-q" id="chatq"></p>
+    <p class="chat-rev" id="chatrev" hidden></p>
     <div class="chat-m" id="chatm" aria-live="polite"></div>
+    <p class="chat-ty" id="chatty" aria-live="polite"></p>
+    <div class="chat-qk" id="chatqk"><button type="button" data-q="👍 ¡Esa!">👍 ¡Esa!</button><button type="button" data-q="❌ No">❌ No</button><button type="button" data-q="🤔 Ni idea">🤔 Ni idea</button></div>
     <form class="chat-f" id="chatf" autocomplete="off"><input id="chati" maxlength="80" enterkeyhint="send" placeholder="Escribe a tu equipo…" aria-label="Mensaje para tu equipo"><button class="chat-go" aria-label="Enviar">➤</button></form>
-    <button type="button" class="ghost sm" id="chatok">¡Ya sabemos! Seguir jugando</button>
+    <div class="chat-btns"><button type="button" class="chat-claim" id="chatclaim" hidden>✋ Yo la digo</button><button type="button" class="ghost sm" id="chatok">¡Ya sabemos! Seguir jugando</button></div>
   </section>
   <section class="finph" id="finph" hidden role="dialog" aria-modal="true" aria-labelledby="finpht">
     <div class="finph-in">
@@ -151,6 +158,10 @@
       <h2 id="finpht"></h2>
       <p class="finph-s" id="finphs"></p>
       <div class="finph-pz" id="finphpz" hidden>🎁 Se llevan: <b id="finphpzt"></b></div>
+      <div class="finph-ph" id="finphph" hidden>
+        <button type="button" class="ghost" id="finphcam">📸 Foto de los ganadores <small>(si quieren)</small></button><input type="file" id="finphf" accept="image/*" hidden>
+        <div class="finph-pic" id="finphpic" hidden><img id="finphimg" alt="Foto de los ganadores con su marco"><div class="finph-pb"><button type="button" class="ghost sm" id="finphsave">💾 Guardar</button><button type="button" class="ghost sm" id="finphre">📸 Otra</button></div><small id="finphnote"></small></div>
+      </div>
       <p class="finph-mt" id="finphmt"></p>
       <div class="finph-meds" id="finphm"></div>
       <button type="button" class="big" id="finphok">¡Listo!</button>
@@ -188,6 +199,13 @@
     <div class="ask-res" id="askres" hidden></div>
   </section>
 </main>
+  <div class="sheet" id="avsheet" hidden><div class="sheet-in"><h2 id="avtitle">Animalito</h2><div class="avg" id="avg"></div><button type="button" class="ghost" id="avclose">Listo</button></div></div>
+  <div class="rxbar" id="rxbar" hidden><div class="rxp" id="rxp" hidden role="group" aria-label="Reacciones"></div><button type="button" class="rxk" id="rxk" aria-label="Mandar una reacción" aria-expanded="false">😀</button></div>
+  <section class="tut" id="tut" hidden role="dialog" aria-modal="true" aria-labelledby="tutt"><div class="tut-card">
+    <div class="tut-bar" aria-hidden="true"><i id="tutbar"></i></div>
+    <div class="tut-ic" id="tutic" aria-hidden="true"></div><b id="tutt"></b><p id="tutp"></p>
+    <div class="tut-nav"><button type="button" class="ghost sm" id="tutprev" aria-label="Anterior">◀</button><span id="tutn"></span><button type="button" class="ghost sm" id="tutnext" aria-label="Siguiente">▶</button></div>
+    <button type="button" class="big" id="tutx">¡Ya entendí!</button></div></section>
   <section class="sheet-ov" id="instsh" hidden role="dialog" aria-modal="true" aria-labelledby="insth"><div class="sheet-card">
     <b id="insth">📲 Instalar la app</b>
     <p><b>Android (Chrome):</b> toca el menú <b>⋮</b> de arriba a la derecha y luego <b>“Instalar app”</b> o <b>“Agregar a la pantalla principal”</b>.</p>
