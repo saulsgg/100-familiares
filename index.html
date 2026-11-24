@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,interactive-widget=resizes-content">
+<meta name="theme-color" content="#070a24">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>100 Familiares Dijeron</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<link rel="stylesheet" href="app.css">
+</head>
+<body>
+<div class="bg" aria-hidden="true"><i></i><i></i><i></i></div>
+
+<!-- ============ INICIO ============ -->
+<main id="v-home" class="view">
+  <div class="logo" aria-label="100 Familiares Dijeron"><b>100</b><span>Familiares</span><em>dijeron</em></div>
+  <p class="sub">Juega con tu familia y tus amigos</p>
+  <div class="choices">
+    <button type="button" class="card-btn star" data-go="create">
+      <svg viewBox="0 0 64 64" aria-hidden="true"><ellipse cx="32" cy="59" rx="20" ry="3" fill="rgba(0,0,0,.35)"/><circle cx="32" cy="30" r="26" fill="#ffc42e" stroke="#2b1840" stroke-width="3"/><circle cx="32" cy="30" r="20" fill="#ff2e88" stroke="#2b1840" stroke-width="2.5"/><ellipse cx="25.5" cy="21" rx="7" ry="3.6" fill="#fff" opacity=".6" transform="rotate(-24 25.5 21)"/><text x="32" y="37" text-anchor="middle" font-family="Lilita One,Rubik,sans-serif" font-size="19" fill="#fff" stroke="#6b0a3a" stroke-width="1.2" paint-order="stroke">100</text><g fill="#fff6cf"><circle cx="32" cy="5.5" r="1.6"/><circle cx="56.5" cy="30" r="1.6"/><circle cx="7.5" cy="30" r="1.6"/><circle cx="49.3" cy="12.7" r="1.6"/><circle cx="14.7" cy="12.7" r="1.6"/><circle cx="49.3" cy="47.3" r="1.6"/><circle cx="14.7" cy="47.3" r="1.6"/></g></svg>
+      <b>Crear partida</b><small>Tú diriges el juego: ruleta, preguntas y puntos. Los demás se unen con el QR.</small>
+    </button>
+    <button type="button" class="card-btn" data-go="join">
+      <svg viewBox="0 0 64 64" aria-hidden="true"><ellipse cx="32" cy="60.5" rx="15" ry="2.6" fill="rgba(0,0,0,.35)"/><rect x="15" y="3" width="34" height="56" rx="8" fill="#1e2569" stroke="#2b1840" stroke-width="3"/><rect x="18.5" y="8" width="27" height="46.5" rx="4.5" fill="#0d6d64"/><rect x="28" y="4.6" width="8" height="2" rx="1" fill="#0b0f3a"/><g fill="#35ff7a"><circle cx="26" cy="14" r="2.2"/><circle cx="32" cy="14" r="2.2"/><circle cx="38" cy="14" r="2.2"/></g><path d="M20.5 33a11.5 11.5 0 0 1 23 0M18 33a14 14 0 0 1 28 0" fill="none" stroke="#a8fff3" stroke-width="1.6" stroke-linecap="round" opacity=".55"/><circle cx="32" cy="35.5" r="11" fill="#20244a"/><circle cx="32" cy="34" r="11" fill="#cfd4ee" stroke="#2b1840" stroke-width="2"/><circle cx="32" cy="33" r="8" fill="#3fe0cc" stroke="#0b6f64" stroke-width="1.5"/><ellipse cx="29.3" cy="29.6" rx="3.6" ry="2" fill="#fff" opacity=".75" transform="rotate(-22 29.3 29.6)"/><path d="M40 52c-2-5 1-9 4-9 2 0 3 2 3 4v-5c0-2 3-2 3 0v2c0-2 3-2 3 0v2c0-2 3-2 3 0v6c0 5-3 9-8 9h-3" fill="#fff1dc" stroke="#2b1840" stroke-width="2" stroke-linejoin="round" transform="translate(-6 -6) rotate(-14 46 50)"/></svg>
+      <b>Unirme a una partida</b><small>Escanea el QR o escribe el código que te pasen.</small>
+    </button>
+  </div>
+  <section class="modes" id="modes" hidden aria-labelledby="modest">
+    <h2 id="modest">¿Dónde se va a ver el juego?</h2>
+    <div class="choices">
+      <a class="card-btn" href="juego.html?modo=pantalla">
+        <svg viewBox="0 0 64 64" aria-hidden="true"><ellipse cx="32" cy="59" rx="21" ry="3" fill="rgba(0,0,0,.35)"/><path d="M23 50l-5 7M41 50l5 7" stroke="#2b1840" stroke-width="6" stroke-linecap="round"/><path d="M23 50l-5 7M41 50l5 7" stroke="#e9a91c" stroke-width="3" stroke-linecap="round"/><rect x="5" y="9" width="54" height="42" rx="9" fill="#ffc42e" stroke="#2b1840" stroke-width="3"/><path d="M8 18a7 7 0 0 1 7-7h34a7 7 0 0 1 7 7" fill="none" stroke="#fff3b0" stroke-width="2" stroke-linecap="round" opacity=".8"/><circle cx="13" cy="12.6" r="1.4" fill="#fff6cf"/><circle cx="19" cy="12.6" r="1.4" fill="#fff6cf"/><circle cx="25" cy="12.6" r="1.4" fill="#fff6cf"/><circle cx="31" cy="12.6" r="1.4" fill="#fff6cf"/><circle cx="37" cy="12.6" r="1.4" fill="#fff6cf"/><circle cx="43" cy="12.6" r="1.4" fill="#fff6cf"/><circle cx="49" cy="12.6" r="1.4" fill="#fff6cf"/><circle cx="13" cy="47.4" r="1.4" fill="#fff6cf"/><circle cx="19" cy="47.4" r="1.4" fill="#fff6cf"/><circle cx="25" cy="47.4" r="1.4" fill="#fff6cf"/><circle cx="31" cy="47.4" r="1.4" fill="#fff6cf"/><circle cx="37" cy="47.4" r="1.4" fill="#fff6cf"/><circle cx="43" cy="47.4" r="1.4" fill="#fff6cf"/><circle cx="49" cy="47.4" r="1.4" fill="#fff6cf"/><rect x="10.5" y="15.5" width="43" height="29" rx="4.5" fill="#0b0f3a" stroke="#2b1840" stroke-width="2"/><g><circle cx="22" cy="30" r="7.5" fill="#35ff7a" opacity=".22"/><circle cx="32" cy="30" r="7.5" fill="#35ff7a" opacity=".22"/><circle cx="42" cy="30" r="7.5" fill="#35ff7a" opacity=".22"/><circle cx="22" cy="30" r="5" fill="#2bd968"/><circle cx="32" cy="30" r="5" fill="#2bd968"/><circle cx="42" cy="30" r="5" fill="#2bd968"/><circle cx="20.5" cy="28.4" r="1.7" fill="#e6ffee"/><circle cx="30.5" cy="28.4" r="1.7" fill="#e6ffee"/><circle cx="40.5" cy="28.4" r="1.7" fill="#e6ffee"/></g><path d="M12 42L28 17h8L20 42z" fill="#fff" opacity=".07"/></svg>
+        <b>En una pantalla grande</b><small>Tele, compu o tablet. Cada quien usa su celular como botón.</small>
+      </a>
+      <a class="card-btn" href="juego.html?modo=celulares">
+        <svg viewBox="0 0 64 64" aria-hidden="true"><ellipse cx="32" cy="60" rx="24" ry="2.6" fill="rgba(0,0,0,.35)"/><g transform="rotate(-10 18 32)"><rect x="6" y="8" width="24" height="44" rx="6" fill="#1e2569" stroke="#2b1840" stroke-width="3"/><rect x="9.5" y="13" width="17" height="30" rx="3" fill="#3fe0cc"/><circle cx="18" cy="28" r="6" fill="#ff2e88" stroke="#2b1840" stroke-width="2"/></g><g transform="rotate(10 46 32)"><rect x="34" y="8" width="24" height="44" rx="6" fill="#1e2569" stroke="#2b1840" stroke-width="3"/><rect x="37.5" y="13" width="17" height="30" rx="3" fill="#ffc42e"/><circle cx="46" cy="28" r="6" fill="#ff2e88" stroke="#2b1840" stroke-width="2"/></g></svg>
+        <b>Cada quien en su celular</b><small>Sin tele: todos ven la pregunta y el tablero en su celular. Tú también juegas desde el tuyo.</small>
+      </a>
+    </div>
+  </section>
+  <form id="joinf" class="joinf" hidden autocomplete="off">
+    <label for="code">Código de la partida</label>
+    <input id="code" maxlength="4" autocapitalize="characters" spellcheck="false" placeholder="ABCD" enterkeyhint="go">
+    <label for="pname">Tu nombre</label>
+    <input id="pname" maxlength="14" placeholder="Tu nombre" enterkeyhint="go">
+    <button class="big gold" type="submit">Entrar</button>
+    <p class="err" id="joinerr" role="alert"></p>
+  </form>
+  <button type="button" class="ghost sm" data-go="host">Probar los botones</button>
+  <button type="button" id="install" class="ghost" hidden>Instalar la app en este aparato</button>
+</main>
+
+<!-- ============ PANTALLA GRANDE ============ -->
+<main id="v-host" class="view" hidden>
+  <header class="hbar">
+    <div class="room"><small>Código</small><b id="hcode">····</b></div>
+    <span class="pill" id="hstat">Conectando…</span>
+    <button type="button" class="ghost sm" id="hback">Salir</button>
+  </header>
+  <section class="lobby" id="lobby">
+    <div class="qrbox"><div class="qr" id="qr" aria-label="Código QR para unirse"></div><p>Escaneen con la cámara del celular<br><b id="hlink"></b></p></div>
+    <div class="teams" id="teams"></div>
+  </section>
+  <section class="arena" id="arena" hidden>
+    <div class="side" id="sideA"></div>
+    <div class="center">
+      <div class="lamps" id="lamps"><i></i><i></i><i></i></div>
+      <b class="semt" id="semt">Prepárense…</b>
+    </div>
+    <div class="side" id="sideB"></div>
+    <div class="result" id="result" hidden></div>
+  </section>
+  <footer class="hctl">
+    <button type="button" class="big gold" id="go">¡Probar botones!</button>
+    <button type="button" class="ghost" id="lobbyb" hidden>Ver jugadores</button>
+    <div class="rule" id="rule"><span>Si alguien toca antes del ¡YA!:</span><button type="button" data-r="foul" aria-pressed="true">Pierde el turno</button><button type="button" data-r="soft" aria-pressed="false">Solo espera tantito</button></div>
+  </footer>
+  <div class="sheet" id="avsheet" hidden><div class="sheet-in"><h2 id="avtitle">Animalito</h2><div class="avg" id="avg"></div><button type="button" class="ghost" id="avclose">Listo</button></div></div>
+</main>
+
+<!-- ============ JUGADOR ============ -->
+<main id="v-play" class="view" hidden>
+  <header class="pbar">
+    <span class="me" id="me"></span>
+    <span class="pill" id="pstat">Conectando…</span>
+  </header>
+  <section class="gv" id="gv" hidden aria-label="El juego">
+    <div class="gv-sc">
+      <div class="gv-t" id="gvt0" style="--c:#3fe0cc"><i id="gva0"></i><span><b>Turquesas</b><em id="gvs0">0</em></span></div>
+      <div class="gv-bank"><small>En juego</small><b id="gvb">0</b><em id="gvm"></em></div>
+      <div class="gv-t" id="gvt1" style="--c:#ffc42e"><i id="gva1"></i><span><b>Dorados</b><em id="gvs1">0</em></span></div>
+    </div>
+    <div class="gv-q"><small id="gvr">Ronda 1</small><p id="gvq">Esperando la pregunta…</p></div>
+    <p class="gv-say" id="gvsay" hidden></p>
+    <ol class="gv-board" id="gvboard"></ol>
+    <div class="gv-foot">
+      <div class="gv-x" id="gvx" aria-label="Errores"><i></i><i></i><i></i></div>
+      <p class="gv-turn" id="gvturn"></p>
+      <div class="gv-ck" id="gvck" aria-label="Segundos"><b id="gvckn">15</b></div>
+    </div>
+    <button type="button" class="ghost sm gv-ch" id="gvch">Cambiar de equipo</button>
+  </section>
+  <section class="pick" id="pick" hidden>
+    <h2>¿De qué equipo eres?</h2>
+    <div class="pteams" id="pteams"></div>
+  </section>
+  <section class="pad" id="pad" hidden>
+    <div class="plamps" id="plamps"><i></i><i></i><i></i></div>
+    <p class="pmsg" id="pmsg">Esperen la siguiente ronda</p>
+    <div class="dome" id="dome"><span class="ring"></span><span class="ring r2"></span><span class="base"></span><span class="cap"><span class="av" id="pav"></span></span></div>
+    <p class="psub" id="psub"></p>
+    <button type="button" class="ghost sm" id="chteam">Cambiar de equipo</button>
+  </section>
+  <div class="pres" id="pres" hidden></div>
+  <section class="ask" id="ask" hidden aria-live="polite" aria-labelledby="askt">
+    <header class="ask-h">
+      <span class="ask-av" id="askav"></span>
+      <div class="ask-ht"><b id="askt">¡Te toca contestar!</b><small id="asks">¿Qué dijeron las 100 personas?</small></div>
+      <span class="ask-sec" id="asksec">15</span>
+    </header>
+    <p class="ask-q" id="askq"></p>
+    <div class="ask-time" aria-hidden="true"><i id="askbar"></i></div>
+    <div class="ask-prev" id="askprev" aria-hidden="true"></div>
+    <form class="ask-f" id="askf" autocomplete="off">
+      <input id="aski" maxlength="40" autocomplete="off" enterkeyhint="send" placeholder="Toca aquí y escribe…" aria-label="Tu respuesta">
+      <button class="ask-go" type="submit">¡Contestar!</button>
+    </form>
+    <div class="ask-res" id="askres" hidden></div>
+  </section>
+</main>
+
+<div class="toast" id="toast" role="status"></div>
+<script src="vendor/paho-mqtt.min.js"></script>
+<script src="vendor/qrcode.js"></script>
+<script src="avatars.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

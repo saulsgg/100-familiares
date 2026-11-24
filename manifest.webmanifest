@@ -1,0 +1,17 @@
+{
+  "name": "100 Familiares Dijeron · Botones",
+  "short_name": "100 Familiares",
+  "description": "Un botón en cada celular para jugar 100 Familiares Dijeron en familia.",
+  "lang": "es-MX",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#070a24",
+  "theme_color": "#070a24",
+  "icons": [
+    {"src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png"},
+    {"src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png"},
+    {"src": "icons/icon-maskable.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable"}
+  ]
+}
