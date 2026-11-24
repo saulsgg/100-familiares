@@ -1036,6 +1036,13 @@ body{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-r
 .j-saved small{color:var(--mute);font-weight:700;font-size:13px}
 .j-saved div{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin-top:6px}
 .j-wsub{min-height:1.2em;margin:-4px 0 4px;color:var(--mute);font:800 clamp(14px,1.8vw,18px) Rubik,sans-serif;text-align:center}
+/* dos errores: el equipo que puede robar se prende y el tercer hueco parpadea */
+.l2-team.ready{animation:jready 1s ease-in-out infinite}
+@keyframes jready{0%,100%{box-shadow:0 0 0 3px #fff,0 0 0 0 rgba(255,255,255,0)}50%{box-shadow:0 0 0 4px #fff,0 0 26px 6px rgba(255,255,255,.55)}}
+.l2-team.ready .l2-turn{transform:translateX(-50%) scale(1);background:#ff2e88;animation:jreadyt .9s ease-in-out infinite alternate}
+@keyframes jreadyt{from{transform:translateX(-50%) scale(1)}to{transform:translateX(-50%) scale(1.15)}}
+.xslot.next{animation:jnext .8s ease-in-out infinite;box-shadow:inset 0 0 0 3px rgba(255,51,85,.9),0 0 16px rgba(255,51,85,.6)}
+@keyframes jnext{50%{box-shadow:inset 0 0 0 3px rgba(255,51,85,.25),0 0 4px rgba(255,51,85,.2)}}
 
 /* pantalla del jugador: sin botones de quien dirige y pensada para celular */
 body.ver{overflow-x:hidden}
@@ -1573,6 +1580,9 @@ function apply(v){const first=!V;
   if(Array.isArray(v.sc)&&!FLY)[0,1].forEach(t=>{if(SC[t]!==v.sc[t]){SC[t]=v.sc[t];scoreTo(t,v.sc[t],!first)}});
   if(v.ph==='end'&&VPH!=='end'&&!first){const[a,b]=v.sc,w=a===b?-1:a>b?0:1;cinta(w<0?'¡EMPATE!':`¡GANARON ${losN(w).toUpperCase()}!`,`${NAMES[0]} ${a} · ${NAMES[1]} ${b}`,w<0?'c-pink':w?'c-gold':'c-teal');
     later(300,()=>{sfr('top1',.9);confetti()});later(1400,()=>sfr('pts',.8));if(w>=0){bump($('#tm'+w),1.12);stage('team',{el:$('#tm'+w),c:TCOL[w]});later(2500,stIdle)}}
+  /* dos errores: se preparan para robar */
+  const wn=v.warn==null?-1:v.warn;$$('.l2-team').forEach((e,k)=>{e.classList.toggle('ready',k===wn);if(k===wn)$('.l2-turn',e).textContent='¡Prepárense!'});const s3=$$('#xslots .xslot')[2];if(s3)s3.classList.toggle('next',wn>=0);
+  if(wn>=0&&(!V||V.warn!==wn)&&!first){cinta(`¡PREPÁRENSE, ${NAMES[wn].toUpperCase()}!`,'Una ✕ más y pueden robar los puntos',wn?'c-gold':'c-teal');sfr('grow',.5);bump($('#tm'+wn),1.12)}
   saySync(v.say||null,v);
   ckSync(v.ck,xs>(V?V.xs||0:0)||(v.say&&(v.say.cls==='miss'||v.say.cls==='time')));
   VPH=v.ph||'';V=v}

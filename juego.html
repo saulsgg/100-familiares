@@ -1037,6 +1037,13 @@ body{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-r
 .j-saved small{color:var(--mute);font-weight:700;font-size:13px}
 .j-saved div{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin-top:6px}
 .j-wsub{min-height:1.2em;margin:-4px 0 4px;color:var(--mute);font:800 clamp(14px,1.8vw,18px) Rubik,sans-serif;text-align:center}
+/* dos errores: el equipo que puede robar se prende y el tercer hueco parpadea */
+.l2-team.ready{animation:jready 1s ease-in-out infinite}
+@keyframes jready{0%,100%{box-shadow:0 0 0 3px #fff,0 0 0 0 rgba(255,255,255,0)}50%{box-shadow:0 0 0 4px #fff,0 0 26px 6px rgba(255,255,255,.55)}}
+.l2-team.ready .l2-turn{transform:translateX(-50%) scale(1);background:#ff2e88;animation:jreadyt .9s ease-in-out infinite alternate}
+@keyframes jreadyt{from{transform:translateX(-50%) scale(1)}to{transform:translateX(-50%) scale(1.15)}}
+.xslot.next{animation:jnext .8s ease-in-out infinite;box-shadow:inset 0 0 0 3px rgba(255,51,85,.9),0 0 16px rgba(255,51,85,.6)}
+@keyframes jnext{50%{box-shadow:inset 0 0 0 3px rgba(255,51,85,.25),0 0 4px rgba(255,51,85,.2)}}
 </style>
 </head>
 <body>
@@ -1927,12 +1934,18 @@ function strike(){if(!R||(R.phase!=='play'&&R.phase!=='steal'))return;R.xs=(R.xs
   later(1400,stIdle);
   if(R.phase==='steal'){T(1300,()=>award(R.ctl,'¡No pudieron robar!'));return}
   R.x++;drawX();
-  if(R.x>=3)T(1300,startSteal);else T(1600,turnStart)}
+  if(R.x>=3)T(1300,startSteal);else if(R.x===2){T(1250,warnSteal);T(3900,turnStart)}else T(1600,turnStart)}
+/* dos errores: el otro equipo se prepara para robar */
+function warnSteal(){if(!R||R.phase!=='play')return;const o=1-R.ctl;R.warn=true;warnFx(o,true);NH.P.forEach(p=>nhTo(p,{t:'warn',team:o},1));
+  note(`${losN(o,1)} ya se pueden ir preparando: una ✕ más y les toca robar.`)}
+function warnFx(o,on){$$('.l2-team').forEach((e,k)=>{e.classList.toggle('ready',on&&k===o);if(on&&k===o)$('.l2-turn',e).textContent='¡Prepárense!'});const s=$$('#xslots .xslot')[2];if(s)s.classList.toggle('next',on);
+  if(!on)return;cinta(`¡PREPÁRENSE, ${NAMES[o].toUpperCase()}!`,'Una ✕ más y pueden robar los puntos',o?'c-gold':'c-teal');sfr('grow',.5);bump($('#tm'+o),1.12)}
+function clearWarn(){if(R)R.warn=false;warnFx(0,false)}
 /* tres errores: el otro equipo tiene una sola oportunidad de robar */
-function startSteal(){if(!R||R.phase!=='play')return;R.phase='steal';const o=1-R.ctl;setTurn(o,true);ckReset();ctl('steal');document.body.classList.add('steal');MUS.sync();
+function startSteal(){if(!R||R.phase!=='play')return;clearWarn();R.phase='steal';const o=1-R.ctl;setTurn(o,true);ckReset();ctl('steal');document.body.classList.add('steal');MUS.sync();
   cinta('¡ROBO!',`${losN(o,1)} tienen una sola oportunidad`,'c-pink');nhInfo(`¡Robo! Contestan ${losN(o)}`,scoreLine());
   note(`Si ${losN(o)} atinan, toquen la ficha; si no, toquen “Falló el robo”.`);T(2600,turnStart)}
-function award(t,why){if(!R||R.phase==='done')return;G.fin=G.ri;saveG();closeAsk();clearGrace();later(1500,hideSay);R.phase='done';ckStop('ok');document.body.classList.remove('steal');MUS.sync();const pts=R.bank*R.m;R.aw={id:Date.now(),t,pts,why};setTurn(-1);ctl('done');
+function award(t,why){if(!R||R.phase==='done')return;clearWarn();G.fin=G.ri;saveG();closeAsk();clearGrace();later(1500,hideSay);R.phase='done';ckStop('ok');document.body.classList.remove('steal');MUS.sync();const pts=R.bank*R.m;R.aw={id:Date.now(),t,pts,why};setTurn(-1);ctl('done');
   if(pts>0){flyChip($('#bv'),$('#ts'+t),'+'+pts,t?'gold':'teal',800,()=>{G.sc[t]+=pts;saveG();scoreShow();bump($('#tm'+t),1.08);sfr('pts',.85);stage('team',{el:$('#tm'+t),c:TCOL[t]});later(1800,stIdle)})}
   R.bank=0;later(200,bankShow);
   cinta(pts>0?`¡+${pts} para ${NAMES[t]}!`:why,pts>0?why:'',t?'c-gold':'c-teal');
@@ -1967,7 +1980,7 @@ function ctl(mode){const c=$('#ctl');
   :mode==='steal'?`<button class="l2-b l3-x big" type="button" data-a="x">✕ Falló el robo</button>`
   :mode==='done'?`<button class="l2-b" type="button" data-a="rest">Destapar las que faltan</button>${lastRound()?'<button class="l2-b l2-gd big" type="button" data-a="end">🏆 ¡Ver quién ganó!</button>':'<button class="l2-b l2-gd big" type="button" data-a="next">⏭ Siguiente ronda</button>'}<button class="l2-b l2-gh" type="button" data-a="new">Nueva partida</button>`
   :`<button class="l2-b l2-gh" type="button" data-a="skip">Cambiar la pregunta</button>`}
-function closeAll(){F.tok++;clearBZ();nhCancel();closeAsk();if(R)clearGrace();hideSay();const b=$('#bz');b.hidden=true;$('#bzc').hidden=true;const w=$('#wov');if(!w.hidden){w.hidden=true;rimIdle(false)}document.body.classList.remove('ovl','steal');stIdle()}
+function closeAll(){F.tok++;clearWarn();clearBZ();nhCancel();closeAsk();if(R)clearGrace();hideSay();const b=$('#bz');b.hidden=true;$('#bzc').hidden=true;const w=$('#wov');if(!w.hidden){w.hidden=true;rimIdle(false)}document.body.classList.remove('ovl','steal');stIdle()}
 function startRound(skip){ac();loadSounds();closeAll();
   const q=nextQ();R={q,n:Math.min(q.a.length,Math.max(4,7-(G.ri%4))),m:skip&&R?R.m:0,bank:0,ctl:-1,x:0,rev:[],phase:'wheel'};
   rnLabel();setTurn(-1);qReset();ckReset();drawBoard();drawX();bankShow();MUS.sync();
@@ -2133,7 +2146,7 @@ function meSync(){const ok=ME&&ME.name&&(ME.team===0||ME.team===1);
 function sayV(){const s=$('#say');if(s.hidden)return null;const cls=['hit','miss','dup','time'].find(c=>s.classList.contains(c))||(s.classList.contains('typing')?'typing':'said');
   return{who:$('#sayn').textContent,cls,txt:cls==='typing'?'':SAYT,w:cls==='typing'?SAYW:''}}
 function viewMsg(){const v={t:'view',on:CEL,rn:G.ri+1,rr:CFG.rounds,sc:G.sc.slice(),av:AV,names:NAMES};
-  if(R){const shown=R.phase!=='wheel';v.q=shown?R.q.q:'';v.n=R.n;v.rev=R.rev.map((x,i)=>x?[i,R.q.a[i][0],R.q.a[i][1]]:null).filter(Boolean);v.bank=R.bank;v.m=R.m||1;v.x=R.x;v.xs=R.xs||0;v.aw=R.aw||null;v.ph=R.phase;v.ctl=R.ctl;
+  if(R){const shown=R.phase!=='wheel';v.q=shown?R.q.q:'';v.n=R.n;v.rev=R.rev.map((x,i)=>x?[i,R.q.a[i][0],R.q.a[i][1]]:null).filter(Boolean);v.bank=R.bank;v.m=R.m||1;v.x=R.x;v.xs=R.xs||0;v.aw=R.aw||null;v.warn=R.warn&&R.phase==='play'?1-R.ctl:-1;v.ph=R.phase;v.ctl=R.ctl;
     v.ck={run:CK.run,left:CK.left,tot:CK.tot};v.say=sayV();
     if(R.phase==='wheel'){v.wsp=R.spinner||'';v.wspn=R.spinName||'';v.wth=WH.spin?null:Math.round(WH.th*1000)/1000;v.wid=WSN;v.wres=WH.res?F.m:0}}
   return v}

@@ -256,6 +256,7 @@ function playMsg(topic,m){
   if(!P.found)return;
   if(m.t==='view'){gvDraw(m);wphView(m);return}
   if(m.t==='wspin'){wphSpin(m);return}
+  if(m.t==='warn'){warnMe(+m.team);return}
   if(m.t==='kick'){playStop();toast('La pantalla del juego te sacó de la sala.');return}
   if(m.t==='ask'){showAsk(m);return}if(m.t==='asked'||m.t==='judged'||m.t==='close'||m.t==='lock'){askMsg(m);return}
   if(m.t==='arm'){hideAsk();arm(m)}else if(m.t==='res')onRes(m);else if(m.t==='cancel'){clearPT();P.phase='idle';hideRes();showPad();padState('idle','Esperen la siguiente ronda','')}}
@@ -344,6 +345,15 @@ function gvDraw(v){const old=GV;GV=v;gvShow();verSend(v);if(!v.on)return;const s
   const sy=v.say,e=$('#gvsay');if(sy){e.hidden=false;e.className='gv-say '+sy.cls;
     e.textContent=sy.cls==='typing'?`${sy.who} está escribiendo…`:sy.cls==='hit'?`✓ ${sy.who}: “${sy.txt}” ¡Sí está!`:sy.cls==='miss'?`✕ ${sy.who}: “${sy.txt}” no está`:sy.cls==='dup'?`${sy.who}: “${sy.txt}” ya salió`:sy.cls==='time'?`¡Se le acabó el tiempo a ${sy.who}!`:`${sy.who} contestó: “${sy.txt}”`}else e.hidden=true;
   if(snd&&old&&!old.q&&v.q)sf('flap2',.5)}
+
+/* dos errores: aviso para que el otro equipo se prepare a robar */
+let WARNT=0;
+function warnMe(t){if(!P.found||P.team<0)return;const mine=P.team===t;vib(mine?[90,60,90,60,160]:[60,40,60]);
+  if(gvOn()&&$('#gvf').offsetParent)return; /* en modo celulares ya lo muestra la pantalla del juego */
+  const b=$('#warnb');b.className='warnb '+(mine?'mine':'other');$('#warnbt').textContent=mine?'¡Prepárense para robar!':'¡Cuidado! Ya llevan 2 ✕';
+  $('#warnbs').textContent=mine?'Vayan pensando la respuesta: una ✕ más y les toca':'Una ✕ más y el otro equipo puede robar';b.hidden=false;
+  if(!RM())b.animate([{transform:'translateY(-140%) rotate(-4deg)'},{transform:'translateY(6%) rotate(1deg)',offset:.7},{transform:'none'}],{duration:520,easing:'cubic-bezier(.2,.9,.3,1)'});
+  clearTimeout(WARNT);WARNT=later(3600,()=>{if(RM()){b.hidden=true;return}b.animate([{opacity:1},{opacity:0,transform:'translateY(-30%)'}],{duration:300}).onfinish=()=>{b.hidden=true}})}
 
 /* ===================== LA RULETA EN EL CELULAR ===================== */
 /* mismo cálculo que la pantalla del juego: todos ven caer el mismo número */
