@@ -79,3 +79,10 @@
   #bzc .hr-lane{font-size:15px}
   #bzc .hr-t{font-size:20px}
 }
+/* caballos especiales */
+.hr-h.hz-fuego .hr-tail,.hr-h.hz-fuego .hr-mane{filter:drop-shadow(0 0 3px #ff8a00)}
+.hr.run .hr-lane:not(.fin) .hr-h.hz-fuego{filter:drop-shadow(0 0 5px #ff5a00)}
+.hr-h.hz-uni{filter:drop-shadow(0 0 4px rgba(255,255,255,.8))}
+.hr-h.hz-fant{opacity:.85;filter:drop-shadow(0 0 6px #9cc0ff)}
+.hr.run .hr-lane:not(.fin) .hr-h.hz-fant{animation:hrBob .36s linear infinite,hrGhost 1.2s ease-in-out infinite}
+@keyframes hrGhost{50%{opacity:.45}}

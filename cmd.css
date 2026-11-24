@@ -78,3 +78,44 @@ button.ctk:active .ctk-d{transform:scale(.88)}
 .wph-fx.brk{font-size:clamp(26px,9vw,44px)}
 .j-wfx.deb,.wph-fx.deb{color:#dfe4ff;text-shadow:0 3px 0 #1a1f55,0 0 14px rgba(120,140,255,.6)}
 .j-wfx.deb{font-size:clamp(26px,4.5vw,48px)}.wph-fx.deb{font-size:clamp(22px,7vw,36px)}
+
+/* ===== auras (rareza) alrededor del animalito ===== */
+.aura{position:relative;border-radius:50%}
+.aura-com{box-shadow:0 0 0 3px #9aa3b8}
+.aura-poc{box-shadow:0 0 0 3px #35e08a,0 0 10px #35e08a}
+.aura-rar{box-shadow:0 0 0 3px #3b9bff,0 0 12px #3b9bff;animation:auPulse 1.6s ease-in-out infinite}
+.aura-epi{box-shadow:0 0 0 3px #a855f7,0 0 14px #a855f7,0 0 26px rgba(168,85,247,.5)}
+.aura-leg{box-shadow:0 0 0 3px #ffb020,0 0 14px #ff8a00,0 -4px 22px #ff5a00;animation:auFire .9s ease-in-out infinite alternate}
+.aura-mit{box-shadow:0 0 0 3px #fff,0 0 16px #ff5ce1;animation:auRain 3s linear infinite}
+.aura-sec{box-shadow:0 0 0 3px #b3122e,0 0 16px #ff2b4d;animation:auBolt 2.4s steps(1) infinite}
+@keyframes auPulse{50%{box-shadow:0 0 0 3px #3b9bff,0 0 22px #3b9bff}}
+@keyframes auFire{to{box-shadow:0 0 0 3px #ffd23f,0 0 20px #ff8a00,0 -8px 28px #ff3d00}}
+@keyframes auRain{0%{box-shadow:0 0 0 3px #ff5ce1,0 0 16px #ff5ce1}25%{box-shadow:0 0 0 3px #ffd23f,0 0 16px #ffd23f}50%{box-shadow:0 0 0 3px #3fe0cc,0 0 16px #3fe0cc}75%{box-shadow:0 0 0 3px #8b5cf6,0 0 16px #8b5cf6}100%{box-shadow:0 0 0 3px #ff5ce1,0 0 16px #ff5ce1}}
+@keyframes auBolt{0%,86%,92%{box-shadow:0 0 0 3px #b3122e,0 0 14px #ff2b4d}88%,94%{box-shadow:0 0 0 3px #fff,0 0 30px #ff2b4d,0 0 60px #fff}}
+.lite .aura{animation:none!important}
+/* ===== Ronda Relámpago (pantalla y vista del celular) ===== */
+.fl{position:fixed;inset:0;z-index:70;display:grid;place-items:center;padding:clamp(8px,2vw,24px);background:radial-gradient(circle at 50% 30%,rgba(255,196,46,.22),rgba(5,8,30,.94) 60%)}
+.fl-in{display:grid;gap:10px;width:min(96vw,1100px);max-height:96dvh;overflow:auto;padding:clamp(12px,2vw,24px);border-radius:26px;background:linear-gradient(180deg,#232c86,#0e1240);box-shadow:0 0 0 3px #ffc42e,0 0 40px rgba(255,196,46,.45)}
+.fl-h{display:flex;align-items:center;justify-content:center;gap:14px}.fl-h>b{font:400 clamp(28px,4vw,54px) 'Lilita One',Rubik,sans-serif;color:#ffd23f;text-shadow:0 4px 0 #7a3a00,0 0 24px rgba(255,160,0,.6)}
+.fl .ring{width:clamp(44px,5vw,64px);height:clamp(44px,5vw,64px)}.fl .ring b{font-size:clamp(18px,2.2vw,28px)}
+.fl-s{margin:0;text-align:center;color:#dfe4ff;font:700 clamp(14px,1.8vw,22px) Rubik,sans-serif}
+.fl-tm{display:grid;grid-template-columns:1fr 1fr;gap:clamp(8px,2vw,24px)}
+.fl-team{display:grid;gap:10px;padding:clamp(10px,1.6vw,18px);border-radius:20px;background:rgba(0,0,0,.25);box-shadow:inset 0 0 0 3px var(--tc)}
+.fl-team>b{font:400 clamp(20px,2.6vw,34px) 'Lilita One',Rubik,sans-serif;color:var(--tc);text-align:center}
+.fl-p{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:14px;background:rgba(255,255,255,.06)}
+.fl-p.on{background:rgba(255,215,106,.16);box-shadow:inset 0 0 0 2px #ffd76a}.fl-p.empty{opacity:.5}
+.fl-p>i{flex:none;display:grid;place-items:center;width:clamp(36px,4vw,52px);height:clamp(36px,4vw,52px);border-radius:50%;background:#0b0f3a;font-style:normal;color:#fff}.fl-p>i svg{width:100%;height:100%}
+.fl-p>span{flex:1;font:800 clamp(14px,1.8vw,22px) Rubik,sans-serif}
+.fl-p>em{display:flex;gap:5px}.fl-p u{display:block;width:clamp(10px,1.2vw,16px);height:clamp(10px,1.2vw,16px);border-radius:50%;background:rgba(255,255,255,.18);text-decoration:none}.fl-p u.on{background:#ffd23f;box-shadow:0 0 8px #ffb020}
+.fl-bd{display:grid;gap:6px}
+.fl-row{display:grid;grid-template-columns:minmax(0,1.1fr) 1fr 1fr;gap:8px;align-items:stretch}
+.fl-hd b{text-align:center;color:var(--tc);font:400 clamp(16px,2vw,26px) 'Lilita One',Rubik,sans-serif}
+.fl-q{align-self:center;color:#fff;font:700 clamp(12px,1.4vw,17px)/1.25 Rubik,sans-serif}
+.fl-cs{display:grid;gap:4px}
+.fl-c{display:grid;grid-template-columns:1fr auto;grid-template-rows:auto auto;align-items:center;min-height:clamp(40px,4.4vw,56px);padding:4px 10px;border-radius:10px;background:#141a5c;box-shadow:inset 0 0 0 2px rgba(255,255,255,.08)}
+.fl-c small{grid-column:1/-1;color:#9aa3d9;font-size:clamp(10px,1.1vw,13px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fl-c b{color:#fff;font:400 clamp(14px,1.7vw,22px) 'Lilita One',Rubik,sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.fl-c em{font:400 clamp(16px,2vw,26px) 'Lilita One',Rubik,sans-serif;font-style:normal;color:#ffd23f}
+.fl-c:not(.on) *{visibility:hidden}.fl-c.on.hit{background:linear-gradient(180deg,#1f6fd1,#164aa0);box-shadow:inset 0 0 0 2px var(--tc)}.fl-c.on.miss{background:#3a1030}.fl-c.on.miss em{color:#ff8aa0}
+.fl-sum{display:grid;grid-template-columns:1fr 1fr;gap:12px}.fl-sum>div{display:grid;justify-items:center;padding:8px;border-radius:16px;background:rgba(0,0,0,.3);box-shadow:inset 0 0 0 2px var(--tc)}
+.fl-sum small{color:var(--tc);font-weight:800}.fl-sum b{font:400 clamp(26px,3.4vw,44px) 'Lilita One',Rubik,sans-serif}.fl-sum em{font:400 clamp(18px,2.2vw,30px) 'Lilita One',Rubik,sans-serif;font-style:normal;color:#ffd23f}
+@media (max-width:600px){.fl-row{grid-template-columns:1fr 1fr}.fl-row .fl-q{grid-column:1/-1}.fl-hd>span{display:none}}

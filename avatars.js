@@ -147,8 +147,9 @@ const HLEG={/* cuadros del galope: [mano lejana, pata lejana, mano cercana, pata
   f4:['46 28L52 35L58 39','24 28L28 36L30 42','48 28L50 38L50 47','26 28L24 37L22 46'],
   fs:['46 28L46 38L46 47','24 28L23 38L23 47','49 28L49 38L49 47','27 28L26 38L26 47']};
 const hLeg=(p,c)=>{const e=p.split(/L|\s/).slice(-2);return `<path d="M${p}" fill="none" stroke="#2b1840" stroke-width="5.6"/><path d="M${p}" fill="none" stroke="${c}" stroke-width="3.2"/><circle cx="${e[0]}" cy="${e[1]}" r="2.1" fill="#2b1840"/>`};
-function horseSVG(i){const[c,m]=COATS[i%COATS.length];const fr=(k,a,b)=>Object.keys(HLEG).map(f=>`<g class="hr-f ${f}">${hLeg(HLEG[f][a],k)}${hLeg(HLEG[f][b],k)}</g>`).join('');
-  return `<svg class="hr-h" viewBox="0 0 80 50" aria-hidden="true"><g stroke-linecap="round" stroke-linejoin="round">
+const HSKIN={fuego:['#c2410c','#ffb020'],uni:['#fbf8ff','url(#hrRain)'],fant:['rgba(210,230,255,.55)','rgba(170,200,255,.75)']};
+function horseSVG(i,hz){const[c,m]=HSKIN[hz]||COATS[i%COATS.length];const fr=(k,a,b)=>Object.keys(HLEG).map(f=>`<g class="hr-f ${f}">${hLeg(HLEG[f][a],k)}${hLeg(HLEG[f][b],k)}</g>`).join('');
+  return `<svg class="hr-h${hz?' hz-'+hz:''}" viewBox="0 0 80 50" aria-hidden="true">${hz==='uni'?'<defs><linearGradient id="hrRain" x1="0" x2="1"><stop offset="0" stop-color="#ff5ce1"/><stop offset=".33" stop-color="#ffd23f"/><stop offset=".66" stop-color="#3fe0cc"/><stop offset="1" stop-color="#8b5cf6"/></linearGradient></defs>':''}<g stroke-linecap="round" stroke-linejoin="round">
   <path class="hr-tail" d="M21 21q-11-3-17 6q-3 5-2 11q4-7 10-9q6-2 10-4z" fill="${m}" stroke="#2b1840" stroke-width="2"/>
   ${fr(m,0,1)}
   <g stroke="#2b1840" stroke-width="2"><path d="M19 23q0-10 14-11h13q8 0 10 6l4 8q-2 6-10 7H30q-11 0-11-10z" fill="${c}"/>
@@ -156,11 +157,11 @@ function horseSVG(i){const[c,m]=COATS[i%COATS.length];const fr=(k,a,b)=>Object.k
   <path class="hr-mane" d="M51 15q3-8 9-12" fill="none" stroke="${m}" stroke-width="3.6"/>
   <rect x="31" y="11" width="14" height="10" rx="2.5" fill="currentColor"/></g>
   <circle cx="67" cy="8.5" r="1.4" fill="#2b1840"/><circle cx="74.6" cy="13.2" r=".9" fill="#2b1840"/>
-  ${fr(c,2,3)}</g></svg>`}
+  ${fr(c,2,3)}${hz==='uni'?'<path d="M66 4L74 -6L69 6z" fill="#ffe27a" stroke="#2b1840" stroke-width="1.6"/>':''}</g></svg>`}
 function raceHTML(L,av,col,me){const A=p=>p.av&&AVM[p.av]?p.av:av[p.team];
   return `<div class="hr" role="img" aria-label="Carrera: ${L.map((p,i)=>`${i+1}. ${String(p.name).replace(/[<>"&]/g,'')}`).join(', ')}">`+
   L.map((p,i)=>`<div class="hr-lane${me&&p.uid===me?' me':''}" style="--c:${col[p.team]}"><span class="hr-nm">${avSVG(A(p),'hr-av')}<span>${String(p.name).replace(/[<>&]/g,'')}</span></span>`+
-    `<span class="hr-trk"><i class="hr-gate"></i><span class="hr-go"><i class="hr-tr"></i><span class="hr-run"><i class="hr-dust"></i>${horseSVG(i)}<i class="hr-jk">${avSVG(A(p),'hr-avj')}</i></span></span><u class="hr-meta"></u></span>`+
+    `<span class="hr-trk"><i class="hr-gate"></i><span class="hr-go"><i class="hr-tr"></i><span class="hr-run"><i class="hr-dust"></i>${horseSVG(i,p.hz)}<i class="hr-jk${typeof auraCls==='function'?auraCls(p.au==null?-1:p.au):''}">${avSVG(A(p),'hr-avj')}</i></span></span><u class="hr-meta"></u></span>`+
     `<span class="hr-t"><em>${i+1}°</em>${(p.rt/1000).toFixed(2)} s</span></div>`).join('')+`<span class="hr-flash"></span><span class="hr-slowt">📸 FOTO FINISH</span><span class="hr-photo">¡Por una nariz!</span></div>`}
 /* arranca la carrera (el: ms que ya pasaron, para seguirla si llega alguien tarde); regresa {first,total} en ms */
 function raceRun(box,L,anim,onFirst,el){const lanes=[...box.querySelectorAll('.hr-lane')],hr=box.querySelector('.hr');if(!hr||!L.length||lanes.length!==L.length)return{first:0,total:0};el=isFinite(el)&&el>0?el:0;
@@ -214,8 +215,8 @@ function ringHTML(id){return `<span class="ring" ${id?`id="${id}"`:''} hidden><s
 function ringSet(el,left,tot){if(!el)return;if(left==null||!(tot>0)){el.hidden=true;return}el.hidden=false;const f=Math.max(0,Math.min(1,left/tot));
   el.querySelector('.rg-fg').style.strokeDashoffset=(100-100*f).toFixed(1);el.querySelector('b').textContent=Math.max(0,Math.ceil(left-.05));el.classList.toggle('hot',left<=5.05)}
 /* fila de animalitos del equipo: quién escribe (puntitos) y quién dijo "yo la digo" (✋) */
-function talkAvs(box,ps,ty,cl){if(!box)return;ty=ty||[];const k=ps.map(p=>p.u+p.av+(ty.includes(p.u)?'t':'')+(cl===p.u?'c':'')).join();if(box.dataset.k===k)return;box.dataset.k=k;
-  box.innerHTML=ps.map(p=>`<span class="tk${ty.includes(p.u)?' ty':''}${cl===p.u?' cl':''}"><i>${avSVG(p.av)}</i><small>${avEsc(p.n)}</small>${ty.includes(p.u)?'<em class="tk-d" aria-label="escribiendo"><i></i><i></i><i></i></em>':''}${cl===p.u?'<em class="tk-c" aria-label="la va a decir">✋</em>':''}</span>`).join('')}
+function talkAvs(box,ps,ty,cl){if(!box)return;ty=ty||[];const k=ps.map(p=>p.u+p.av+p.a+(ty.includes(p.u)?'t':'')+(cl===p.u?'c':'')).join();if(box.dataset.k===k)return;box.dataset.k=k;
+  box.innerHTML=ps.map(p=>`<span class="tk${ty.includes(p.u)?' ty':''}${cl===p.u?' cl':''}"><i class="${typeof auraCls==='function'?auraCls(p.a==null?-1:p.a):''}">${avSVG(p.av)}</i><small>${avEsc(p.n)}</small>${ty.includes(p.u)?'<em class="tk-d" aria-label="escribiendo"><i></i><i></i><i></i></em>':''}${cl===p.u?'<em class="tk-c" aria-label="la va a decir">✋</em>':''}</span>`).join('')}
 /* el cuadrito "se ponen de acuerdo para robar" (en la pantalla nunca se ven los mensajes: la ve el otro equipo) */
 function hudPanel(h){const p=document.getElementById('jhud');if(!p)return;if(!h){if(!p.hidden)p.hidden=true;return}
   if(p.hidden){p.hidden=false;if(!(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches))p.animate([{opacity:0,transform:'translateY(30px) scale(.9)'},{opacity:1,transform:'none'}],{duration:420,easing:'cubic-bezier(.3,1.4,.5,1)'})}

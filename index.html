@@ -59,6 +59,7 @@
     <p class="err" id="joinerr" role="alert"></p>
   </form>
   <button type="button" class="ghost sm" data-go="host">Probar los botones</button>
+  <button type="button" class="ghost sm" data-prof="1">🏅 Mi perfil y logros</button>
   <button type="button" class="ghost sm" data-tut="1">❓ ¿Cómo se juega? <small>(20 s)</small></button>
   <button type="button" id="install" class="ghost">Instalar la app en este aparato</button>
   <button type="button" class="ghost sm lite-btn" id="litebtn">🐢 Modo ligero: <b id="litev">Auto</b></button>
@@ -120,7 +121,7 @@
     <button type="button" class="myav" id="myavb" aria-label="Escoger tu animalito"><i id="myavi"></i><span><b>Tu animalito</b><small>Tócalo para cambiarlo</small></span></button>
     <h2>¿De qué equipo eres?</h2>
     <div class="pteams" id="pteams"></div>
-    <div class="pick-x"><button type="button" class="ghost sm" id="pspec">👀 Solo quiero ver</button><button type="button" class="ghost sm" data-tut="1">❓ ¿Cómo se juega? <small>(20 s)</small></button></div>
+    <div class="pick-x"><button type="button" class="ghost sm" data-prof="1">🏅 Mi perfil</button><button type="button" class="ghost sm" id="pspec">👀 Solo quiero ver</button><button type="button" class="ghost sm" data-tut="1">❓ ¿Cómo se juega? <small>(20 s)</small></button></div>
   </section>
   <section class="pad" id="pad" hidden>
     <div class="plamps" id="plamps"><i></i><i></i><i></i></div>
@@ -164,6 +165,7 @@
       </div>
       <p class="finph-mt" id="finphmt"></p>
       <div class="finph-meds" id="finphm"></div>
+      <button type="button" class="ghost" id="finphshare">📤 Compartir resultados</button>
       <button type="button" class="big" id="finphok">¡Listo!</button>
     </div>
   </section>
@@ -201,6 +203,13 @@
 </main>
   <div class="sheet" id="avsheet" hidden><div class="sheet-in"><h2 id="avtitle">Animalito</h2><div class="avg" id="avg"></div><button type="button" class="ghost" id="avclose">Listo</button></div></div>
   <div class="rxbar" id="rxbar" hidden><div class="rxp" id="rxp" hidden role="group" aria-label="Reacciones"></div><button type="button" class="rxk" id="rxk" aria-label="Mandar una reacción" aria-expanded="false">😀</button></div>
+  <section class="unl" id="unl" hidden aria-live="assertive"><div class="unl-bg" aria-hidden="true"></div><div class="unl-card" id="unlcard"><small id="unlr"></small><div class="unl-ic" id="unlic" aria-hidden="true"></div><b id="unln"></b><p id="unld"></p><span class="unl-t" id="unlt"></span></div></section>
+  <section class="prof" id="prof" hidden role="dialog" aria-modal="true" aria-labelledby="proft"><div class="prof-in">
+    <header class="prof-h"><button type="button" class="prof-av" id="profav" aria-label="Cambiar tu animalito"></button><div><b id="proft"></b><small id="proftt"></small></div><button type="button" class="prof-x" id="profx" aria-label="Cerrar">✕</button></header>
+    <div class="prof-st" id="profst"></div>
+    <h3>Lo que traes puesto</h3><div class="prof-eq" id="profeq"></div>
+    <h3>Logros <small id="profn"></small></h3><div id="proflg"></div>
+  </div></section>
   <section class="tut" id="tut" hidden role="dialog" aria-modal="true" aria-labelledby="tutt"><div class="tut-card">
     <div class="tut-bar" aria-hidden="true"><i id="tutbar"></i></div>
     <div class="tut-ic" id="tutic" aria-hidden="true"></div><b id="tutt"></b><p id="tutp"></p>
@@ -221,6 +230,7 @@
 <script src="version.js"></script>
 <script src="news.js"></script>
 <script src="avatars.js"></script>
+<script src="logros.js"></script>
 <script src="app.js"></script>
 </body>
 </html>

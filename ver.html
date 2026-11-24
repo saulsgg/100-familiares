@@ -1153,6 +1153,26 @@ body{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-r
 .j-finpic img{display:block;width:100%;aspect-ratio:1;object-fit:cover;border-radius:3px}
 .j-finpic figcaption{display:grid;margin-top:6px}.j-finpic b{font:400 clamp(16px,1.8vw,24px) var(--disp)}.j-finpic small{font:700 12px Rubik,sans-serif;color:#6a5a80}
 @media (max-width:900px){.j-finpic{position:relative;right:auto;top:auto;transform:rotate(2deg);margin:8px auto 0;width:min(60vw,220px)}}
+.j-ptit{font-style:normal;font-size:.78em;color:#ffd76a;font-weight:800}
+.j-pav.aura{border-radius:50%}
+/* letras especiales de la respuesta */
+.j-say.w-oro #saytx .l2-c{color:#ffe27a;text-shadow:0 0 8px #ffb020,0 0 18px #ff8a00}
+.j-say.w-oro #saytx{filter:drop-shadow(0 0 6px rgba(255,190,40,.7))}
+.j-say.w-rayo #saytx .l2-c{color:#ffd0d8;text-shadow:0 0 6px #ff2b4d,0 0 16px #b3122e;animation:wrRayo 1.6s steps(1) infinite}
+@keyframes wrRayo{0%,80%,88%{filter:none}84%,92%{filter:brightness(2.2)}}
+.lite .j-say.w-rayo #saytx .l2-c{animation:none}
+/* momentos y salón de la fama */
+.j-mos{display:grid;gap:8px;width:100%}
+.j-mo{display:flex;align-items:center;gap:12px;padding:10px 14px;border-radius:16px;background:rgba(255,255,255,.06);box-shadow:inset 0 0 0 2px rgba(255,215,106,.35);text-align:left}
+.j-mo>span{font-size:28px}.j-mo>div{display:grid;gap:2px}.j-mo b{font:400 18px var(--disp);color:#ffd76a}.j-mo small{color:#dfe4ff;font-size:14px;line-height:1.3}
+.j-fame h3{margin:6px 0 8px;font:400 20px var(--disp)}
+.j-fl{margin:0 0 10px;padding:0;list-style:none;display:grid;gap:6px;counter-reset:f}
+.j-fl li{display:grid;grid-template-columns:28px 1fr auto;align-items:center;gap:4px 10px;padding:8px 12px;border-radius:12px;background:rgba(0,0,0,.25);counter-increment:f}
+.j-fl li::before{content:counter(f)"°";font:400 18px var(--disp);color:#ffd76a}
+.j-fl li.top{box-shadow:inset 0 0 0 2px #ffd76a;background:rgba(255,215,106,.12)}.j-fl li.top::before{content:"👑"}
+.j-fl b{font-weight:800}.j-fl span{font:400 20px var(--disp);color:#3fe0cc}.j-fl small{grid-column:2/-1;color:var(--mute);font-size:11px}
+.j-fr{display:flex;align-items:center;gap:12px;margin-bottom:6px;padding:8px 12px;border-radius:12px;background:rgba(0,0,0,.25)}.j-fr>span{font-size:24px}.j-fr>div{display:grid}.j-fr small{color:#b9c1f5}
+.j-fe{color:var(--mute)}
 
 /* ===== foto finish: carrera de caballos (galope, polvo, cerca y meta) ===== */
 .hr{--hw:46px;position:relative;display:grid;gap:3px;margin:4px 0;padding:17px 8px 7px;border-radius:14px;overflow:hidden;text-align:left;color:#fff;
@@ -1235,6 +1255,13 @@ body{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-r
   #bzc .hr-lane{font-size:15px}
   #bzc .hr-t{font-size:20px}
 }
+/* caballos especiales */
+.hr-h.hz-fuego .hr-tail,.hr-h.hz-fuego .hr-mane{filter:drop-shadow(0 0 3px #ff8a00)}
+.hr.run .hr-lane:not(.fin) .hr-h.hz-fuego{filter:drop-shadow(0 0 5px #ff5a00)}
+.hr-h.hz-uni{filter:drop-shadow(0 0 4px rgba(255,255,255,.8))}
+.hr-h.hz-fant{opacity:.85;filter:drop-shadow(0 0 6px #9cc0ff)}
+.hr.run .hr-lane:not(.fin) .hr-h.hz-fant{animation:hrBob .36s linear infinite,hrGhost 1.2s ease-in-out infinite}
+@keyframes hrGhost{50%{opacity:.45}}
 
 /* ===== comodines: fichas redondas de concurso ===== */
 .ctk{--s:40px;--k1:#ffe680;--k2:#ef9200;--kg:255,186,40;position:relative;display:inline-flex;align-items:center;gap:8px;padding:0;border:0;background:none;color:#fff;font:inherit;text-align:left;-webkit-tap-highlight-color:transparent;-webkit-user-select:none;user-select:none}
@@ -1316,6 +1343,47 @@ button.ctk:active .ctk-d{transform:scale(.88)}
 .wph-fx.brk{font-size:clamp(26px,9vw,44px)}
 .j-wfx.deb,.wph-fx.deb{color:#dfe4ff;text-shadow:0 3px 0 #1a1f55,0 0 14px rgba(120,140,255,.6)}
 .j-wfx.deb{font-size:clamp(26px,4.5vw,48px)}.wph-fx.deb{font-size:clamp(22px,7vw,36px)}
+
+/* ===== auras (rareza) alrededor del animalito ===== */
+.aura{position:relative;border-radius:50%}
+.aura-com{box-shadow:0 0 0 3px #9aa3b8}
+.aura-poc{box-shadow:0 0 0 3px #35e08a,0 0 10px #35e08a}
+.aura-rar{box-shadow:0 0 0 3px #3b9bff,0 0 12px #3b9bff;animation:auPulse 1.6s ease-in-out infinite}
+.aura-epi{box-shadow:0 0 0 3px #a855f7,0 0 14px #a855f7,0 0 26px rgba(168,85,247,.5)}
+.aura-leg{box-shadow:0 0 0 3px #ffb020,0 0 14px #ff8a00,0 -4px 22px #ff5a00;animation:auFire .9s ease-in-out infinite alternate}
+.aura-mit{box-shadow:0 0 0 3px #fff,0 0 16px #ff5ce1;animation:auRain 3s linear infinite}
+.aura-sec{box-shadow:0 0 0 3px #b3122e,0 0 16px #ff2b4d;animation:auBolt 2.4s steps(1) infinite}
+@keyframes auPulse{50%{box-shadow:0 0 0 3px #3b9bff,0 0 22px #3b9bff}}
+@keyframes auFire{to{box-shadow:0 0 0 3px #ffd23f,0 0 20px #ff8a00,0 -8px 28px #ff3d00}}
+@keyframes auRain{0%{box-shadow:0 0 0 3px #ff5ce1,0 0 16px #ff5ce1}25%{box-shadow:0 0 0 3px #ffd23f,0 0 16px #ffd23f}50%{box-shadow:0 0 0 3px #3fe0cc,0 0 16px #3fe0cc}75%{box-shadow:0 0 0 3px #8b5cf6,0 0 16px #8b5cf6}100%{box-shadow:0 0 0 3px #ff5ce1,0 0 16px #ff5ce1}}
+@keyframes auBolt{0%,86%,92%{box-shadow:0 0 0 3px #b3122e,0 0 14px #ff2b4d}88%,94%{box-shadow:0 0 0 3px #fff,0 0 30px #ff2b4d,0 0 60px #fff}}
+.lite .aura{animation:none!important}
+/* ===== Ronda Relámpago (pantalla y vista del celular) ===== */
+.fl{position:fixed;inset:0;z-index:70;display:grid;place-items:center;padding:clamp(8px,2vw,24px);background:radial-gradient(circle at 50% 30%,rgba(255,196,46,.22),rgba(5,8,30,.94) 60%)}
+.fl-in{display:grid;gap:10px;width:min(96vw,1100px);max-height:96dvh;overflow:auto;padding:clamp(12px,2vw,24px);border-radius:26px;background:linear-gradient(180deg,#232c86,#0e1240);box-shadow:0 0 0 3px #ffc42e,0 0 40px rgba(255,196,46,.45)}
+.fl-h{display:flex;align-items:center;justify-content:center;gap:14px}.fl-h>b{font:400 clamp(28px,4vw,54px) 'Lilita One',Rubik,sans-serif;color:#ffd23f;text-shadow:0 4px 0 #7a3a00,0 0 24px rgba(255,160,0,.6)}
+.fl .ring{width:clamp(44px,5vw,64px);height:clamp(44px,5vw,64px)}.fl .ring b{font-size:clamp(18px,2.2vw,28px)}
+.fl-s{margin:0;text-align:center;color:#dfe4ff;font:700 clamp(14px,1.8vw,22px) Rubik,sans-serif}
+.fl-tm{display:grid;grid-template-columns:1fr 1fr;gap:clamp(8px,2vw,24px)}
+.fl-team{display:grid;gap:10px;padding:clamp(10px,1.6vw,18px);border-radius:20px;background:rgba(0,0,0,.25);box-shadow:inset 0 0 0 3px var(--tc)}
+.fl-team>b{font:400 clamp(20px,2.6vw,34px) 'Lilita One',Rubik,sans-serif;color:var(--tc);text-align:center}
+.fl-p{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:14px;background:rgba(255,255,255,.06)}
+.fl-p.on{background:rgba(255,215,106,.16);box-shadow:inset 0 0 0 2px #ffd76a}.fl-p.empty{opacity:.5}
+.fl-p>i{flex:none;display:grid;place-items:center;width:clamp(36px,4vw,52px);height:clamp(36px,4vw,52px);border-radius:50%;background:#0b0f3a;font-style:normal;color:#fff}.fl-p>i svg{width:100%;height:100%}
+.fl-p>span{flex:1;font:800 clamp(14px,1.8vw,22px) Rubik,sans-serif}
+.fl-p>em{display:flex;gap:5px}.fl-p u{display:block;width:clamp(10px,1.2vw,16px);height:clamp(10px,1.2vw,16px);border-radius:50%;background:rgba(255,255,255,.18);text-decoration:none}.fl-p u.on{background:#ffd23f;box-shadow:0 0 8px #ffb020}
+.fl-bd{display:grid;gap:6px}
+.fl-row{display:grid;grid-template-columns:minmax(0,1.1fr) 1fr 1fr;gap:8px;align-items:stretch}
+.fl-hd b{text-align:center;color:var(--tc);font:400 clamp(16px,2vw,26px) 'Lilita One',Rubik,sans-serif}
+.fl-q{align-self:center;color:#fff;font:700 clamp(12px,1.4vw,17px)/1.25 Rubik,sans-serif}
+.fl-cs{display:grid;gap:4px}
+.fl-c{display:grid;grid-template-columns:1fr auto;grid-template-rows:auto auto;align-items:center;min-height:clamp(40px,4.4vw,56px);padding:4px 10px;border-radius:10px;background:#141a5c;box-shadow:inset 0 0 0 2px rgba(255,255,255,.08)}
+.fl-c small{grid-column:1/-1;color:#9aa3d9;font-size:clamp(10px,1.1vw,13px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fl-c b{color:#fff;font:400 clamp(14px,1.7vw,22px) 'Lilita One',Rubik,sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.fl-c em{font:400 clamp(16px,2vw,26px) 'Lilita One',Rubik,sans-serif;font-style:normal;color:#ffd23f}
+.fl-c:not(.on) *{visibility:hidden}.fl-c.on.hit{background:linear-gradient(180deg,#1f6fd1,#164aa0);box-shadow:inset 0 0 0 2px var(--tc)}.fl-c.on.miss{background:#3a1030}.fl-c.on.miss em{color:#ff8aa0}
+.fl-sum{display:grid;grid-template-columns:1fr 1fr;gap:12px}.fl-sum>div{display:grid;justify-items:center;padding:8px;border-radius:16px;background:rgba(0,0,0,.3);box-shadow:inset 0 0 0 2px var(--tc)}
+.fl-sum small{color:var(--tc);font-weight:800}.fl-sum b{font:400 clamp(26px,3.4vw,44px) 'Lilita One',Rubik,sans-serif}.fl-sum em{font:400 clamp(18px,2.2vw,30px) 'Lilita One',Rubik,sans-serif;font-style:normal;color:#ffd23f}
+@media (max-width:600px){.fl-row{grid-template-columns:1fr 1fr}.fl-row .fl-q{grid-column:1/-1}.fl-hd>span{display:none}}
 
 /* ===== modo ligero: sin luces ni adornos pesados (lo importante se sigue viendo) ===== */
 .lite .marq canvas.l,.lite .rim canvas.l{animation:none!important;opacity:0!important}
@@ -1479,6 +1547,7 @@ body.ver{overflow-x:hidden}
     <div class="j-finpz" id="finpz" hidden>🎁 Se llevan: <b id="finpzt"></b></div>
     <p class="j-finmt" id="finmt">Medallas de la partida</p>
     <div class="l2-meds j-meds" id="meds"></div>
+    <p class="j-finmt" id="finmo" hidden>✨ Momentos de la partida</p><div class="j-mos" id="mos"></div>
     <figure class="j-finpic" id="finpic" hidden><img id="finpicimg" alt="Foto de los ganadores"><figcaption><b>¡Los campeones!</b><small id="finpicby"></small></figcaption></figure>
   </div>
 </div>
@@ -1487,7 +1556,7 @@ body.ver{overflow-x:hidden}
 
 <script>
 {
-const APPV='botones-v24';
+const APPV='botones-v25';
 const $=(s,r)=>(r||document).querySelector(s),$$=(s,r)=>[...(r||document).querySelectorAll(s)];
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const S={mute:false,music:'baja',gm:'j1',anime:true,order:'orden'};const view=()=>'tablero';let introOn=false;let flowTok=0;
@@ -1856,8 +1925,9 @@ const HLEG={/* cuadros del galope: [mano lejana, pata lejana, mano cercana, pata
   f4:['46 28L52 35L58 39','24 28L28 36L30 42','48 28L50 38L50 47','26 28L24 37L22 46'],
   fs:['46 28L46 38L46 47','24 28L23 38L23 47','49 28L49 38L49 47','27 28L26 38L26 47']};
 const hLeg=(p,c)=>{const e=p.split(/L|\s/).slice(-2);return `<path d="M${p}" fill="none" stroke="#2b1840" stroke-width="5.6"/><path d="M${p}" fill="none" stroke="${c}" stroke-width="3.2"/><circle cx="${e[0]}" cy="${e[1]}" r="2.1" fill="#2b1840"/>`};
-function horseSVG(i){const[c,m]=COATS[i%COATS.length];const fr=(k,a,b)=>Object.keys(HLEG).map(f=>`<g class="hr-f ${f}">${hLeg(HLEG[f][a],k)}${hLeg(HLEG[f][b],k)}</g>`).join('');
-  return `<svg class="hr-h" viewBox="0 0 80 50" aria-hidden="true"><g stroke-linecap="round" stroke-linejoin="round">
+const HSKIN={fuego:['#c2410c','#ffb020'],uni:['#fbf8ff','url(#hrRain)'],fant:['rgba(210,230,255,.55)','rgba(170,200,255,.75)']};
+function horseSVG(i,hz){const[c,m]=HSKIN[hz]||COATS[i%COATS.length];const fr=(k,a,b)=>Object.keys(HLEG).map(f=>`<g class="hr-f ${f}">${hLeg(HLEG[f][a],k)}${hLeg(HLEG[f][b],k)}</g>`).join('');
+  return `<svg class="hr-h${hz?' hz-'+hz:''}" viewBox="0 0 80 50" aria-hidden="true">${hz==='uni'?'<defs><linearGradient id="hrRain" x1="0" x2="1"><stop offset="0" stop-color="#ff5ce1"/><stop offset=".33" stop-color="#ffd23f"/><stop offset=".66" stop-color="#3fe0cc"/><stop offset="1" stop-color="#8b5cf6"/></linearGradient></defs>':''}<g stroke-linecap="round" stroke-linejoin="round">
   <path class="hr-tail" d="M21 21q-11-3-17 6q-3 5-2 11q4-7 10-9q6-2 10-4z" fill="${m}" stroke="#2b1840" stroke-width="2"/>
   ${fr(m,0,1)}
   <g stroke="#2b1840" stroke-width="2"><path d="M19 23q0-10 14-11h13q8 0 10 6l4 8q-2 6-10 7H30q-11 0-11-10z" fill="${c}"/>
@@ -1865,11 +1935,11 @@ function horseSVG(i){const[c,m]=COATS[i%COATS.length];const fr=(k,a,b)=>Object.k
   <path class="hr-mane" d="M51 15q3-8 9-12" fill="none" stroke="${m}" stroke-width="3.6"/>
   <rect x="31" y="11" width="14" height="10" rx="2.5" fill="currentColor"/></g>
   <circle cx="67" cy="8.5" r="1.4" fill="#2b1840"/><circle cx="74.6" cy="13.2" r=".9" fill="#2b1840"/>
-  ${fr(c,2,3)}</g></svg>`}
+  ${fr(c,2,3)}${hz==='uni'?'<path d="M66 4L74 -6L69 6z" fill="#ffe27a" stroke="#2b1840" stroke-width="1.6"/>':''}</g></svg>`}
 function raceHTML(L,av,col,me){const A=p=>p.av&&AVM[p.av]?p.av:av[p.team];
   return `<div class="hr" role="img" aria-label="Carrera: ${L.map((p,i)=>`${i+1}. ${String(p.name).replace(/[<>"&]/g,'')}`).join(', ')}">`+
   L.map((p,i)=>`<div class="hr-lane${me&&p.uid===me?' me':''}" style="--c:${col[p.team]}"><span class="hr-nm">${avSVG(A(p),'hr-av')}<span>${String(p.name).replace(/[<>&]/g,'')}</span></span>`+
-    `<span class="hr-trk"><i class="hr-gate"></i><span class="hr-go"><i class="hr-tr"></i><span class="hr-run"><i class="hr-dust"></i>${horseSVG(i)}<i class="hr-jk">${avSVG(A(p),'hr-avj')}</i></span></span><u class="hr-meta"></u></span>`+
+    `<span class="hr-trk"><i class="hr-gate"></i><span class="hr-go"><i class="hr-tr"></i><span class="hr-run"><i class="hr-dust"></i>${horseSVG(i,p.hz)}<i class="hr-jk${typeof auraCls==='function'?auraCls(p.au==null?-1:p.au):''}">${avSVG(A(p),'hr-avj')}</i></span></span><u class="hr-meta"></u></span>`+
     `<span class="hr-t"><em>${i+1}°</em>${(p.rt/1000).toFixed(2)} s</span></div>`).join('')+`<span class="hr-flash"></span><span class="hr-slowt">📸 FOTO FINISH</span><span class="hr-photo">¡Por una nariz!</span></div>`}
 /* arranca la carrera (el: ms que ya pasaron, para seguirla si llega alguien tarde); regresa {first,total} en ms */
 function raceRun(box,L,anim,onFirst,el){const lanes=[...box.querySelectorAll('.hr-lane')],hr=box.querySelector('.hr');if(!hr||!L.length||lanes.length!==L.length)return{first:0,total:0};el=isFinite(el)&&el>0?el:0;
@@ -1923,8 +1993,8 @@ function ringHTML(id){return `<span class="ring" ${id?`id="${id}"`:''} hidden><s
 function ringSet(el,left,tot){if(!el)return;if(left==null||!(tot>0)){el.hidden=true;return}el.hidden=false;const f=Math.max(0,Math.min(1,left/tot));
   el.querySelector('.rg-fg').style.strokeDashoffset=(100-100*f).toFixed(1);el.querySelector('b').textContent=Math.max(0,Math.ceil(left-.05));el.classList.toggle('hot',left<=5.05)}
 /* fila de animalitos del equipo: quién escribe (puntitos) y quién dijo "yo la digo" (✋) */
-function talkAvs(box,ps,ty,cl){if(!box)return;ty=ty||[];const k=ps.map(p=>p.u+p.av+(ty.includes(p.u)?'t':'')+(cl===p.u?'c':'')).join();if(box.dataset.k===k)return;box.dataset.k=k;
-  box.innerHTML=ps.map(p=>`<span class="tk${ty.includes(p.u)?' ty':''}${cl===p.u?' cl':''}"><i>${avSVG(p.av)}</i><small>${avEsc(p.n)}</small>${ty.includes(p.u)?'<em class="tk-d" aria-label="escribiendo"><i></i><i></i><i></i></em>':''}${cl===p.u?'<em class="tk-c" aria-label="la va a decir">✋</em>':''}</span>`).join('')}
+function talkAvs(box,ps,ty,cl){if(!box)return;ty=ty||[];const k=ps.map(p=>p.u+p.av+p.a+(ty.includes(p.u)?'t':'')+(cl===p.u?'c':'')).join();if(box.dataset.k===k)return;box.dataset.k=k;
+  box.innerHTML=ps.map(p=>`<span class="tk${ty.includes(p.u)?' ty':''}${cl===p.u?' cl':''}"><i class="${typeof auraCls==='function'?auraCls(p.a==null?-1:p.a):''}">${avSVG(p.av)}</i><small>${avEsc(p.n)}</small>${ty.includes(p.u)?'<em class="tk-d" aria-label="escribiendo"><i></i><i></i><i></i></em>':''}${cl===p.u?'<em class="tk-c" aria-label="la va a decir">✋</em>':''}</span>`).join('')}
 /* el cuadrito "se ponen de acuerdo para robar" (en la pantalla nunca se ven los mensajes: la ve el otro equipo) */
 function hudPanel(h){const p=document.getElementById('jhud');if(!p)return;if(!h){if(!p.hidden)p.hidden=true;return}
   if(p.hidden){p.hidden=false;if(!(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches))p.animate([{opacity:0,transform:'translateY(30px) scale(.9)'},{opacity:1,transform:'none'}],{duration:420,easing:'cubic-bezier(.3,1.4,.5,1)'})}
@@ -1973,6 +2043,53 @@ function wBreakFx(stage,wheel,o){o=o||{};const rm=window.matchMedia&&matchMedia(
   setTimeout(()=>{c.remove();if(rm){if(o.done)o.done();return}if(o.boom)o.boom.cancel();
     wheel.animate([{scale:'.3',opacity:0,filter:'blur(8px)',rotate:'-45deg'},{scale:'1.12',opacity:1,filter:'none',rotate:'6deg',offset:.7},{scale:'1',opacity:1,filter:'none',rotate:'0deg'}],{duration:780,easing:'cubic-bezier(.3,1.4,.5,1)'});
     if(o.done)o.done()},1500)}
+
+/* ===================== LOGROS, TÍTULOS, AURAS Y CABALLOS (iguales en todas las pantallas) =====================
+   Cada celular guarda su propio perfil (no hay cuentas): lo que ganó, sus contadores y lo que trae puesto. */
+const RAR=[{k:'com',n:'Común',c:'#9aa3b8'},{k:'poc',n:'Poco común',c:'#35e08a'},{k:'rar',n:'Raro',c:'#3b9bff'},{k:'epi',n:'Épico',c:'#a855f7'},
+  {k:'leg',n:'Legendario',c:'#ffb020'},{k:'mit',n:'Mítico',c:'#ff5ce1'},{k:'sec',n:'Secreto',c:'#b3122e'}];
+/* k: contador del perfil; goal: cuánto hace falta. Los secretos no dicen cómo se ganan hasta que los sacas. */
+const LOGROS=[
+  {id:'novato',r:0,n:'Novato',d:'Termina tu primera partida',k:'games',goal:1},
+  {id:'acierto',r:0,n:'Primer acierto',d:'Atina tu primera respuesta',k:'hits',goal:1},
+  {id:'inquieto',r:0,n:'Dedo inquieto',d:'Tócale al botón antes del ¡YA!',k:'fouls',goal:1},
+  {id:'chismoso',r:0,n:'Chismoso',d:'Manda 10 mensajes en las juntas',k:'msgs',goal:10},
+  {id:'veloz',r:1,n:'Dedo veloz',d:'Gana el botón 5 veces',k:'bz',goal:5},
+  {id:'ladron',r:1,n:'Ladronzuelo',d:'Atina una respuesta en un robo',k:'steals',goal:1},
+  {id:'fiel',r:1,n:'Fiel',d:'Juega 5 partidas',k:'games',goal:5},
+  {id:'atinado',r:1,n:'Atinado',d:'Atina 15 respuestas',k:'hits',goal:15},
+  {id:'cazador',r:2,n:'Cazador de la #1',d:'Atina la respuesta #1 diez veces',k:'ones',goal:10},
+  {id:'ganador',r:2,n:'Ganador',d:'Gana 3 partidas',k:'wins',goal:3},
+  {id:'colmena',r:2,n:'Mente colmena',d:'Atina justo después de una junta de tu equipo',k:'hive',goal:1},
+  {id:'comodinero',r:2,n:'Comodinero',d:'Tu equipo usa los 3 comodines en una partida',k:'cmd3',goal:1},
+  {id:'rey',r:3,n:'Rey del botón',d:'Gana el botón 50 veces',k:'bz',goal:50},
+  {id:'maestro',r:3,n:'Robo maestro',d:'Atina 5 robos',k:'steals',goal:5},
+  {id:'limpio',r:3,n:'Tablero limpio',d:'Tu equipo destapa todo el tablero sin ninguna ✕',k:'clean',goal:1},
+  {id:'supergiro',r:3,n:'Súper giro',d:'Avienta la ruleta con muchísima fuerza',k:'sup',goal:1},
+  {id:'rayo',r:4,n:'Rayo',d:'Gana el botón en menos de 0.18 s',k:'rayo',goal:1},
+  {id:'guante',r:4,n:'Guante blanco',d:'Atina 3 robos en una sola partida',k:'steal3',goal:1},
+  {id:'relperf',r:4,n:'Relámpago perfecto',d:'Haz 150 puntos o más tú solo en la Ronda Relámpago',k:'fm150',goal:1},
+  {id:'piedad',r:4,n:'Sin piedad',d:'Gana por 300 puntos o más',k:'win300',goal:1},
+  {id:'rompe',r:5,n:'Rompe ruletas',d:'Rompe la ruleta',k:'brk',goal:1},
+  {id:'invicto',r:5,n:'Invicto',d:'Gana 5 partidas seguidas',k:'streak',goal:5},
+  {id:'perfecto',r:5,n:'Perfecto',d:'Gana una partida sin que tu equipo tenga ni una ✕',k:'perfect',goal:1},
+  {id:'gente',r:5,n:'Y la gente dijo…',d:'Tu equipo hace 200 puntos en la Ronda Relámpago',k:'fm200',goal:1},
+  {id:'gemelos',r:6,n:'Gemelos',d:'Tocar el botón en el mismo milisegundo que alguien del otro equipo',k:'twin',goal:1},
+  {id:'tigres',r:6,n:'Tres tristes tigres',d:'Tocar el botón en exactamente 0.333 s',k:'t333',goal:1},
+  {id:'filo',r:6,n:'Al filo',d:'En la última ronda, atinar en el último segundo y que tu equipo gane',k:'edge',goal:1},
+  {id:'destino',r:6,n:'Ruleta del destino',d:'Romper la ruleta y que caiga en ×4',k:'brk4',goal:1},
+  {id:'remontada',r:6,n:'Remontada imposible',d:'Ganar después de ir 200 puntos abajo antes de la última ronda',k:'comeback',goal:1}];
+const LGM={};LOGROS.forEach(l=>LGM[l.id]=l);
+/* premios que se equipan: aura (una por rareza que tengas), caballo (legendario o más) y letras (mítico o más) */
+const HORSES=[{id:'',n:'Normal',r:-1},{id:'fuego',n:'Caballo de fuego',r:4},{id:'uni',n:'Unicornio arcoíris',r:5},{id:'fant',n:'Caballo fantasma',r:6}];
+const WRITES=[{id:'',n:'Normales',r:-1},{id:'oro',n:'Letras de oro',r:5},{id:'rayo',n:'Letras de rayo',r:6}];
+const lgTitle=id=>LGM[id]?LGM[id].n:'';
+/* aura alrededor del animalito: clase según la rareza */
+const auraCls=a=>a>=0&&a<RAR.length?' aura aura-'+RAR[a].k:'';
+/* lo que un jugador trae puesto, ya revisado (para que nadie mande cosas raras) */
+function eqClean(e){e=e&&typeof e==='object'?e:{};return{t:LGM[e.t]?e.t:'',a:Number.isInteger(e.a)&&e.a>=0&&e.a<RAR.length?e.a:-1,h:HORSES.some(x=>x.id===e.h)?e.h:'',w:WRITES.some(x=>x.id===e.w)?e.w:''}}
+/* identificador corto y estable de cada pregunta (para recordar cuáles ya vio cada celular) */
+function qid(q){const s=String(q||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]/g,'');let h=5381;for(let i=0;i<s.length;i++)h=((h<<5)+h+s.charCodeAt(i))>>>0;return h.toString(36)}
 
 /* ===================== PANTALLA DEL JUGADOR: lo mismo que la pantalla grande, sin botones de quien dirige ===================== */
 const NAMES=['Turquesas','Dorados'],TCOL=['#3fe0cc','#ffc42e'];let AV=['ajolote','jaguar'];
@@ -2042,6 +2159,10 @@ var FINPICF=null;function finShow(f){const run=++FINRUN,box=$('#fin'),w=f.w,[a,b
     $('#finav').animate([{transform:'scale(0) rotate(-30deg)'},{transform:'scale(1.25) rotate(8deg)',offset:.6},{transform:'none'}],{duration:800,delay:200,fill:'backwards',easing:'cubic-bezier(.3,1.5,.5,1)'})}
   sfr('medf',.8);
   if(f.prize&&w>=0)later(900,()=>{if(run!==FINRUN)return;if(!RM())pz.animate([{opacity:0,transform:'scale(.4) rotate(-6deg)'},{opacity:1,transform:'scale(1.12) rotate(2deg)',offset:.6},{opacity:1,transform:'none'}],{duration:600,easing:'cubic-bezier(.3,1.5,.5,1)'});sparks(pz,18,true);sfr('pts',.7)});
+  $('#finmo').hidden=true;$('#mos').innerHTML='';const mo=Array.isArray(f.mo)?f.mo:[];
+  if(mo.length)later(1500+f.meds.length*1300+500,()=>{if(run!==FINRUN)return;$('#finmo').hidden=false;mo.forEach((x,k)=>later(k*700,()=>{if(run!==FINRUN)return;const el=document.createElement('div');el.className='j-mo';
+    el.innerHTML=`<span>${x.ic}</span><div><b>${esc(x.t)}</b><small>${esc(x.d)}</small></div>`;$('#mos').appendChild(el);sfr('pts',.5);el.scrollIntoView({block:'nearest',behavior:RM()?'auto':'smooth'});
+    if(!RM())el.animate([{opacity:0,transform:'translateY(20px) scale(.95)'},{opacity:1,transform:'none'}],{duration:420,easing:'cubic-bezier(.2,.9,.3,1)'})}))});
   f.meds.forEach((m,k)=>later(1500+k*1300,()=>{if(run!==FINRUN)return;const el=document.createElement('div');el.className='l2-med on';
     el.innerHTML=`<div class="l2-md" style="--mc:${m.c}"><i class="rb"></i><span class="dk">${m.ic}</span></div><div class="l2-mt"><b>${esc(m.t)}</b><small>${esc(m.d)}</small></div><span class="j-mav">${m.av&&AVM[m.av]?avSVG(m.av):m.tm>=0?avSVG(AV[m.tm]):''}</span>`;
     list.appendChild(el);sfr('med',.85);el.style.opacity=1;el.scrollIntoView({block:'nearest',behavior:RM()?'auto':'smooth'});
@@ -2103,6 +2224,7 @@ function saySync(s,v){const t=v.ph==='steal'?1-v.ctl:Math.max(0,v.ctl);
   else if(p.cls!==s.cls){if($('#say').hidden)showSay(t,s.who,'',v.q);if(p.cls!=='said'&&s.txt)$('#saytx').innerHTML=cellsHTML(s.txt);$('#sayn').textContent=s.who;sayState(s.cls,SAYTXT[s.cls]||'');
     if(s.cls==='miss'){$('#say').classList.add('grace');if(!RM())$('#saybar i').animate([{transform:'scaleX(1)'},{transform:'scaleX(0)'}],{duration:3200,easing:'linear'})}}
   if(s.av&&AVM[s.av]&&$('#sayav').dataset.av!==s.av){$('#sayav').innerHTML=avSVG(s.av);$('#sayav').dataset.av=s.av}
+  {const sy=$('#say');$('#sayav').className='j-sayav'+auraCls(s.au==null?-1:s.au);sy.classList.toggle('w-oro',s.wr==='oro');sy.classList.toggle('w-rayo',s.wr==='rayo')}
   VSAY=s}
 /* reloj al mismo paso que la pantalla grande: cada segundo cae en el mismo instante que allá */
 let VD=null,VLAG=0;
@@ -2127,7 +2249,7 @@ function apply(v){const first=!V;
   VD=isFinite(v._d)?v._d-performance.timeOrigin:null;VLAG=VD!=null&&isFinite(v.hts)?Math.max(0,Math.min(700,performance.now()-(v.hts+VD))):0;
   if(Array.isArray(v.names))v.names.forEach((n,t)=>{if(n&&NAMES[t]!==n){NAMES[t]=n;$$('.l2-tn')[t].textContent=n}});
   if(Array.isArray(v.av)&&(first||v.av.join()!==AV.join())){AV=v.av.slice();[0,1].forEach(t=>$('#av'+t).innerHTML=avSVG(AV[t]))}
-  $('#rn').textContent=(v.rn||1)+(v.rr?' de '+v.rr:'');
+  $('#rn').textContent=v.sd?'Desempate':(v.rn||1)+(v.rr?' de '+v.rr:'');
   /* nueva ronda o nueva pregunta */
   const q=v.q||'';
   if(q!==VQ){F.tok++;VREV=new Set();VHINT=new Set();VXS=v.xs||0;VSAY=null;hideSay();drawX(v.x||0);
