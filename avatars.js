@@ -94,8 +94,69 @@ const AVS3=[
     <path d="M42 80 q-6 22 2 42 h24 q-8 -22 2 -40z" fill="#8e6ee6" ${SK}/>
     <path d="M52 40 Q24 8 2 6 Q16 32 38 60 Z" fill="#6b4fc4" ${SK}/><path d="M44 36 Q24 18 12 14" fill="none" stroke="#8e6ee6" stroke-width="3" stroke-linecap="round"/>
     <path d="M64 50 L114 61 L64 72 Z" fill="#ffcf5a" ${SK}/><path d="M66 61 H104" fill="none" ${SKt}/><circle cx="96" cy="57" r="1.8" fill="${OL}"/>
-    <circle cx="52" cy="60" r="23" fill="#9b7bf0" ${SK}/><path d="M33 50 q18 -16 38 -2 q-20 -8 -38 2z" fill="#b39af7"/>`+EYEW(55,55,4.6,'#ffe36b')+CHK(44,68)}
+    <circle cx="52" cy="60" r="23" fill="#9b7bf0" ${SK}/><path d="M33 50 q18 -16 38 -2 q-20 -8 -38 2z" fill="#b39af7"/>`+EYEW(55,55,4.6,'#ffe36b')+CHK(44,68),secret:1}
+,
+  /* secretos: chica caballo de carreras (diseño propio) */
+  {id:'potra',n:'Potranca',bg:'#45b86a',secret:1,art:
+    `<path d="M21 103 Q12 58 32 40 Q60 22 88 40 Q108 58 99 103 A58 58 0 0 1 21 103 Z" fill="#7a3f22" ${SK}/>
+    <path d="M52 86 v14 h16 v-14" fill="#ffe0c8" ${SKt}/>
+    <path d="M24 106 Q36 98 50 97 H70 Q84 98 96 106 A58 58 0 0 1 24 106 Z" fill="#fff" ${SK}/><path d="M44 98 l16 13 l16 -13" fill="none" stroke="#e8364f" stroke-width="4.5" stroke-linejoin="round"/>
+    <rect x="51" y="104" width="18" height="11" rx="3" fill="#fff" ${SKt}/><text x="60" y="113" text-anchor="middle" font-family="Arial Black,Arial,sans-serif" font-weight="900" font-size="9" fill="${OL}">1</text>
+    <ellipse cx="60" cy="64" rx="26" ry="28" fill="#ffe0c8" ${SK}/>
+    <path d="M32 58 q-2 -28 28 -30 q30 2 28 30 q-6 -6 -10 -15 q-4 10 -12 12 q2 -8 -2 -14 q-6 12 -16 14 q4 -6 2 -12 q-8 10 -18 15z" fill="#8a4a28" ${SK}/>
+    <path d="M38 34 q-10 -14 -7 -26 q14 6 17 22z" fill="#8a4a28" ${SK}/><path d="M37 29 q-5 -9 -4 -16 q7 5 9 12z" fill="#ffb3c4"/>
+    <path d="M82 34 q10 -14 7 -26 q-14 6 -17 22z" fill="#8a4a28" ${SK}/><path d="M83 29 q5 -9 4 -16 q-7 5 -9 12z" fill="#ffb3c4"/>
+    <path d="M86 28 l9 -6 l1 9 z M86 28 l2 10 l-8 -4z" fill="#ff4d6d" ${SKt}/><circle cx="86" cy="30" r="2.6" fill="#ffd23f" ${SKt}/>
+    <g ${SKt}><ellipse cx="49" cy="68" rx="5.6" ry="7.4" fill="#8a52e0"/><ellipse cx="71" cy="68" rx="5.6" ry="7.4" fill="#8a52e0"/></g>
+    <ellipse cx="49" cy="69.5" rx="2.6" ry="3.6" fill="${OL}"/><ellipse cx="71" cy="69.5" rx="2.6" ry="3.6" fill="${OL}"/>
+    <circle cx="51" cy="65" r="2" fill="#fff"/><circle cx="73" cy="65" r="2" fill="#fff"/><circle cx="47.5" cy="72" r="1" fill="#fff"/><circle cx="69.5" cy="72" r="1" fill="#fff"/>
+    <path d="M43 57 q6 -4 11 -1 M77 57 q-6 -4 -11 -1" fill="none" ${SKt}/>`+CHK(42,78)+CHK(78,78)+
+    `<path d="M54 82 q6 6 12 0 q-6 3 -12 0z" fill="#e8364f" ${SKt}/>`}
+,
+  /* secretos: monstruo gigante (diseño propio) */
+  {id:'kaiju',n:'Kaiju',bg:'#2b3a8f',secret:1,art:
+    `<g fill="#1b2464"><path d="M5 76 H12 V66 H22 V74 H30 V112 L28 108 A58 58 0 0 1 5 76 Z"/><path d="M115 74 H108 V62 H98 V70 H90 V108 L92 108 A58 58 0 0 0 115 74 Z"/></g>
+    <g fill="#ffd96b"><rect x="14" y="72" width="4" height="5"/><rect x="22" y="82" width="4" height="5"/><rect x="101" y="68" width="4" height="5"/><rect x="96" y="80" width="4" height="5"/></g>
+    <g fill="#ffd23f" ${SK}><path d="M34 42 l-6 -20 l16 10z"/><path d="M52 32 l4 -22 l10 20z"/><path d="M72 32 l14 -18 l2 22z"/><path d="M88 46 l20 -10 l-8 18z"/></g>
+    <path d="M24 106 Q18 70 32 48 Q60 16 90 44 Q104 70 96 106 A58 58 0 0 1 24 106 Z" fill="#ff6b3d" ${SK}/>
+    <path d="M44 116 Q42 96 60 92 Q78 96 76 116 A58 58 0 0 1 44 116 Z" fill="#ffd9a8" ${SK}/><path d="M50 103 h20 M48 110 h24" fill="none" stroke="#e0a060" stroke-width="2.4" stroke-linecap="round"/>
+    <path d="M58 38 l3 -14 l6 13z" fill="#fff3d6" ${SKt}/>`+EYEW(46,58,5.4,'#9cf06b')+EYEW(76,58,5.4,'#9cf06b')+
+    `<path d="M40 76 q20 18 42 0 q-21 6 -42 0z" fill="#7a1530" ${SK}/><path d="M44 77 l4 6 l4 -5 l4 6 l4 -6 l4 6 l4 -6 l4 6 l4 -6" fill="#fff" stroke="${OL}" stroke-width="1.6" stroke-linejoin="round"/>
+    <path d="M30 50 q-4 -4 -2 -10 M92 50 q4 -4 2 -10" fill="none" ${SKt}/>`}
 ];
 const AVM={};AVS3.forEach(a=>AVM[a.id]=a);
+/* íconos secretos: aparecen al tocar 5 veces el título de la hoja de animalitos */
+function avSecretOn(){try{return localStorage.getItem('av-secret')==='1'}catch(e){return false}}
+function avList(cur){const on=avSecretOn();return AVS3.filter(a=>!a.secret||on||(cur||[]).includes(a.id))}
+function avSecretTap(el,onOpen){const now=performance.now();el._tp=(el._tp||[]).filter(t=>now-t<2500);el._tp.push(now);if(el._tp.length<5||avSecretOn())return false;
+  el._tp=[];try{localStorage.setItem('av-secret','1')}catch(e){}if(onOpen)onOpen();return true}
 /* el dibujo en su placa redonda de color */
 function avSVG(id,cls){const a=AVM[id]||AVS3[0];return `<svg class="${cls||'l3-svg'}" viewBox="0 0 120 120" role="img" aria-label="${a.n}"><circle cx="60" cy="60" r="58" fill="${a.bg}"/><circle cx="60" cy="60" r="54.5" fill="none" stroke="rgba(0,0,0,.18)" stroke-width="3"/><ellipse cx="44" cy="30" rx="28" ry="14" fill="#fff" opacity=".16" transform="rotate(-25 44 30)"/><g>${a.art}</g><circle cx="60" cy="60" r="58" fill="none" stroke="#fff" stroke-width="3.5"/></svg>`}
+
+/* ===================== FOTO FINISH: CARRERA DE CABALLITOS =====================
+   Cada jinete es la barra de tiempo: el que tocó más rápido llega primero a la meta.
+   L: lista ordenada del más rápido al más lento [{name,team,rt}], av: animalito de cada equipo, col: color de cada equipo */
+const HORSE=`<svg class="hr-h" viewBox="0 0 64 40" aria-hidden="true"><g stroke="#2b1840" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+  <g class="hr-la" fill="none" stroke-width="3.4"><path d="M41 24 L48 30 L50 37"/><path d="M37 25 L39 37"/><path d="M18 24 L12 30 L7 35"/><path d="M22 25 L22 37"/></g>
+  <g class="hr-lb" fill="none" stroke-width="3.4"><path d="M41 24 L36 31 L38 37"/><path d="M37 25 L32 30 L33 36"/><path d="M18 24 L23 31 L22 37"/><path d="M22 25 L27 31 L26 36"/></g>
+  <path d="M15 17 q-9 -1 -13 9 q7 -3 12 -4z" fill="#4a2a14"/>
+  <ellipse cx="29" cy="20" rx="15.5" ry="8" fill="#b06a3c"/>
+  <path d="M39 18 q4 -10 10 -13 l6 6 q-6 4 -8 11z" fill="#b06a3c"/>
+  <path d="M49 4 q9 -2 13 7 q1 3 -2 4 l-10 -2z" fill="#b06a3c"/><path d="M50 5 l1 -5 l3 4z" fill="#b06a3c"/>
+  <path d="M41 16 q3 -8 8 -11" fill="none" stroke="#4a2a14" stroke-width="3"/>
+  <rect x="21" y="11" width="13" height="10" rx="2.5" fill="currentColor"/></g>
+  <circle cx="53.5" cy="7.5" r="1.3" fill="#2b1840"/></svg>`;
+function raceHTML(L,av,col,me){return `<div class="hr" role="img" aria-label="Carrera: ${L.map((p,i)=>`${i+1}. ${String(p.name).replace(/[<>"&]/g,'')}`).join(', ')}">`+
+  L.map((p,i)=>`<div class="hr-lane${me&&p.uid===me?' me':''}" style="--c:${col[p.team]}"><span class="hr-nm">${avSVG(av[p.team],'hr-av')}<span>${String(p.name).replace(/[<>&]/g,'')}</span></span>`+
+    `<span class="hr-trk"><span class="hr-go"><i class="hr-tr"></i><span class="hr-run">${HORSE}<i class="hr-jk">${avSVG(av[p.team],'hr-avj')}</i></span></span><u class="hr-meta"></u></span>`+
+    `<span class="hr-t"><em>${i+1}°</em>${(p.rt/1000).toFixed(2)} s</span></div>`).join('')+`<span class="hr-flash"></span><span class="hr-photo">📸 ¡Por una nariz!</span></div>`}
+/* arranca la carrera (el: ms que ya pasaron, para seguirla si llega alguien tarde); regresa {first,total} en ms */
+function raceRun(box,L,anim,onFirst,el){const lanes=[...box.querySelectorAll('.hr-lane')],hr=box.querySelector('.hr');if(!hr||!L.length||lanes.length!==L.length)return{first:0,total:0};el=isFinite(el)&&el>0?el:0;
+  const d=L.map(p=>Math.round(1000+Math.min(1800,Math.max(0,p.rt-L[0].rt)*4))),total=Math.max(...d);
+  if(!anim||el>=total||matchMedia('(prefers-reduced-motion:reduce)').matches){lanes.forEach(l=>l.classList.add('fin','still'));return{first:0,total:0}}
+  hr.classList.add('run');
+  lanes.forEach((l,i)=>{const o={duration:d[i],easing:'cubic-bezier(.35,0,.65,1)',fill:'forwards'};
+    [l.querySelector('.hr-run').animate([{left:'0%'},{left:'100%'}],o),l.querySelector('.hr-tr').animate([{width:'0%'},{width:'100%'}],o)].forEach(a=>a.currentTime=Math.min(el,d[i]));
+    if(d[i]<=el){l.classList.add('fin','still');return}
+    setTimeout(()=>{l.classList.add('fin');if(i===0){hr.classList.add('flash');if(onFirst)onFirst();if(L[1]&&L[1].rt-L[0].rt<25)hr.classList.add('photo')}},d[i]-el)});
+  setTimeout(()=>hr.classList.remove('run'),total-el);return{first:Math.max(0,d[0]-el),total:total-el}}

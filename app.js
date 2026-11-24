@@ -93,7 +93,7 @@ function pop(el,ms){if(RM()||!el)return;el.animate([{transform:'scale(.4)',opaci
 function shake(el){if(RM()||!el)return;el.animate([0,-12,12,-9,7,-4,0].map(x=>({transform:`translateX(${x}px) rotate(${x*.6}deg)`})),{duration:460,easing:'ease-out'})}
 
 /* ===================== PANTALLA GRANDE ===================== */
-const H={net:null,code:'',bi:0,P:new Map(),mem:{},av:(a=>Array.isArray(a)&&a.length===2&&AVM[a[0]]&&AVM[a[1]]&&a[0]!==a[1]?a:['ajolote','jaguar'])(LS.get('bt-av',null)),
+const H={raceTok:0,raceAt:0,net:null,code:'',bi:0,P:new Map(),mem:{},av:(a=>Array.isArray(a)&&a.length===2&&AVM[a[0]]&&AVM[a[1]]&&a[0]!==a[1]?a:['ajolote','jaguar'])(LS.get('bt-av',null)),
   foul:LS.get('bt-foul',true),r:0,phase:'lobby',T:[],presses:[],res:null,first:0,early:null,pingT:0,resAt:0,lat:0};
 function newCode(){let s='';for(let i=0;i<4;i++)s+=ABC[Math.floor(Math.random()*ABC.length)];return s}
 const tp=(code,k)=>NS+code+'/'+k;
@@ -186,21 +186,29 @@ function drawResult(first){const R=H.res,box=$('#result');
     if(R.kind==='foul'){const f=R.foul;sides[f.team].classList.add('foul','lose');$$('#lamps i').forEach(l=>l.className='r');semt('¡FALTA!','fl');animal(H.av[f.team],1);
       const st=document.createElement('div');st.className='stamp';st.textContent='¡SE ADELANTÓ!';sides[f.team].appendChild(st);pop(st,520);shake(sides[f.team]);
       H.T.push(later(1000,()=>{sides[R.win].classList.add('win');$$('#lamps i').forEach((l,k)=>lamp(k,'t',TCOL[R.win]));semt(`¡Turno de ${NAMES[R.win]}!`,'wn',TCOL[R.win]);sf('bz'+R.win,.9);spk($('.sav',sides[R.win]),26,[TCOL[R.win],'#fff','#fff3c4'])}))}
-    else if(R.kind==='ok'){sides[R.win].classList.add('win');sides[1-R.win].classList.add('lose');$$('#lamps i').forEach((l,k)=>lamp(k,'t',TCOL[R.win]));semt(`¡${NAMES[R.win]}!`,'wn',TCOL[R.win]);sf('bz'+R.win,.9);spk($('.sav',sides[R.win]),26,[TCOL[R.win],'#fff','#fff3c4']);later(600,()=>sf(R.rec&&R.rec.nuevo?'rec':'fin',.7))}
+    else if(R.kind==='ok'){sides[R.win].classList.add('win');sides[1-R.win].classList.add('lose');$$('#lamps i').forEach((l,k)=>lamp(k,'t',TCOL[R.win]));semt(`¡${NAMES[R.win]}!`,'wn',TCOL[R.win]);sf('bz'+R.win,.9);spk($('.sav',sides[R.win]),26,[TCOL[R.win],'#fff','#fff3c4'])}
     else{semt('Nadie tocó','')}}
   let h='';
   if(R.kind==='foul'){const f=R.foul;h=`<h3>Se adelantó</h3><p class="foulx">${esc(f.name)} (${NAMES[f.team]}) tocó <b>${sec(f.before)}</b> antes del ¡YA!</p><p class="verdict">Le toca a ${NAMES[R.win]}</p>`}
-  else if(R.kind==='ok'){const L=R.list.slice(0,8),mx=Math.max(250,...L.map(p=>p.rt)),b=L[0],o=R.list.find(p=>p.team!==b.team);
-    h=`<h3>Foto finish</h3>`+L.map((p,i)=>`<div class="lane" style="--c:${TCOL[p.team]}"><span>${avSVG(H.av[p.team])}${i+1}. ${esc(p.name)}</span><i><em style="--w:${(p.rt/mx).toFixed(3)}"></em></i><b>${sec(p.rt)}</b></div>`).join('')+
+  else if(R.kind==='ok'){const L=R.list.slice(0,8),b=L[0],o=R.list.find(p=>p.team!==b.team);
+    h=`<h3>🏇 Foto finish</h3>`+raceHTML(L,H.av,TCOL)+
       `<p class="verdict">${o?`¡${esc(b.name)} le ganó a ${NAMES[o.team]} por ${sec(o.rt-b.rt)}!`:`¡${esc(b.name)} fue el más rápido!`}</p>`+
       (R.rec?(R.rec.nuevo?`<span class="rec">¡Nuevo récord! ${sec(R.rec.rt)}</span>`:`<span class="rc">Récord: ${sec(R.rec.rt)} (${esc(R.rec.name)})</span>`):'')}
   else h=`<h3>Nadie tocó</h3><p class="verdict">Toquen “Otra vez” para repetir.</p>`;
-  box.innerHTML=h;box.hidden=false;if(first&&!RM()){box.animate([{opacity:0,transform:'translateY(20px) scale(.95)'},{opacity:1,transform:'none'}],{duration:420,delay:R.kind==='foul'?900:300,fill:'backwards',easing:'cubic-bezier(.3,1.4,.5,1)'});$$('.lane em',box).forEach((e,k)=>e.animate([{transform:'scaleX(0)'},{transform:`scaleX(${e.style.getPropertyValue('--w')})`}],{duration:650,delay:450+k*110,easing:'cubic-bezier(.2,.8,.3,1)',fill:'backwards'}))}}
+  box.innerHTML=h;box.hidden=false;if(first&&!RM()){box.animate([{opacity:0,transform:'translateY(20px) scale(.95)'},{opacity:1,transform:'none'}],{duration:420,delay:R.kind==='foul'?900:300,fill:'backwards',easing:'cubic-bezier(.3,1.4,.5,1)'})}
+  /* carrera de caballitos: arranca cuando aparece la tarjeta; si alguien tocó tarde, sigue donde iba */
+  if(R.kind==='ok'){const L=R.list.slice(0,8),tok=++H.raceTok;if(first)H.raceAt=performance.now()+(RM()?0:300);const v=$('.verdict',box),snd=()=>sf(R.rec&&R.rec.nuevo?'rec':'fin',.7);
+    if(first&&!RM())v.style.opacity=0;
+    const go=()=>{if(tok!==H.raceTok)return;const rr=raceRun(box,L,!RM(),snd,Math.max(0,performance.now()-H.raceAt));if(first&&!rr.first)snd();
+      if(first&&rr.first)later(rr.first+150,()=>{v.style.opacity='';v.animate([{opacity:0,transform:'scale(.8)'},{opacity:1,transform:'none'}],{duration:300,easing:'cubic-bezier(.3,1.5,.5,1)'})});else v.style.opacity=''};
+    const w=H.raceAt-performance.now();if(w>0)later(w,go);else go()}}
 function backToLobby(){if(H.phase==='arm'||H.phase==='go')bcast({t:'cancel'},1);clearHT();H.phase='lobby';showArena(false);$('#go').disabled=false;$('#go').textContent='¡Probar botones!';drawTeams()}
 /* escoger animalito de cada equipo */
 let SHEET=0;
 function openSheet(t){SHEET=t;const s=$('#avsheet');s.style.setProperty('--tc',TCOL[t]);$('#avtitle').textContent='Animalito de '+NAMES[t];
-  $('#avg').innerHTML=AVS3.map(a=>`<button type="button" data-av="${a.id}" aria-pressed="${H.av[t]===a.id}" class="${H.av[1-t]===a.id?'taken':''}" ${H.av[1-t]===a.id?'disabled':''}><i>${avSVG(a.id)}</i>${a.n}</button>`).join('');s.hidden=false}
+  $('#avg').innerHTML=avList(H.av).map(a=>`<button type="button" data-av="${a.id}" aria-pressed="${H.av[t]===a.id}" class="${H.av[1-t]===a.id?'taken':''}${a.secret?' av-sec':''}" ${H.av[1-t]===a.id?'disabled':''}><i>${avSVG(a.id)}</i>${a.n}</button>`).join('');s.hidden=false}
+/* truco secreto: tocar 5 veces el título de la hoja */
+$('#avtitle').addEventListener('click',()=>avSecretTap($('#avtitle'),()=>{openSheet(SHEET);sf('rec',.8);toast('🥚 ¡Encontraste los íconos secretos!');$$('#avg .av-sec').forEach((b,k)=>{b.classList.add('av-new');later(k*140,()=>spk(b,14,['#ffd23f','#fff','#ff5c9a']))})}));
 $('#avg').addEventListener('click',e=>{const b=e.target.closest('button');if(!b||b.disabled)return;H.av[SHEET]=b.dataset.av;LS.set('bt-av',H.av);openSheet(SHEET);drawTeams();bcastState()});
 $('#avclose').addEventListener('click',()=>{$('#avsheet').hidden=true});
 $('#avsheet').addEventListener('click',e=>{if(e.target.id==='avsheet')$('#avsheet').hidden=true});
@@ -301,9 +309,13 @@ function onRes(m){if(m.r!==P.r){if(P.phase!=='idle')return;P.r=m.r}clearPT();con
   else{const L=m.list,pos=L.findIndex(x=>x.uid===P.uid),won=m.win===me;cls=won?'win':'lose';big=won?'¡Ganaron!':'¡Uy, casi!';if(!won&&P.st)av=P.st.av[m.win];
     txt=won?(pos===0?`¡Fuiste el más rápido! ${sec(L[0].rt)}`:`${L[0].name} tocó primero: ${sec(L[0].rt)}`):`Ganó ${NAMES[m.win]}: ${L[0].name} en ${sec(L[0].rt)}`;
     if(pos>0)sub=`Tu tiempo: ${sec(L[pos].rt)} · lugar ${pos+1} de ${L.length}`;else if(pos<0)sub=P.rt?`Tu tiempo: ${sec(P.rt)}`:'No alcanzaste a tocar';}
-  showRes(cls,big,txt,sub,av);
+  showRes(cls,big,txt,sub,av);let hold=4500;
+  /* la carrera de caballitos también en tu celular (tu caballito va marcado) */
+  if(m.kind==='ok'&&Array.isArray(m.list)&&m.list.length&&P.st){const r=$('#pres'),L=m.list.slice(0,6);r.classList.add('hasrace');r.insertAdjacentHTML('beforeend',raceHTML(L,P.st.av,TCOL,P.uid));
+    if(first||!isFinite(P.raceAt))P.raceAt=performance.now()+250;const tok=P.raceTok=(P.raceTok||0)+1,el=performance.now()-P.raceAt,go=()=>{if(tok===P.raceTok)raceRun(r,L,!RM(),null,Math.max(0,performance.now()-P.raceAt))};
+    if(el<0)later(-el,go);else go();hold=Math.max(hold,P.raceAt-performance.now()+Math.min(2800,1000+(L[L.length-1].rt-L[0].rt)*4)+1800)}
   if(first){if(cls==='win')sf('bz'+me,.85);else if(cls==='foul'&&m.foul.uid!==P.uid)animal(myAv(),.8);vib(cls==='win'?[40,40,80]:60)}
-  clearTimeout(P.resT);P.resT=later(4500,()=>{hideRes();if(P.phase==='res'){P.phase='idle';showPad()}})}
+  clearTimeout(P.resT);P.resT=later(hold,()=>{hideRes();if(P.phase==='res'){P.phase='idle';showPad()}})}
 function showRes(cls,big,txt,sub,av){const r=$('#pres');r.className='pres '+cls;r.innerHTML=(av?avSVG(av):'')+`<b>${esc(big)}</b><p>${esc(txt)}</p>`+(sub?`<p>${esc(sub)}</p>`:'');r.hidden=false;if(!RM()){pop($('.l3-svg',r),600);r.animate([{opacity:0},{opacity:1}],{duration:250})}}
 function hideRes(){clearTimeout(P.resT);$('#pres').hidden=true}
 function onDome(e){const d=$('#dome');if(MODE!=='play'||$('#pad').hidden)return false;const r=d.getBoundingClientRect();if(!r.width)return false;return Math.hypot(e.clientX-(r.left+r.width/2),e.clientY-(r.top+r.height/2))<=r.width/2}
@@ -513,7 +525,9 @@ $('#ask').addEventListener('pointerdown',e=>{if(!AK.sent&&!e.target.closest('for
 /* partida guardada en este aparato: se puede continuar */
 function savedGame(){try{const g=JSON.parse(localStorage.getItem('j-game')||'null'),c=JSON.parse(localStorage.getItem('j-cfg')||'{}')||{};
   if(!g||g.ended||!Array.isArray(g.sc))return null;if(!(g.ri>0||g.sc[0]+g.sc[1]>0||g.fin>=0))return null;return{g,c}}catch(e){return null}}
-function drawSaved(){const s=savedGame();$('#contcard').hidden=!s;$('#modesnote').hidden=!s;$('#createbtn').classList.toggle('star',!s);if(!s)return;
+function drawSaved(){const s=savedGame();$('#contcard').hidden=!s;$('#modesnote').hidden=!s;$('#createbtn').classList.toggle('star',!s);
+  /* con partida guardada no se borra sola: al entrar pregunta si continuar o empezar de nuevo */
+  $$('#modes a[href*="modo="]').forEach(a=>{const q=new URLSearchParams(a.getAttribute('href').split('?')[1]||'');if(s)q.delete('nueva');else q.set('nueva','1');a.setAttribute('href','juego.html?'+q)});if(!s)return;
   const g=s.g,c=s.c,nm=Array.isArray(c.names)&&c.names.length===2?c.names:['Turquesas','Dorados'],r=c.rounds==null?5:c.rounds,n=g.fin===g.ri?g.ri+2:g.ri+1;
   $('#contsm').textContent=(r>0&&n>r?'Ya terminaron todas las rondas':`Van en la ronda ${n}${r>0?' de '+r:''}`)+` · ${nm[0]} ${g.sc[0]} · ${nm[1]} ${g.sc[1]}`}
 drawSaved();addEventListener('pageshow',drawSaved);

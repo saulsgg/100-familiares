@@ -1099,6 +1099,66 @@ body{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-r
 .j-chm p.me{background:color-mix(in srgb,var(--tc) 30%,transparent)}
 .j-chf{display:flex;gap:6px}.j-chf input{flex:1;min-width:0;min-height:42px;padding:6px 12px;border:0;border-radius:12px;background:#fff8ec;color:var(--cink);font:700 15px Rubik,sans-serif}
 @media (max-width:600px){.l2-cmd{width:40px}}
+
+/* íconos secretos */
+#avtitle{-webkit-user-select:none;user-select:none;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+.av-sec{position:relative}.av-sec i,.av-sec .l3-avw{box-shadow:0 0 0 3px #ffd23f}
+.av-sec::after{content:'✨';position:absolute;top:-2px;right:2px;font-size:18px;pointer-events:none}
+.av-new{animation:avnew .9s cubic-bezier(.3,1.5,.5,1) both}
+@keyframes avnew{0%{transform:scale(.2) rotate(-25deg);opacity:0}60%{transform:scale(1.2) rotate(6deg);opacity:1}100%{transform:none}}
+@media (prefers-reduced-motion:reduce){.av-new{animation:none}}
+.j-saved.j-inplay{padding:10px 14px;background:rgba(255,255,255,.04);box-shadow:inset 0 0 0 2px rgba(255,255,255,.15)}
+.j-saved.j-inplay b{font-size:18px;color:#fff}
+
+/* ===== foto finish: carrera de caballitos ===== */
+.hr{--hw:44px;position:relative;display:grid;gap:4px;margin:4px 0;padding:8px 8px 6px;border-radius:14px;background:repeating-linear-gradient(180deg,#1f7a3e 0 22%,#23894a 22% 44%);box-shadow:inset 0 0 0 2px rgba(255,255,255,.18);overflow:hidden;text-align:left;color:#fff}
+.hr-lane{display:grid;grid-template-columns:minmax(0,6.2em) 1fr 5.4em;align-items:center;gap:6px;min-height:calc(var(--hw)*.77);font:800 13px/1.1 Rubik,sans-serif}
+.hr-nm{display:flex;align-items:center;gap:5px;min-width:0;text-shadow:0 1px 2px rgba(0,0,0,.6)}
+.hr-nm>span{overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.hr-av{flex:none;width:22px;height:22px}
+.hr-trk{position:relative;height:calc(var(--hw)*.68);border-bottom:2px dashed rgba(255,255,255,.35)}
+.hr-go{position:absolute;left:0;top:0;bottom:0;right:var(--hw)}
+.hr-tr{position:absolute;left:0;top:50%;width:100%;height:8px;margin-top:2px;border-radius:99px;background:linear-gradient(90deg,transparent,var(--c));opacity:.85}
+.hr-run{position:absolute;left:100%;bottom:-1px;width:var(--hw);height:calc(var(--hw)*.68);color:var(--c)}
+.hr-h{position:absolute;inset:auto 0 0 0;width:var(--hw);height:calc(var(--hw)*.64);overflow:visible}
+.hr-jk{position:absolute;left:calc(var(--hw)*.32);top:calc(var(--hw)*-.2);width:calc(var(--hw)*.39);height:calc(var(--hw)*.39);border-radius:50%}
+.hr-avj{width:100%;height:100%;display:block}
+.hr-la{opacity:1}.hr-lb{opacity:0}
+.hr.run .hr-lane:not(.fin) .hr-la{animation:hrA .22s steps(1) infinite}
+.hr.run .hr-lane:not(.fin) .hr-lb{animation:hrB .22s steps(1) infinite}
+.hr.run .hr-lane:not(.fin) .hr-run{animation:hrbob .22s ease-in-out infinite alternate}
+@keyframes hrA{0%{opacity:1}50%{opacity:0}}
+@keyframes hrB{0%{opacity:0}50%{opacity:1}}
+@keyframes hrbob{to{transform:translateY(-3px)}}
+.hr-meta{position:absolute;right:0;top:-4px;bottom:-4px;width:8px;background:repeating-conic-gradient(#fff 0 25%,#1a1a1a 0 50%) 0 0/8px 8px;box-shadow:0 0 6px rgba(255,255,255,.5)}
+.hr-t{display:flex;align-items:baseline;justify-content:flex-end;gap:3px;white-space:nowrap;font:400 17px/1 var(--disp,inherit);opacity:0;transform:scale(.4);transition:opacity .2s,transform .35s cubic-bezier(.3,1.6,.5,1);text-shadow:0 2px 0 rgba(0,0,0,.35)}
+.hr-t em{font:800 11px Rubik,sans-serif;font-style:normal;color:#ffd76a}
+.hr-lane.fin .hr-t{opacity:1;transform:none}
+.hr-lane.still .hr-t{transition:none}
+.hr-lane:first-child.fin .hr-t em{color:#fff;background:#ffb020;padding:1px 5px;border-radius:99px}
+.hr-flash{position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none}
+.hr.flash .hr-flash{animation:hrfl .5s ease-out}
+@keyframes hrfl{0%{opacity:.85}100%{opacity:0}}
+.hr-photo{position:absolute;left:50%;top:50%;padding:4px 12px;border-radius:99px;background:#ff2e88;color:#fff;font:400 18px var(--disp,inherit);white-space:nowrap;opacity:0;transform:translate(-50%,-50%) rotate(-6deg) scale(.4);pointer-events:none}
+.hr.photo .hr-photo{animation:hrph 1.8s cubic-bezier(.3,1.6,.5,1) forwards}
+@keyframes hrph{0%{opacity:0;transform:translate(-50%,-50%) rotate(-6deg) scale(.4)}15%{opacity:1;transform:translate(-50%,-50%) rotate(-6deg) scale(1.1)}80%{opacity:1;transform:translate(-50%,-50%) rotate(-6deg) scale(1)}100%{opacity:0;transform:translate(-50%,-50%) rotate(-6deg) scale(1)}}
+@media (prefers-reduced-motion:reduce){.hr *{animation:none!important}}
+.hr-lane.me{border-radius:10px;background:rgba(255,255,255,.14);box-shadow:inset 0 0 0 2px #ffd76a}
+.pres .hr{width:min(92vw,420px);margin-top:4px}
+.pres.hasrace{gap:8px}
+.pres.hasrace .l3-svg{width:min(26vw,120px)}
+.pres.hasrace b{font-size:clamp(34px,10vw,60px)}
+/* pantallas grandes: caballitos más grandes */
+#result .hr{--hw:clamp(44px,5vmin,64px)}
+#result .hr-lane{font-size:clamp(13px,1.9vmin,18px)}
+#result .hr-av{width:clamp(22px,3vmin,30px);height:clamp(22px,3vmin,30px)}
+#result .hr-t{font-size:clamp(17px,2.6vmin,24px)}
+@media (min-width:900px) and (min-height:600px){
+  #bzc{width:min(60vw,560px)}
+  #bzc .hr{--hw:56px}
+  #bzc .hr-lane{font-size:15px}
+  #bzc .hr-t{font-size:20px}
+}
 </style>
 </head>
 <body>
@@ -1160,7 +1220,7 @@ body{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-r
   <div class="j-lin">
     <header><h2 id="lobt">Sala de la partida</h2><span class="pill" id="lobstat">Conectando…</span></header>
     <div class="j-saved" id="saved" hidden>
-      <b>💾 Hay una partida guardada</b><p id="savedtx"></p><small id="savedat"></small>
+      <b id="savedh">💾 Hay una partida guardada</b><p id="savedtx"></p><small id="savedat"></small>
       <div><button type="button" class="l2-b l2-gd big" id="cont">▶ Continuar</button><button type="button" class="l2-b" id="fresh">Empezar de nuevo</button></div>
     </div>
     <div class="j-tabs" role="tablist"><button type="button" role="tab" data-tab="eq" aria-selected="true">👥 Equipos</button><button type="button" role="tab" data-tab="aj" aria-selected="false">⚙ Ajustes</button></div>
@@ -1299,7 +1359,7 @@ const SY={
   jingle:t=>{[392,523,659,784].forEach((f,i)=>brassS(t+i*.11,f,.22,.17));[523,659,784,1047].forEach(f=>brassS(t+.5,f,1.3,.12))}
 };
 /* sonidos grabados */
-const FILES=["flap", "flap2", "pa", "qok", "lr", "ya", "bz0", "bz1", "thr", "peg", "wx1", "wx2", "wx3", "wx4", "tic", "tac", "cd1", "cd2", "cd3", "cd4", "cd5", "grow", "tmo", "went", "fin", "rec", "ok1", "top1", "pts", "cinta_4", "j1", "med", "medf", "cmd", "an_ajolote", "an_armadillo", "an_colibri", "an_coyote", "an_flamenco", "an_guacamaya", "an_iguana", "an_jaguar", "an_monarca", "an_mono", "an_ptero", "an_quetzal", "an_tlacuache", "an_tortuga", "an_tucan", "an_venado", "an_xolo"];
+const FILES=["flap", "flap2", "pa", "qok", "lr", "ya", "bz0", "bz1", "thr", "peg", "wx1", "wx2", "wx3", "wx4", "tic", "tac", "cd1", "cd2", "cd3", "cd4", "cd5", "grow", "tmo", "went", "fin", "rec", "ok1", "top1", "pts", "cinta_4", "j1", "med", "medf", "cmd", "an_ajolote", "an_armadillo", "an_colibri", "an_coyote", "an_flamenco", "an_guacamaya", "an_iguana", "an_jaguar", "an_kaiju", "an_monarca", "an_mono", "an_potra", "an_ptero", "an_quetzal", "an_tlacuache", "an_tortuga", "an_tucan", "an_venado", "an_xolo"];
 const BUF={};let loading=null;
 function loadSounds(){if(loading)return loading;if(!ac())return Promise.resolve();
   loading=Promise.all(FILES.map(f=>fetch('sounds/'+f+'.mp3').then(r=>{if(!r.ok)throw 0;return r.arrayBuffer()}).then(b=>new Promise((ok,ko)=>AC.decodeAudioData(b,ok,ko))).then(b=>{BUF[f]=b;if(TRK[f])MUS.sync()}).catch(()=>{})));return loading}
@@ -1567,11 +1627,72 @@ const AVS3=[
     <path d="M42 80 q-6 22 2 42 h24 q-8 -22 2 -40z" fill="#8e6ee6" ${SK}/>
     <path d="M52 40 Q24 8 2 6 Q16 32 38 60 Z" fill="#6b4fc4" ${SK}/><path d="M44 36 Q24 18 12 14" fill="none" stroke="#8e6ee6" stroke-width="3" stroke-linecap="round"/>
     <path d="M64 50 L114 61 L64 72 Z" fill="#ffcf5a" ${SK}/><path d="M66 61 H104" fill="none" ${SKt}/><circle cx="96" cy="57" r="1.8" fill="${OL}"/>
-    <circle cx="52" cy="60" r="23" fill="#9b7bf0" ${SK}/><path d="M33 50 q18 -16 38 -2 q-20 -8 -38 2z" fill="#b39af7"/>`+EYEW(55,55,4.6,'#ffe36b')+CHK(44,68)}
+    <circle cx="52" cy="60" r="23" fill="#9b7bf0" ${SK}/><path d="M33 50 q18 -16 38 -2 q-20 -8 -38 2z" fill="#b39af7"/>`+EYEW(55,55,4.6,'#ffe36b')+CHK(44,68),secret:1}
+,
+  /* secretos: chica caballo de carreras (diseño propio) */
+  {id:'potra',n:'Potranca',bg:'#45b86a',secret:1,art:
+    `<path d="M21 103 Q12 58 32 40 Q60 22 88 40 Q108 58 99 103 A58 58 0 0 1 21 103 Z" fill="#7a3f22" ${SK}/>
+    <path d="M52 86 v14 h16 v-14" fill="#ffe0c8" ${SKt}/>
+    <path d="M24 106 Q36 98 50 97 H70 Q84 98 96 106 A58 58 0 0 1 24 106 Z" fill="#fff" ${SK}/><path d="M44 98 l16 13 l16 -13" fill="none" stroke="#e8364f" stroke-width="4.5" stroke-linejoin="round"/>
+    <rect x="51" y="104" width="18" height="11" rx="3" fill="#fff" ${SKt}/><text x="60" y="113" text-anchor="middle" font-family="Arial Black,Arial,sans-serif" font-weight="900" font-size="9" fill="${OL}">1</text>
+    <ellipse cx="60" cy="64" rx="26" ry="28" fill="#ffe0c8" ${SK}/>
+    <path d="M32 58 q-2 -28 28 -30 q30 2 28 30 q-6 -6 -10 -15 q-4 10 -12 12 q2 -8 -2 -14 q-6 12 -16 14 q4 -6 2 -12 q-8 10 -18 15z" fill="#8a4a28" ${SK}/>
+    <path d="M38 34 q-10 -14 -7 -26 q14 6 17 22z" fill="#8a4a28" ${SK}/><path d="M37 29 q-5 -9 -4 -16 q7 5 9 12z" fill="#ffb3c4"/>
+    <path d="M82 34 q10 -14 7 -26 q-14 6 -17 22z" fill="#8a4a28" ${SK}/><path d="M83 29 q5 -9 4 -16 q-7 5 -9 12z" fill="#ffb3c4"/>
+    <path d="M86 28 l9 -6 l1 9 z M86 28 l2 10 l-8 -4z" fill="#ff4d6d" ${SKt}/><circle cx="86" cy="30" r="2.6" fill="#ffd23f" ${SKt}/>
+    <g ${SKt}><ellipse cx="49" cy="68" rx="5.6" ry="7.4" fill="#8a52e0"/><ellipse cx="71" cy="68" rx="5.6" ry="7.4" fill="#8a52e0"/></g>
+    <ellipse cx="49" cy="69.5" rx="2.6" ry="3.6" fill="${OL}"/><ellipse cx="71" cy="69.5" rx="2.6" ry="3.6" fill="${OL}"/>
+    <circle cx="51" cy="65" r="2" fill="#fff"/><circle cx="73" cy="65" r="2" fill="#fff"/><circle cx="47.5" cy="72" r="1" fill="#fff"/><circle cx="69.5" cy="72" r="1" fill="#fff"/>
+    <path d="M43 57 q6 -4 11 -1 M77 57 q-6 -4 -11 -1" fill="none" ${SKt}/>`+CHK(42,78)+CHK(78,78)+
+    `<path d="M54 82 q6 6 12 0 q-6 3 -12 0z" fill="#e8364f" ${SKt}/>`}
+,
+  /* secretos: monstruo gigante (diseño propio) */
+  {id:'kaiju',n:'Kaiju',bg:'#2b3a8f',secret:1,art:
+    `<g fill="#1b2464"><path d="M5 76 H12 V66 H22 V74 H30 V112 L28 108 A58 58 0 0 1 5 76 Z"/><path d="M115 74 H108 V62 H98 V70 H90 V108 L92 108 A58 58 0 0 0 115 74 Z"/></g>
+    <g fill="#ffd96b"><rect x="14" y="72" width="4" height="5"/><rect x="22" y="82" width="4" height="5"/><rect x="101" y="68" width="4" height="5"/><rect x="96" y="80" width="4" height="5"/></g>
+    <g fill="#ffd23f" ${SK}><path d="M34 42 l-6 -20 l16 10z"/><path d="M52 32 l4 -22 l10 20z"/><path d="M72 32 l14 -18 l2 22z"/><path d="M88 46 l20 -10 l-8 18z"/></g>
+    <path d="M24 106 Q18 70 32 48 Q60 16 90 44 Q104 70 96 106 A58 58 0 0 1 24 106 Z" fill="#ff6b3d" ${SK}/>
+    <path d="M44 116 Q42 96 60 92 Q78 96 76 116 A58 58 0 0 1 44 116 Z" fill="#ffd9a8" ${SK}/><path d="M50 103 h20 M48 110 h24" fill="none" stroke="#e0a060" stroke-width="2.4" stroke-linecap="round"/>
+    <path d="M58 38 l3 -14 l6 13z" fill="#fff3d6" ${SKt}/>`+EYEW(46,58,5.4,'#9cf06b')+EYEW(76,58,5.4,'#9cf06b')+
+    `<path d="M40 76 q20 18 42 0 q-21 6 -42 0z" fill="#7a1530" ${SK}/><path d="M44 77 l4 6 l4 -5 l4 6 l4 -6 l4 6 l4 -6 l4 6 l4 -6" fill="#fff" stroke="${OL}" stroke-width="1.6" stroke-linejoin="round"/>
+    <path d="M30 50 q-4 -4 -2 -10 M92 50 q4 -4 2 -10" fill="none" ${SKt}/>`}
 ];
 const AVM={};AVS3.forEach(a=>AVM[a.id]=a);
+/* íconos secretos: aparecen al tocar 5 veces el título de la hoja de animalitos */
+function avSecretOn(){try{return localStorage.getItem('av-secret')==='1'}catch(e){return false}}
+function avList(cur){const on=avSecretOn();return AVS3.filter(a=>!a.secret||on||(cur||[]).includes(a.id))}
+function avSecretTap(el,onOpen){const now=performance.now();el._tp=(el._tp||[]).filter(t=>now-t<2500);el._tp.push(now);if(el._tp.length<5||avSecretOn())return false;
+  el._tp=[];try{localStorage.setItem('av-secret','1')}catch(e){}if(onOpen)onOpen();return true}
 /* el dibujo en su placa redonda de color */
 function avSVG(id,cls){const a=AVM[id]||AVS3[0];return `<svg class="${cls||'l3-svg'}" viewBox="0 0 120 120" role="img" aria-label="${a.n}"><circle cx="60" cy="60" r="58" fill="${a.bg}"/><circle cx="60" cy="60" r="54.5" fill="none" stroke="rgba(0,0,0,.18)" stroke-width="3"/><ellipse cx="44" cy="30" rx="28" ry="14" fill="#fff" opacity=".16" transform="rotate(-25 44 30)"/><g>${a.art}</g><circle cx="60" cy="60" r="58" fill="none" stroke="#fff" stroke-width="3.5"/></svg>`}
+
+/* ===================== FOTO FINISH: CARRERA DE CABALLITOS =====================
+   Cada jinete es la barra de tiempo: el que tocó más rápido llega primero a la meta.
+   L: lista ordenada del más rápido al más lento [{name,team,rt}], av: animalito de cada equipo, col: color de cada equipo */
+const HORSE=`<svg class="hr-h" viewBox="0 0 64 40" aria-hidden="true"><g stroke="#2b1840" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+  <g class="hr-la" fill="none" stroke-width="3.4"><path d="M41 24 L48 30 L50 37"/><path d="M37 25 L39 37"/><path d="M18 24 L12 30 L7 35"/><path d="M22 25 L22 37"/></g>
+  <g class="hr-lb" fill="none" stroke-width="3.4"><path d="M41 24 L36 31 L38 37"/><path d="M37 25 L32 30 L33 36"/><path d="M18 24 L23 31 L22 37"/><path d="M22 25 L27 31 L26 36"/></g>
+  <path d="M15 17 q-9 -1 -13 9 q7 -3 12 -4z" fill="#4a2a14"/>
+  <ellipse cx="29" cy="20" rx="15.5" ry="8" fill="#b06a3c"/>
+  <path d="M39 18 q4 -10 10 -13 l6 6 q-6 4 -8 11z" fill="#b06a3c"/>
+  <path d="M49 4 q9 -2 13 7 q1 3 -2 4 l-10 -2z" fill="#b06a3c"/><path d="M50 5 l1 -5 l3 4z" fill="#b06a3c"/>
+  <path d="M41 16 q3 -8 8 -11" fill="none" stroke="#4a2a14" stroke-width="3"/>
+  <rect x="21" y="11" width="13" height="10" rx="2.5" fill="currentColor"/></g>
+  <circle cx="53.5" cy="7.5" r="1.3" fill="#2b1840"/></svg>`;
+function raceHTML(L,av,col,me){return `<div class="hr" role="img" aria-label="Carrera: ${L.map((p,i)=>`${i+1}. ${String(p.name).replace(/[<>"&]/g,'')}`).join(', ')}">`+
+  L.map((p,i)=>`<div class="hr-lane${me&&p.uid===me?' me':''}" style="--c:${col[p.team]}"><span class="hr-nm">${avSVG(av[p.team],'hr-av')}<span>${String(p.name).replace(/[<>&]/g,'')}</span></span>`+
+    `<span class="hr-trk"><span class="hr-go"><i class="hr-tr"></i><span class="hr-run">${HORSE}<i class="hr-jk">${avSVG(av[p.team],'hr-avj')}</i></span></span><u class="hr-meta"></u></span>`+
+    `<span class="hr-t"><em>${i+1}°</em>${(p.rt/1000).toFixed(2)} s</span></div>`).join('')+`<span class="hr-flash"></span><span class="hr-photo">📸 ¡Por una nariz!</span></div>`}
+/* arranca la carrera (el: ms que ya pasaron, para seguirla si llega alguien tarde); regresa {first,total} en ms */
+function raceRun(box,L,anim,onFirst,el){const lanes=[...box.querySelectorAll('.hr-lane')],hr=box.querySelector('.hr');if(!hr||!L.length||lanes.length!==L.length)return{first:0,total:0};el=isFinite(el)&&el>0?el:0;
+  const d=L.map(p=>Math.round(1000+Math.min(1800,Math.max(0,p.rt-L[0].rt)*4))),total=Math.max(...d);
+  if(!anim||el>=total||matchMedia('(prefers-reduced-motion:reduce)').matches){lanes.forEach(l=>l.classList.add('fin','still'));return{first:0,total:0}}
+  hr.classList.add('run');
+  lanes.forEach((l,i)=>{const o={duration:d[i],easing:'cubic-bezier(.35,0,.65,1)',fill:'forwards'};
+    [l.querySelector('.hr-run').animate([{left:'0%'},{left:'100%'}],o),l.querySelector('.hr-tr').animate([{width:'0%'},{width:'100%'}],o)].forEach(a=>a.currentTime=Math.min(el,d[i]));
+    if(d[i]<=el){l.classList.add('fin','still');return}
+    setTimeout(()=>{l.classList.add('fin');if(i===0){hr.classList.add('flash');if(onFirst)onFirst();if(L[1]&&L[1].rt-L[0].rt<25)hr.classList.add('photo')}},d[i]-el)});
+  setTimeout(()=>hr.classList.remove('run'),total-el);return{first:Math.max(0,d[0]-el),total:total-el}}
 
 /* núcleo de conexión compartido con la app de botones */
 const LSN={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v)}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
@@ -1976,18 +2097,23 @@ NH.on.result=res=>{if(!BZ.net||$('#bz').hidden)return;
   semWin(t,`¡${NAMES[t]}!`);sfr('bz'+t,.9);winFx(t);T(1000,()=>netCard(res))};
 NH.on.late=(res,chg)=>{if(!BZ.net||$('#bz').hidden)return;if(chg)F.turn=res.win;if(res.list[0])F.wuid=res.list[0].uid;if(BZ.st==='card')netCard(res,true)};
 /* foto finish con todos los celulares */
-function netCard(res,again){if(!again&&BZ.card)return;BZ.card=true;BZ.cardAt=performance.now();BZ.st='card';const c=$('#bzc');let html='',line='';
+function netCard(res,again){if(!again&&BZ.card)return;BZ.card=true;if(!again)BZ.cardAt=performance.now();BZ.st='card';const c=$('#bzc');let html='',line='',race=null;
   if(res.kind==='foul'){const f=res.foul;html=`<b class="l3-ct">SE ADELANTÓ</b><p class="l3-cbig">${avSVG(AV[f.team],'l3-mini')} ${esc(f.name)} (${NAMES[f.team]}) tocó <b>${sec2(f.before)}</b> antes del ¡YA!</p>`;line=`Le toca a ${NAMES[res.win]}`}
   else{const L=res.list.slice(0,6),mx=Math.max(250,...L.map(p=>p.rt)),b=L[0],o=res.list.find(p=>p.team!==b.team);
-    html=`<b class="l3-ct">FOTO FINISH</b>`+L.map((p,i)=>`<div class="l3-lane" style="--c:${TCOL[p.team]}"><span>${avSVG(AV[p.team],'l3-mini')} ${esc(p.name)}</span><i><em style="--w:${(p.rt/mx).toFixed(3)}"></em></i><b>${sec2(p.rt)}</b></div>`).join('');
+    html=`<b class="l3-ct">🏇 FOTO FINISH</b>`+raceHTML(L,AV,TCOL);race=L;
     line=o?`¡${esc(b.name)} le ganó a ${NAMES[o.team]} por ${sec2(o.rt-b.rt)}!`:`¡${esc(b.name)} fue el más rápido!`;
     if(res.rec)line+=res.rec.nuevo?`<span class="l3-rec">¡Nuevo récord! ${sec2(res.rec.rt)}</span>`:`<span class="l3-rc">Récord: ${sec2(res.rec.rt)} (${esc(res.rec.name)})</span>`;
-    if(!again)later(500,()=>sfr(res.rec&&res.rec.nuevo?'rec':'fin',.7))}
+  }
   c.innerHTML=html+`<p class="l3-cv">${line}</p><small>Toca la pantalla para seguir</small>`;c.hidden=false;
   if(stacked())$('#sem').style.opacity=0;
   if(!again&&!RM()){const cy=stacked()?'-50%':'0px';c.animate([{opacity:0,transform:`translate(-50%,${cy}) scale(.6)`},{opacity:1,transform:`translate(-50%,${cy}) scale(1.04)`,offset:.7},{opacity:1,transform:`translate(-50%,${cy}) scale(1)`}],{duration:420,easing:'cubic-bezier(.3,1.4,.5,1)'});
-    $$('.l3-lane em',c).forEach((e,k)=>e.animate([{transform:'scaleX(0)'},{transform:`scaleX(${e.style.getPropertyValue('--w')})`}],{duration:650,delay:150+k*110,easing:'cubic-bezier(.2,.8,.3,1)',fill:'backwards'}))}
-  if(!again){clearTimeout(BZ.cardT);BZ.cardT=T(3600,bzFinish)}}
+  }
+  /* la carrera: el más rápido llega primero a la meta; si alguien tocó tarde, sigue donde iba */
+  const now=performance.now();let end=now+3600;
+  if(race){const snd=()=>sfr(res.rec&&res.rec.nuevo?'rec':'fin',.7),rr=raceRun(c,race,!RM(),snd,again?now-BZ.cardAt:0);end=Math.max(BZ.cardAt+3600,now+rr.total+1900);
+    if(!again&&rr.first){const cv=$('.l3-cv',c);cv.style.opacity=0;later(rr.first+150,()=>{cv.style.opacity='';if(!RM())cv.animate([{opacity:0,transform:'scale(.8)'},{opacity:1,transform:'none'}],{duration:300,easing:'cubic-bezier(.3,1.5,.5,1)'})})}
+    else if(!again)snd()}
+  if(!again||end>BZ.cardEnd){clearTimeout(BZ.cardT);BZ.cardEnd=end;BZ.cardT=T(end-now,bzFinish)}}
 /* con celulares conectados se usan ellos; si no, los botones salen en esta pantalla */
 function buzzOpen(){if(!R)return;closeAsk();clearGrace();hideSay();F.wuid=null;R.phase='buzz';ctl('buzz');if(nhReady())netBuzz();else{BZ.net=false;bzOpen()}}
 
@@ -2054,7 +2180,9 @@ function openLobby(){$('#lobby').hidden=false;drawLobby()}
 let SHEET=0;
 function openSheet(t){SHEET=t;const s=$('#avsheet');s.style.setProperty('--tc',TCOL[t]);$('#avtitle').textContent='Animalito de '+NAMES[t];
   $('#avgrid').style.setProperty('--tcol',TCOL[t]);$('#avgrid').style.setProperty('--ocol',TCOL[1-t]);
-  $('#avgrid').innerHTML=AVS3.map(a=>{const mine=AV[t]===a.id,tk=AV[1-t]===a.id;return `<button type="button" data-av="${a.id}" class="${mine?'l3-mine':tk?'l3-taken':''}" aria-pressed="${mine}" ${tk?'disabled':''}><i class="l3-avw">${avSVG(a.id)}</i><span>${a.n}</span></button>`}).join('');s.hidden=false}
+  $('#avgrid').innerHTML=avList(AV).map(a=>{const mine=AV[t]===a.id,tk=AV[1-t]===a.id;return `<button type="button" data-av="${a.id}" class="${mine?'l3-mine':tk?'l3-taken':''}${a.secret?' av-sec':''}" aria-pressed="${mine}" ${tk?'disabled':''}><i class="l3-avw">${avSVG(a.id)}</i><span>${a.n}</span></button>`}).join('');s.hidden=false}
+/* truco secreto: tocar 5 veces el título de la hoja */
+$('#avtitle').addEventListener('click',()=>avSecretTap($('#avtitle'),()=>{openSheet(SHEET);sfr('rec',.8);toast('🥚 ¡Encontraste los íconos secretos!');$$('#avgrid .av-sec').forEach((b,k)=>{b.classList.add('av-new');later(k*140,()=>spk(b,14,['#ffd23f','#fff','#ff5c9a']))})}));
 
 /* ===================== FLUJO DE LA PARTIDA ===================== */
 function nextQ(){let pool=DB.r.map((q,i)=>i).filter(i=>!G.used.includes(i));if(!pool.length){G.used=[];pool=DB.r.map((q,i)=>i)}const i=pool[Math.floor(Math.random()*pool.length)];G.used.push(i);saveG();return DB.r[i]}
@@ -2091,7 +2219,7 @@ $('#bzx').addEventListener('pointerdown',e=>e.stopPropagation());
 $('#bzx').addEventListener('click',()=>{F.tok++;nhCancel();bzClose();closeAsk();hideSay();if(R){R.phase='q';ctl('play')}note('Botones cerrados. Toquen “Botones otra vez” cuando quieran.')});
 $('#clk').addEventListener('click',()=>{ac();loadSounds().then(()=>{if(R&&(R.phase==='play'||R.phase==='steal')&&!CK.run)turnStart()})});
 $('#salab').addEventListener('click',openLobby);
-$('#lobok').addEventListener('click',()=>{$('#lobby').hidden=true;ac();loadSounds();if(!R){if(G.fin===G.ri){G.ri++;saveG()}
+$('#lobok').addEventListener('click',()=>{$('#lobby').hidden=true;ac();loadSounds();if(!R){/* la partida pasada ya terminó: empieza una nueva */if(G.ended){resetG();[0,1].forEach(t=>{$('#ts'+t).dataset.v=0;$('#ts'+t).textContent=0})}else if(G.fin===G.ri){G.ri++;saveG()}
   /* al empezar la partida: por qué premio se juega */
   if(G.ri===0&&!G.sc[0]&&!G.sc[1]&&CFG.prize){cinta('🎁 ¡SE JUEGA POR UN PREMIO!',CFG.prize,'c-pink');nhInfo('🎁 Se juega por: '+CFG.prize,'');T(2700,startRound)}else startRound()}});
 $('#lteams').addEventListener('click',e=>{const b=e.target.closest('.tav');if(b)openSheet(+b.dataset.t)});
@@ -2312,17 +2440,19 @@ $$('.j-tabs [data-tab]').forEach(b=>b.addEventListener('click',()=>{$$('.j-tabs 
 /* partida guardada: continuar o empezar de nuevo */
 function hasSaved(){return !G.ended&&(G.ri>0||G.sc[0]+G.sc[1]>0||G.fin>=0)}
 function allPlayed(){return CFG.rounds>0&&G.fin===G.ri&&G.ri+1>=CFG.rounds}
-function drawSaved(){const show=!R&&hasSaved(),box=$('#saved');box.hidden=!show;$('#lobok').hidden=show;$('#lobok').textContent=R?'Seguir jugando':'¡Listo, a jugar!';if(!show)return;
+/* continuar o reiniciar: sale con partida guardada y también a media partida (Sala y equipos) */
+function drawSaved(){const live=!!R&&R.phase!=='end',show=live||(!R&&hasSaved()),box=$('#saved');box.hidden=!show;$('#lobok').hidden=show&&!live;box.classList.toggle('j-inplay',live);$('#lobok').textContent=R?'Seguir jugando':'¡Listo, a jugar!';if(!show)return;
   const n=G.fin===G.ri?G.ri+2:G.ri+1,[a,b]=G.sc,w=a===b?-1:a>b?0:1;
-  $('#savedtx').textContent=allPlayed()?`Ya se jugaron todas las rondas. ${w<0?'Quedaron empatados':'Ganaron '+losN(w)}: ${NAMES[0]} ${a} · ${NAMES[1]} ${b}`:`Van en la ronda ${n}${CFG.rounds?' de '+CFG.rounds:''} · ${NAMES[0]} ${a} · ${NAMES[1]} ${b}`;
-  $('#cont').hidden=allPlayed();
+  $('#savedh').textContent=live?'🎮 Partida en curso':'💾 Hay una partida guardada';$('#cont').textContent=live?'▶ Seguir jugando':'▶ Continuar';$('#fresh').textContent=live?'↺ Reiniciar partida':'Empezar de nuevo';
+  $('#savedtx').textContent=live?`Ronda ${G.ri+1}${CFG.rounds?' de '+CFG.rounds:''} · ${NAMES[0]} ${a} · ${NAMES[1]} ${b}`:allPlayed()?`Ya se jugaron todas las rondas. ${w<0?'Quedaron empatados':'Ganaron '+losN(w)}: ${NAMES[0]} ${a} · ${NAMES[1]} ${b}`:`Van en la ronda ${n}${CFG.rounds?' de '+CFG.rounds:''} · ${NAMES[0]} ${a} · ${NAMES[1]} ${b}`;
+  $('#cont').hidden=live||allPlayed();
   let at='';if(G.at){const d=new Date(G.at),hoy=new Date(),ay=new Date(Date.now()-864e5),h=d.toLocaleTimeString('es-MX',{hour:'numeric',minute:'2-digit'});
     at=d.toDateString()===hoy.toDateString()?'hoy a las '+h:d.toDateString()===ay.toDateString()?'ayer a las '+h:d.toLocaleDateString('es-MX',{day:'numeric',month:'long'})+' a las '+h}
   $('#savedat').textContent=at?'Guardada '+at:''}
 let FRESH=0;
 $('#cont').addEventListener('click',()=>$('#lobok').click());
-$('#fresh').addEventListener('click',()=>{const now=Date.now(),b=$('#fresh');if(now-FRESH>4000){FRESH=now;b.textContent='¿Seguro? Toca otra vez';b.classList.add('l3-x');later(4000,()=>{b.textContent='Empezar de nuevo';b.classList.remove('l3-x')});return}
-  FRESH=0;resetG();[0,1].forEach(t=>{$('#ts'+t).dataset.v=0;$('#ts'+t).textContent=0});rnLabel();toast('Partida nueva: el marcador empieza en cero.');$('#lobok').click()});
+$('#fresh').addEventListener('click',()=>{const now=Date.now(),b=$('#fresh');if(now-FRESH>4000){FRESH=now;const was=b.textContent;b.textContent='¿Seguro? Toca otra vez';b.classList.add('l3-x');later(4000,()=>{if(FRESH===now){b.textContent=was;b.classList.remove('l3-x')}});return}
+  FRESH=0;b.classList.remove('l3-x');if(R){closeAll();R=null}finHide();resetG();[0,1].forEach(t=>{$('#ts'+t).dataset.v=0;$('#ts'+t).textContent=0});rnLabel();toast('Partida nueva: el marcador empieza en cero.');$('#lobok').click()});
 
 /* rondas y final de la partida */
 function rnLabel(){$('#rn').textContent=(G.ri+1)+(CFG.rounds?' de '+CFG.rounds:'')}

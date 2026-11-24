@@ -1,0 +1,49 @@
+/* ===== foto finish: carrera de caballitos ===== */
+.hr{--hw:44px;position:relative;display:grid;gap:4px;margin:4px 0;padding:8px 8px 6px;border-radius:14px;background:repeating-linear-gradient(180deg,#1f7a3e 0 22%,#23894a 22% 44%);box-shadow:inset 0 0 0 2px rgba(255,255,255,.18);overflow:hidden;text-align:left;color:#fff}
+.hr-lane{display:grid;grid-template-columns:minmax(0,6.2em) 1fr 5.4em;align-items:center;gap:6px;min-height:calc(var(--hw)*.77);font:800 13px/1.1 Rubik,sans-serif}
+.hr-nm{display:flex;align-items:center;gap:5px;min-width:0;text-shadow:0 1px 2px rgba(0,0,0,.6)}
+.hr-nm>span{overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.hr-av{flex:none;width:22px;height:22px}
+.hr-trk{position:relative;height:calc(var(--hw)*.68);border-bottom:2px dashed rgba(255,255,255,.35)}
+.hr-go{position:absolute;left:0;top:0;bottom:0;right:var(--hw)}
+.hr-tr{position:absolute;left:0;top:50%;width:100%;height:8px;margin-top:2px;border-radius:99px;background:linear-gradient(90deg,transparent,var(--c));opacity:.85}
+.hr-run{position:absolute;left:100%;bottom:-1px;width:var(--hw);height:calc(var(--hw)*.68);color:var(--c)}
+.hr-h{position:absolute;inset:auto 0 0 0;width:var(--hw);height:calc(var(--hw)*.64);overflow:visible}
+.hr-jk{position:absolute;left:calc(var(--hw)*.32);top:calc(var(--hw)*-.2);width:calc(var(--hw)*.39);height:calc(var(--hw)*.39);border-radius:50%}
+.hr-avj{width:100%;height:100%;display:block}
+.hr-la{opacity:1}.hr-lb{opacity:0}
+.hr.run .hr-lane:not(.fin) .hr-la{animation:hrA .22s steps(1) infinite}
+.hr.run .hr-lane:not(.fin) .hr-lb{animation:hrB .22s steps(1) infinite}
+.hr.run .hr-lane:not(.fin) .hr-run{animation:hrbob .22s ease-in-out infinite alternate}
+@keyframes hrA{0%{opacity:1}50%{opacity:0}}
+@keyframes hrB{0%{opacity:0}50%{opacity:1}}
+@keyframes hrbob{to{transform:translateY(-3px)}}
+.hr-meta{position:absolute;right:0;top:-4px;bottom:-4px;width:8px;background:repeating-conic-gradient(#fff 0 25%,#1a1a1a 0 50%) 0 0/8px 8px;box-shadow:0 0 6px rgba(255,255,255,.5)}
+.hr-t{display:flex;align-items:baseline;justify-content:flex-end;gap:3px;white-space:nowrap;font:400 17px/1 var(--disp,inherit);opacity:0;transform:scale(.4);transition:opacity .2s,transform .35s cubic-bezier(.3,1.6,.5,1);text-shadow:0 2px 0 rgba(0,0,0,.35)}
+.hr-t em{font:800 11px Rubik,sans-serif;font-style:normal;color:#ffd76a}
+.hr-lane.fin .hr-t{opacity:1;transform:none}
+.hr-lane.still .hr-t{transition:none}
+.hr-lane:first-child.fin .hr-t em{color:#fff;background:#ffb020;padding:1px 5px;border-radius:99px}
+.hr-flash{position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none}
+.hr.flash .hr-flash{animation:hrfl .5s ease-out}
+@keyframes hrfl{0%{opacity:.85}100%{opacity:0}}
+.hr-photo{position:absolute;left:50%;top:50%;padding:4px 12px;border-radius:99px;background:#ff2e88;color:#fff;font:400 18px var(--disp,inherit);white-space:nowrap;opacity:0;transform:translate(-50%,-50%) rotate(-6deg) scale(.4);pointer-events:none}
+.hr.photo .hr-photo{animation:hrph 1.8s cubic-bezier(.3,1.6,.5,1) forwards}
+@keyframes hrph{0%{opacity:0;transform:translate(-50%,-50%) rotate(-6deg) scale(.4)}15%{opacity:1;transform:translate(-50%,-50%) rotate(-6deg) scale(1.1)}80%{opacity:1;transform:translate(-50%,-50%) rotate(-6deg) scale(1)}100%{opacity:0;transform:translate(-50%,-50%) rotate(-6deg) scale(1)}}
+@media (prefers-reduced-motion:reduce){.hr *{animation:none!important}}
+.hr-lane.me{border-radius:10px;background:rgba(255,255,255,.14);box-shadow:inset 0 0 0 2px #ffd76a}
+.pres .hr{width:min(92vw,420px);margin-top:4px}
+.pres.hasrace{gap:8px}
+.pres.hasrace .l3-svg{width:min(26vw,120px)}
+.pres.hasrace b{font-size:clamp(34px,10vw,60px)}
+/* pantallas grandes: caballitos más grandes */
+#result .hr{--hw:clamp(44px,5vmin,64px)}
+#result .hr-lane{font-size:clamp(13px,1.9vmin,18px)}
+#result .hr-av{width:clamp(22px,3vmin,30px);height:clamp(22px,3vmin,30px)}
+#result .hr-t{font-size:clamp(17px,2.6vmin,24px)}
+@media (min-width:900px) and (min-height:600px){
+  #bzc{width:min(60vw,560px)}
+  #bzc .hr{--hw:56px}
+  #bzc .hr-lane{font-size:15px}
+  #bzc .hr-t{font-size:20px}
+}
