@@ -1130,6 +1130,23 @@ body{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-r
   body:not(.ver) .l3-ctl{position:sticky;bottom:0;z-index:25;margin:10px -8px 0;padding:10px 8px max(8px,env(safe-area-inset-bottom));background:linear-gradient(180deg,rgba(7,10,36,0),rgba(7,10,36,.96) 28%)}
 }
 
+/* correcciones y modo anfitrión */
+.j-fixrow{display:flex;justify-content:center;gap:8px;margin-top:6px}
+.j-fixb{font-size:14px;padding:6px 14px;opacity:.85}
+.j-admb{margin:6px 0 0;text-align:center;color:var(--mute,#9aa3d6);font-weight:800;font-size:13px}
+.j-admb b{color:#ffd76a}
+/* con el anfitrión controlando desde su celular, la pantalla se ve limpia */
+.admon #ctl,.admon .j-fixrow,.admon #lobok,.admon #saved button,.admon .l3-wbtns,.admon .j-fin-btns,.admon .j-tabs,.admon #tab-aj{display:none!important}
+.j-fixs{position:fixed;inset:0;z-index:80;display:grid;place-items:center;padding:16px;background:rgba(5,8,30,.7)}
+.j-fixp{width:min(94vw,460px);display:grid;gap:12px;padding:16px;border-radius:20px;background:linear-gradient(180deg,#232c86,#121746);box-shadow:0 0 0 3px #ffc42e,0 20px 60px rgba(0,0,0,.6)}
+.j-fixp header{display:flex;justify-content:space-between;align-items:center}.j-fixp header b{font:400 24px var(--disp)}
+.j-fixg{display:grid;grid-template-columns:1fr 1fr;gap:8px}.j-fixg .l3-x{grid-column:1/-1}
+.j-fixpts{display:grid;gap:8px}.j-fixpt{display:grid;gap:6px;padding:8px 10px;border-radius:14px;background:rgba(0,0,0,.25);box-shadow:inset 0 0 0 2px var(--tc)}
+.j-fixpt b{font:400 17px var(--disp);color:var(--tc)}.j-fixpt span{display:flex;gap:6px}.j-fixpt .l2-b{flex:1;padding:6px 0}
+.j-sndg{position:fixed;left:50%;bottom:18px;z-index:85;display:grid;justify-items:center;gap:6px;transform:translateX(-50%)}
+.j-sndg small{color:#fff;font-weight:800;text-shadow:0 2px 4px #000}
+.j-sndg .l2-b:focus-visible{outline:4px solid #fff;outline-offset:4px}
+
 /* ===== foto finish: carrera de caballitos ===== */
 .hr{--hw:44px;position:relative;display:grid;gap:4px;margin:4px 0;padding:8px 8px 6px;border-radius:14px;background:repeating-linear-gradient(180deg,#1f7a3e 0 22%,#23894a 22% 44%);box-shadow:inset 0 0 0 2px rgba(255,255,255,.18);overflow:hidden;text-align:left;color:#fff}
 .hr-lane{display:grid;grid-template-columns:minmax(0,6.2em) 1fr 5.4em;align-items:center;gap:6px;min-height:calc(var(--hw)*.77);font:800 13px/1.1 Rubik,sans-serif}
@@ -1218,6 +1235,17 @@ button.ctk:active .ctk-d{transform:scale(.88)}
 .cmdbar .ctk-t b{font-size:15px}
 .cmdbar .ctk.can{background:rgba(var(--kg),.16);box-shadow:inset 0 0 0 1.5px rgba(var(--kg),.6)}
 .cmdbar .ctk:not(.can):not(.used) .ctk-t small{color:#9aa3d6}
+
+/* ===== modo ligero: sin luces ni adornos pesados (lo importante se sigue viendo) ===== */
+.lite .marq canvas.l,.lite .rim canvas.l{animation:none!important;opacity:0!important}
+.lite #board .tile:not(.on) .front::after,.lite .l3-half::before{display:none!important}
+.lite .l3-rays,.lite .logo img.rays,.lite .wmul img,.lite .l2-fire i,.lite .l2-flame span,.lite .l3-wsw.sway,.lite .vs::before{animation:none!important}
+.lite #wst.fast::after,.lite #wst.fire::after{filter:none!important}
+.lite *{backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
+.lite .ctk.can .ctk-d{animation:none!important;box-shadow:inset 0 -3px 0 rgba(0,0,0,.22),0 0 0 2px #fff,0 0 0 4px rgba(var(--kg),.6)}
+.lite #board .tile.l2-sur .back{animation:none!important}
+.lite-note{position:fixed;left:50%;top:max(12px,env(safe-area-inset-top));z-index:200;transform:translateX(-50%);display:flex;align-items:center;gap:8px;width:max-content;max-width:94vw;padding:8px 10px 8px 14px;border-radius:14px;background:#0b0f3a;color:#fff;font:700 13px Rubik,sans-serif;box-shadow:0 0 0 2px #ffd76a,0 10px 30px rgba(0,0,0,.6)}
+.lite-note button{flex:none;padding:6px 10px;border:0;border-radius:10px;background:#ffd76a;color:#3a1a00;font:800 12px Rubik,sans-serif}
 
 /* pantalla del jugador: sin botones de quien dirige y pensada para celular */
 body.ver{overflow-x:hidden}
@@ -1363,7 +1391,7 @@ body.ver{overflow-x:hidden}
 
 <script>
 {
-const APPV='botones-v22';
+const APPV='botones-v23';
 const $=(s,r)=>(r||document).querySelector(s),$$=(s,r)=>[...(r||document).querySelectorAll(s)];
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const S={mute:false,music:'baja',gm:'j1',anime:true,order:'orden'};const view=()=>'tablero';let introOn=false;let flowTok=0;
@@ -1487,7 +1515,7 @@ function take(list,used,n){
   return JSON.parse(JSON.stringify(out));
 }
 /* el único confeti del juego: para los ganadores */
-function confetti(){if(RM())return;const cs=['#ff2e88','#14b8a6','#ffc42e','#fff8ec','#8b5cf6','#ff8a1a'];for(let i=0;i<90;i++){const p=document.createElement('i');p.className='conf';p.style.left=Math.random()*100+'vw';p.style.background=cs[i%cs.length];p.style.borderRadius=i%3?'2px':'50%';document.body.appendChild(p);
+function confetti(){if(RM())return;const cs=['#ff2e88','#14b8a6','#ffc42e','#fff8ec','#8b5cf6','#ff8a1a'];for(let i=0,N=document.documentElement.classList.contains('lite')?30:90;i<N;i++){const p=document.createElement('i');p.className='conf';p.style.left=Math.random()*100+'vw';p.style.background=cs[i%cs.length];p.style.borderRadius=i%3?'2px':'50%';document.body.appendChild(p);
   const d=2400+Math.random()*1800,x=(Math.random()-.5)*200;try{p.animate([{transform:'translate(0,0) rotate(0deg)'},{transform:`translate(${x}px,110vh) rotate(${(Math.random()-.5)*1080}deg)`}],{duration:d,delay:Math.random()*600,easing:'cubic-bezier(.3,.1,.6,1)',fill:'both'}).onfinish=()=>p.remove()}catch(e){p.remove()}}}
 
 /* ===================== ESCENARIO QUE REACCIONA ===================== */
@@ -1755,6 +1783,20 @@ const CMDN={p:'Pista',s:'Silencio',c:'Junta'};
 /* o:{used,can,tag,attrs,label,sub} */
 function ctkHTML(k,o){o=o||{};const tag=o.tag||'span';return `<${tag} class="ctk ctk-${k}${o.used?' used':''}${o.can&&!o.used?' can':''}" ${o.attrs||''}><span class="ctk-d">${CMDI[k]}</span>`+
   (o.label===false?'':`<span class="ctk-t"><b>${CMDN[k]}</b>${o.sub?`<small>${o.sub}</small>`:''}</span>`)+`</${tag}>`}
+
+/* ===================== MODO LIGERO =====================
+   Si el aparato se traba (menos de 30 cuadros por segundo casi todo el rato), se apagan las luces y adornos pesados.
+   También se puede poner o quitar a mano: auto / on / off (se guarda en este aparato). */
+const LITE={mode:(()=>{try{return localStorage.getItem('lite')||'auto'}catch(e){return'auto'}})(),on:false,bad:0};
+function liteApply(){const on=LITE.mode==='on'||(LITE.mode==='auto'&&(()=>{try{return localStorage.getItem('lite-auto')==='1'}catch(e){return false}})());LITE.on=on;document.documentElement.classList.toggle('lite',on);try{dispatchEvent(new Event('litechange'))}catch(e){}}
+function liteMode(m){LITE.mode=m;try{localStorage.setItem('lite',m);if(m!=='auto')localStorage.removeItem('lite-auto')}catch(e){}liteApply()}
+function liteNote(){if(window.top!==window||!document.body)return;const d=document.createElement('div');d.className='lite-note';d.innerHTML='<span>🐢 Este aparato iba lento: activé el <b>modo ligero</b>.</span><button type="button">Quitarlo</button>';
+  d.querySelector('button').onclick=()=>{liteMode('off');d.remove()};document.body.appendChild(d);setTimeout(()=>d.remove(),12000)}
+liteApply();addEventListener('storage',e=>{if(e.key==='lite'||e.key==='lite-auto'){LITE.mode=(()=>{try{return localStorage.getItem('lite')||'auto'}catch(x){return'auto'}})();liteApply()}});
+(function liteWatch(){if(window.top!==window)return;let last=performance.now(),t0=last,n=0,slow=0;
+  const f=t=>{const d=t-last;last=t;if(!document.hidden&&d<500){n++;if(d>34)slow++}
+    if(t-t0>4000){if(n>40&&slow/n>.45){LITE.bad++;if(LITE.bad>=2&&LITE.mode==='auto'&&!LITE.on){try{localStorage.setItem('lite-auto','1')}catch(e){}liteApply();liteNote()}}else LITE.bad=0;n=0;slow=0;t0=t}
+    if(!LITE.on)requestAnimationFrame(f)};requestAnimationFrame(f)})();
 
 /* ===================== PANTALLA DEL JUGADOR: lo mismo que la pantalla grande, sin botones de quien dirige ===================== */
 const NAMES=['Turquesas','Dorados'],TCOL=['#3fe0cc','#ffc42e'];let AV=['ajolote','jaguar'];

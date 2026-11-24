@@ -170,3 +170,17 @@ const CMDN={p:'Pista',s:'Silencio',c:'Junta'};
 /* o:{used,can,tag,attrs,label,sub} */
 function ctkHTML(k,o){o=o||{};const tag=o.tag||'span';return `<${tag} class="ctk ctk-${k}${o.used?' used':''}${o.can&&!o.used?' can':''}" ${o.attrs||''}><span class="ctk-d">${CMDI[k]}</span>`+
   (o.label===false?'':`<span class="ctk-t"><b>${CMDN[k]}</b>${o.sub?`<small>${o.sub}</small>`:''}</span>`)+`</${tag}>`}
+
+/* ===================== MODO LIGERO =====================
+   Si el aparato se traba (menos de 30 cuadros por segundo casi todo el rato), se apagan las luces y adornos pesados.
+   También se puede poner o quitar a mano: auto / on / off (se guarda en este aparato). */
+const LITE={mode:(()=>{try{return localStorage.getItem('lite')||'auto'}catch(e){return'auto'}})(),on:false,bad:0};
+function liteApply(){const on=LITE.mode==='on'||(LITE.mode==='auto'&&(()=>{try{return localStorage.getItem('lite-auto')==='1'}catch(e){return false}})());LITE.on=on;document.documentElement.classList.toggle('lite',on);try{dispatchEvent(new Event('litechange'))}catch(e){}}
+function liteMode(m){LITE.mode=m;try{localStorage.setItem('lite',m);if(m!=='auto')localStorage.removeItem('lite-auto')}catch(e){}liteApply()}
+function liteNote(){if(window.top!==window||!document.body)return;const d=document.createElement('div');d.className='lite-note';d.innerHTML='<span>🐢 Este aparato iba lento: activé el <b>modo ligero</b>.</span><button type="button">Quitarlo</button>';
+  d.querySelector('button').onclick=()=>{liteMode('off');d.remove()};document.body.appendChild(d);setTimeout(()=>d.remove(),12000)}
+liteApply();addEventListener('storage',e=>{if(e.key==='lite'||e.key==='lite-auto'){LITE.mode=(()=>{try{return localStorage.getItem('lite')||'auto'}catch(x){return'auto'}})();liteApply()}});
+(function liteWatch(){if(window.top!==window)return;let last=performance.now(),t0=last,n=0,slow=0;
+  const f=t=>{const d=t-last;last=t;if(!document.hidden&&d<500){n++;if(d>34)slow++}
+    if(t-t0>4000){if(n>40&&slow/n>.45){LITE.bad++;if(LITE.bad>=2&&LITE.mode==='auto'&&!LITE.on){try{localStorage.setItem('lite-auto','1')}catch(e){}liteApply();liteNote()}}else LITE.bad=0;n=0;slow=0;t0=t}
+    if(!LITE.on)requestAnimationFrame(f)};requestAnimationFrame(f)})();

@@ -86,7 +86,7 @@ let WL=null,MODE='';
 async function wake(){try{if('wakeLock' in navigator&&!WL){WL=await navigator.wakeLock.request('screen');WL.addEventListener('release',()=>{WL=null})}}catch(e){}}
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&MODE)wake()});
 function show(v){['home','host','play'].forEach(k=>$('#v-'+k).hidden=k!==v);scrollTo(0,0)}
-function spk(el,n,cols){if(RM()||!el)return;const r=el.getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height/2;
+function spk(el,n,cols){if(RM()||!el)return;if(document.documentElement.classList.contains('lite'))n=Math.ceil(n*.35);const r=el.getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height/2;
   for(let i=0;i<n;i++){const p=document.createElement('i');p.className='spk';p.style.cssText=`left:${cx}px;top:${cy}px;background:${cols[i%cols.length]};box-shadow:0 0 8px ${cols[i%cols.length]}`;document.body.appendChild(p);
     const a=Math.random()*Math.PI*2,d=r.width*.45+Math.random()*r.width*.55;p.animate([{transform:'translate(-50%,-50%) scale(1.3)',opacity:1},{transform:`translate(calc(-50% + ${Math.cos(a)*d}px),calc(-50% + ${Math.sin(a)*d}px)) scale(.2)`,opacity:0}],{duration:600+Math.random()*450,easing:'cubic-bezier(.15,.7,.35,1)'}).onfinish=()=>p.remove()}}
 function pop(el,ms){if(RM()||!el)return;el.animate([{transform:'scale(.4)',opacity:0},{transform:'scale(1.12)',opacity:1,offset:.6},{transform:'none',opacity:1}],{duration:ms||450,easing:'cubic-bezier(.3,1.5,.5,1)'})}
@@ -256,11 +256,12 @@ function playMsg(topic,m){
   P.lastHost=performance.now();
   if(m.t==='ping'){psend({t:'pong',ts:m.ts,pt:performance.now()});return}
   if(m.t==='off'){if(isFinite(+m.off))P.hoff=+m.off;return}
+  if(m.t&&m.t.startsWith('adm-')){admMsg(m);return}
   if(m.t==='ev'){const f=$('#gvf');if(VERok&&f.contentWindow)try{f.contentWindow.postMessage({t:'ev',e:m,_d:isFinite(P.hoff)?performance.timeOrigin-P.hoff:null},'*')}catch(e){}return}
   if(m.t==='who'){hello();return}
   if(m.t==='rtc-answer'){if(P.pc&&typeof m.sdp==='string'&&P.pc.signalingState==='have-local-offer')P.pc.setRemoteDescription({type:'answer',sdp:m.sdp}).catch(()=>dropP());return}
   if(m.t==='state'){const firstFound=!P.found,prevT=P.team;P.found=true;setNames(m.names);if(m.info&&m.info.text)P.info=m.info;if(Array.isArray(m.av))preAnimals(m.av);clearTimeout(P.probeT);P.st=m;P.foul=!!m.foul;if(m.team===0||m.team===1)P.team=m.team;else if(m.team===-1)P.team=-1;
-    if(!dcOpen(P.dc))setStat('#pstat','Conectado por servidor','ok');drawMe();if(firstFound)later(300,playRTC);
+    if(!dcOpen(P.dc))setStat('#pstat','Conectado por servidor','ok');drawMe();admHello();admUI();if(firstFound)later(300,playRTC);
     if(P.phase==='idle'||P.phase==='res'){if(P.team<0)showPick();else if(P.picking&&prevT<0&&!firstFound){showPad();toast('La pantalla del juego te puso en '+NAMES[P.team]+'.')}else if(P.picking)drawPick();else if(firstFound)showPad();else gvShow()}else drawPick();return}
   if(m.t==='info'){P.info={text:m.text,sub:m.sub||''};if(P.found&&P.phase==='idle'&&!$('#pad').hidden){$$('#plamps i').forEach(l=>{l.className='';l.style.removeProperty('--wc')});padState('idle',P.info.text,P.info.sub)}return}
   if(!P.found)return;
@@ -545,8 +546,20 @@ $('#code').addEventListener('input',e=>{e.target.value=e.target.value.toUpperCas
 let LINKBI=-1;
 $('#joinf').addEventListener('submit',e=>{e.preventDefault();const code=$('#code').value.toUpperCase().replace(/[^A-Z0-9]/g,''),name=$('#pname').value.trim().slice(0,14)||'Jugador';
   if(code.length!==4){$('#joinerr').textContent='El código tiene 4 letras o números.';return}$('#joinerr').textContent='';ac();loadSounds();playStart(code,name,LINKBI)});
-let DEF=null;addEventListener('beforeinstallprompt',e=>{e.preventDefault();DEF=e;$('#install').hidden=false});
-$('#install').addEventListener('click',async()=>{if(!DEF)return;DEF.prompt();try{await DEF.userChoice}catch(e){}DEF=null;$('#install').hidden=true});
+/* instalar la app: si el navegador lo permite, sale su ventana; si no, los pasos para Android y iPhone */
+const STANDALONE=matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
+let DEF=null;$('#install').hidden=STANDALONE;addEventListener('beforeinstallprompt',e=>{e.preventDefault();DEF=e;$('#install').hidden=false});
+$('#install').addEventListener('click',async()=>{if(DEF){DEF.prompt();try{const r=await DEF.userChoice;if(r&&r.outcome==='accepted')$('#install').hidden=true}catch(e){}DEF=null;return}$('#instsh').hidden=false});
+$('#instok').addEventListener('click',()=>$('#instsh').hidden=true);
+/* modo ligero a mano: auto → sí → no */
+function liteBtn(){$('#litev').textContent={auto:LITE.on?'Auto (activado)':'Auto',on:'Sí',off:'No'}[LITE.mode]}
+addEventListener('litechange',liteBtn);$('#litebtn').addEventListener('click',()=>{liteMode({auto:'on',on:'off',off:'auto'}[LITE.mode]);liteBtn()});liteBtn();
+/* ¿qué hay de nuevo? (una vez, después de cada actualización, solo a quien ya había jugado) */
+function newsShow(){if(typeof NEWS==='undefined'||!NEWS.length||typeof APPV==='undefined')return;const n=NEWS[0];if(n.v!==APPV||LS.get('news-seen','')===n.v)return;
+  if(!LS.get('bt-name','')){LS.set('news-seen',n.v);return}if($('#v-home').hidden||!$('#modes').hidden||!$('#joinf').hidden){later(4000,newsShow);return}
+  $('#newl').innerHTML=n.t.map(x=>`<li>${esc(x)}</li>`).join('');$('#newsh').hidden=false}
+$('#newok').addEventListener('click',()=>{$('#newsh').hidden=true;if(typeof NEWS!=='undefined'&&NEWS[0])LS.set('news-seen',NEWS[0].v)});
+later(1800,newsShow);
 if('serviceWorker' in navigator&&!LOCAL)navigator.serviceWorker.register('sw.js').catch(()=>{});
 $('#pname').value=P.name;
 {const m=location.hash.match(/^#j=([A-Za-z0-9]{4})(?:-(\d))?$/);if(m){$('#joinf').hidden=false;$('#code').value=m[1].toUpperCase();if(m[2]!=null)LINKBI=Math.min(+m[2],BROKERS.length-1);later(50,()=>$('#pname').focus())}}
@@ -564,5 +577,79 @@ setInterval(updCheck,90000);addEventListener('visibilitychange',()=>{if(!documen
 /* después de actualizarse, vuelve a entrar solo a la misma sala */
 {let a=null;try{a=JSON.parse(sessionStorage.getItem('bt-auto')||'null');sessionStorage.removeItem('bt-auto')}catch(e){}
   if(a&&a.code&&Date.now()-a.at<600000)later(250,()=>playStart(a.code,a.name||P.name||'Jugador',a.bi))}
-window.__bt={H,P,WP,UPD,updCheck};
+/* ===================== MODO ANFITRIÓN (solo el celular que sabe el PIN) =====================
+   Del PIN solo existe una versión cifrada. Tu celular lo pide una vez (teclado revuelto, sin marcar qué tecla tocas)
+   y guarda una llave; con ella, cualquier pantalla del juego lo reconoce como anfitrión. */
+const ADM_KH='4f741ec379e0261a59ed966dc79a20b779d74af2cdd4efdcded1cb9859fedea1';
+const AD={k:LS.get('adm-k',''),ok:false,st:null,tab:'b',cover:false,conf:{},pin:'',fails:LS.get('adm-fails',0),until:LS.get('adm-until',0)};
+async function sha256(s){const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(s));return[...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('')}
+function admHello(){if(AD.k&&MODE==='play'&&P.found)psend({t:'adm-hi',k:AD.k,black:LS.get('adm-black',[])},1)}
+function admUI(){$('#admk').hidden=MODE!=='play'||AD.ok;$('#admt').hidden=!(MODE==='play'&&AD.ok)}
+/* PIN */
+function pinOpen(){if(Date.now()<AD.until){toast(`Muchos intentos. Espera ${Math.ceil((AD.until-Date.now())/1000)} s`);return}AD.pin='';pinPad();pinDots();$('#pinmsg').textContent='Escribe tu PIN';$('#pin').hidden=false}
+function pinPad(){const d=[...'0123456789'];for(let i=d.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[d[i],d[j]]=[d[j],d[i]]}
+  $('#pinpad').innerHTML=d.slice(0,9).map(x=>`<button type="button" class="pin-k" data-d="${x}">${x}</button>`).join('')+`<span></span><button type="button" class="pin-k" data-d="${d[9]}">${d[9]}</button><button type="button" class="pin-k pin-del" data-d="del" aria-label="Borrar">⌫</button>`}
+function pinDots(){$$('#pindots i').forEach((e,k)=>e.classList.toggle('on',k<AD.pin.length))}
+$('#pinpad').addEventListener('pointerdown',e=>{const b=e.target.closest('.pin-k');if(!b)return;e.preventDefault();const d=b.dataset.d;
+  if(d==='del')AD.pin=AD.pin.slice(0,-1);else if(AD.pin.length<4)AD.pin+=d;pinDots();if(AD.pin.length===4)pinTry()});
+$('#pinx').addEventListener('click',()=>{AD.pin='';$('#pin').hidden=true});
+$('#admk').addEventListener('click',pinOpen);
+async function pinTry(){const k=await sha256('100familiares-anfitrion:'+AD.pin);AD.pin='';pinDots();
+  if(await sha256(k)!==ADM_KH){AD.fails++;LS.set('adm-fails',AD.fails);vib([60,40,60]);if(AD.fails>=3){AD.fails=0;LS.set('adm-fails',0);AD.until=Date.now()+60000;LS.set('adm-until',AD.until);$('#pin').hidden=true;toast('PIN incorrecto. Espera un minuto');return}
+    $('#pinmsg').textContent='PIN incorrecto';pinPad();return}
+  AD.fails=0;LS.set('adm-fails',0);AD.k=k;LS.set('adm-k',k);$('#pin').hidden=true;vib(40);toast('🔑 Listo: este celular es el anfitrión');admHello()}
+/* mensajes de la pantalla */
+function admMsg(m){if(m.t==='adm-ok'){AD.ok=true;admUI();return}if(m.t==='adm-no'){AD.k='';LS.set('adm-k','');AD.ok=false;admUI();toast('La pantalla no reconoció tu llave: vuelve a poner el PIN');return}
+  if(m.t==='adm-st'){AD.st=m;if(Array.isArray(m.black))LS.set('adm-black',m.black);if(!$('#adm').hidden)admDraw()}}
+const admSend=(c,o)=>{psend(Object.assign({t:'adm',c},o||{}),1);tick();vib(15)};
+/* doble toque para lo delicado */
+function admTwice(key,el,msg){const now=Date.now();if(AD.conf[key]&&now-AD.conf[key]<3500){AD.conf[key]=0;return true}AD.conf[key]=now;if(el){const t=el.textContent;el.textContent=msg||'¿Seguro? Toca otra vez';el.classList.add('warn');later(3500,()=>{if(el.isConnected){el.textContent=t;el.classList.remove('warn')}})}return false}
+/* panel */
+function admOpen(){admDraw();const a=$('#adm');a.hidden=false;if(!RM())a.animate([{transform:'translateY(100%)'},{transform:'none'}],{duration:320,easing:'cubic-bezier(.2,.9,.3,1)'})}
+function admClose(){$('#adm').hidden=true;AD.cover=false}
+$('#admt').addEventListener('click',()=>{$('#adm').hidden?admOpen():admClose()});$('#admx').addEventListener('click',admClose);
+$('.adm-tabs').addEventListener('click',e=>{const b=e.target.closest('[data-tab]');if(!b)return;AD.tab=b.dataset.tab;$$('.adm-tabs [data-tab]').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));admDraw()});
+const AB=(cmd,label,cls,extra)=>`<button type="button" class="adm-b ${cls||''}" data-c="${cmd}" ${extra||''}>${label}</button>`;
+function admDraw(){const s=AD.st,b=$('#admbody');if(!s){b.innerHTML='<p class="adm-note">Conectando con la pantalla…</p>';return}let h='';
+  const score=`<div class="adm-sc">${[0,1].map(t=>`<span style="--tc:${TCOL[t]}">${esc(s.names[t])} <b>${s.sc[t]}</b></span>`).join('')}</div>`;
+  if(AD.tab==='b'){
+    if(s.lob){h+=`<p class="adm-note">La pantalla está en la sala.</p>`;if(s.saved){if(s.cont)h+=AB('cont','▶ Continuar la partida','gd big');h+=AB('fresh','Empezar de nuevo','')}if(s.start)h+=AB('start','▶ '+esc(s.start),'gd big')}
+    else{h+=score;if(s.q)h+=`<p class="adm-q">${s.rn?`Ronda ${s.rn} · `:''}${esc(s.q)}</p>`;
+      if(s.nc)h+=`<div class="adm-nc">${AB('nocontaba','↩ No contaba','x')}<small>${esc(s.nc)}</small></div>`;
+      if(s.wauto)h+=AB('wauto','🎡 Girar la ruleta por ellos','gd');
+      if(s.fin)h+=AB('finagain','🎉 Otra partida','gd big')+AB('fincl','Cerrar la ceremonia','');
+      h+=`<div class="adm-ctl">${s.ctl.map(c=>AB('ctl',esc(c.l),c.c==='x'?'x big':c.c==='gd'?'gd big':c.c==='gh'?'gh':'',`data-a="${esc(c.a)}"`)).join('')}</div>`;
+      if(s.n&&['play','steal','done'].includes(s.ph))h+=`<p class="adm-lbl">${AD.cover?'Toca la ficha que quieres tapar':'Destapar una ficha'}</p><div class="adm-bd">${s.rev.map((r,i)=>`<button type="button" class="adm-t${r?' on':''}${AD.cover&&r?' cov':''}" data-c="${AD.cover?'cover':'tile'}" data-i="${i}" ${(AD.cover?!r:r)?'disabled':''}>${i+1}</button>`).join('')}</div>`}}
+  else{
+    h+=`<p class="adm-lbl">Correcciones</p><div class="adm-g">${AB('undox','Quitar la última ✕','',s.ux?'':'disabled')}${AB('cover1',AD.cover?'Cancelar tapar':'Tapar una ficha','',s.rev.some(Boolean)&&s.ph!=='done'?'':'disabled')}
+      ${AB('redo','Repetir la ronda','',s.q?'':'disabled')}${AB('skipq','Cambiar la pregunta','',s.q?'':'disabled')}</div>${AB('blackq','👎 Quitar esta pregunta para siempre','x',s.q?'':'disabled')}
+      <p class="adm-lbl">Puntos</p>${[0,1].map(t=>`<div class="adm-pt" style="--tc:${TCOL[t]}"><b>${esc(s.names[t])} · ${s.sc[t]}</b><span>${[-10,-5,5,10].map(d=>`<button type="button" class="adm-b" data-c="pts" data-t="${t}" data-d="${d}">${d>0?'+':''}${d}</button>`).join('')}</span></div>`).join('')}
+      <p class="adm-lbl">Partida</p><div class="adm-g">${AB('sala','Ir a la sala','',s.lob?'disabled':'')}${AB('fresh','Reiniciar la partida','x')}</div>
+      <label class="adm-sw"><input type="checkbox" id="admhide" ${s.hide?'checked':''}> Esconder los botones en la pantalla</label>
+      <div class="adm-cf"><span>🐢 Modo ligero en la pantalla${s.liteOn&&s.lite==='auto'?' (se activó solo)':''}</span><div>${[['auto','Auto'],['on','Sí'],['off','No']].map(([v,l])=>`<button type="button" class="adm-b" data-c="lite" data-v="${v}" aria-pressed="${s.lite===v}">${l}</button>`).join('')}</div></div>
+      <p class="adm-lbl">Ajustes</p>${admCfg(s.cfg)}
+      <p class="adm-lbl">Premio</p><form class="adm-pz" id="admpz"><input id="admpzi" maxlength="40" value="${esc(s.cfg.prize)}" placeholder="Ej. escogen la película"><button class="adm-b gd">Guardar</button></form>
+      <p class="adm-lbl">Equipos</p>${[0,1].map(t=>`<div class="adm-tm" style="--tc:${TCOL[t]}"><form class="adm-tn" data-t="${t}"><input value="${esc(s.names[t])}" maxlength="14" aria-label="Nombre del equipo"><button class="adm-b">✓</button></form>
+        ${s.ps.filter(p=>p.t===t).map(p=>`<div class="adm-p"><span>${esc(p.n)}</span><button type="button" class="adm-b" data-c="move" data-u="${esc(p.u)}" aria-label="Cambiar de equipo">⇄</button><button type="button" class="adm-b x" data-c="kick" data-u="${esc(p.u)}" aria-label="Sacar">✕</button></div>`).join('')||'<p class="adm-note">Nadie todavía.</p>'}</div>`).join('')}
+      <p class="adm-lbl">Preguntas quitadas (${s.black.length})</p>${s.black.length?s.black.map(q=>`<div class="adm-p"><span>${esc(q)}</span><button type="button" class="adm-b" data-c="blkdel" data-q="${esc(q)}">Restaurar</button></div>`).join(''):'<p class="adm-note">Ninguna.</p>'}`}
+  b.innerHTML=h}
+function admCfg(c){const row=(k,lbl,opts,cur)=>`<div class="adm-cf"><span>${lbl}</span><div>${opts.map(([v,l])=>`<button type="button" class="adm-b" data-c="cfg" data-k="${k}" data-v="${v}" aria-pressed="${String(v)===String(cur)}">${l}</button>`).join('')}</div></div>`;
+  return row('secs','Segundos',[['15','15'],['20','20'],['30','30']],c.secs)+row('rounds','Rondas',[['3','3'],['5','5'],['7','7'],['0','Sin límite']],c.rounds)+row('wheel','Ruleta',[['1','Sí'],['0','No']],c.wheel?1:0)+row('ans','Quién escribe',[['turnos','Por turnos'],['equipo','Cualquiera']],c.ans)}
+$('#admbody').addEventListener('click',e=>{const b=e.target.closest('[data-c]');if(!b||b.disabled)return;const c=b.dataset.c;
+  if(c==='cover1'){AD.cover=!AD.cover;AD.tab='b';$$('.adm-tabs [data-tab]').forEach(x=>x.setAttribute('aria-pressed',String(x.dataset.tab==='b')));admDraw();return}
+  if(c==='cover'){AD.cover=false;admSend('cover',{i:+b.dataset.i});admDraw();return}
+  if(c==='tile'){admSend('tile',{i:+b.dataset.i});return}
+  if(c==='ctl'){admSend('ctl',{a:b.dataset.a});return}
+  if((c==='fresh'||c==='blackq'||c==='kick')&&!admTwice(c+(b.dataset.u||''),b))return;
+  if(c==='pts'){admSend('pts',{tm:+b.dataset.t,d:+b.dataset.d});return}
+  if(c==='cfg'){admSend('cfg',{k:b.dataset.k,v:b.dataset.v});return}
+  if(c==='lite'){admSend('lite',{v:b.dataset.v});return}
+  if(c==='move'||c==='kick'){admSend(c,{u:b.dataset.u});return}
+  if(c==='blkdel'){admSend('blkdel',{q:b.dataset.q});return}
+  admSend(c)});
+$('#admbody').addEventListener('change',e=>{if(e.target.id==='admhide')admSend('hide',{v:e.target.checked})});
+$('#admbody').addEventListener('submit',e=>{e.preventDefault();const f=e.target;if(f.id==='admpz'){admSend('prize',{v:$('#admpzi').value});toast('Premio guardado');return}
+  if(f.classList.contains('adm-tn')){admSend('tname',{tm:+f.dataset.t,v:$('input',f).value});toast('Nombre guardado')}});
+admUI();
+window.__bt={H,P,WP,UPD,updCheck,AD};
 }

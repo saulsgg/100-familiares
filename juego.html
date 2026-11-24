@@ -1131,6 +1131,23 @@ body{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-r
   body:not(.ver) .l3-ctl{position:sticky;bottom:0;z-index:25;margin:10px -8px 0;padding:10px 8px max(8px,env(safe-area-inset-bottom));background:linear-gradient(180deg,rgba(7,10,36,0),rgba(7,10,36,.96) 28%)}
 }
 
+/* correcciones y modo anfitrión */
+.j-fixrow{display:flex;justify-content:center;gap:8px;margin-top:6px}
+.j-fixb{font-size:14px;padding:6px 14px;opacity:.85}
+.j-admb{margin:6px 0 0;text-align:center;color:var(--mute,#9aa3d6);font-weight:800;font-size:13px}
+.j-admb b{color:#ffd76a}
+/* con el anfitrión controlando desde su celular, la pantalla se ve limpia */
+.admon #ctl,.admon .j-fixrow,.admon #lobok,.admon #saved button,.admon .l3-wbtns,.admon .j-fin-btns,.admon .j-tabs,.admon #tab-aj{display:none!important}
+.j-fixs{position:fixed;inset:0;z-index:80;display:grid;place-items:center;padding:16px;background:rgba(5,8,30,.7)}
+.j-fixp{width:min(94vw,460px);display:grid;gap:12px;padding:16px;border-radius:20px;background:linear-gradient(180deg,#232c86,#121746);box-shadow:0 0 0 3px #ffc42e,0 20px 60px rgba(0,0,0,.6)}
+.j-fixp header{display:flex;justify-content:space-between;align-items:center}.j-fixp header b{font:400 24px var(--disp)}
+.j-fixg{display:grid;grid-template-columns:1fr 1fr;gap:8px}.j-fixg .l3-x{grid-column:1/-1}
+.j-fixpts{display:grid;gap:8px}.j-fixpt{display:grid;gap:6px;padding:8px 10px;border-radius:14px;background:rgba(0,0,0,.25);box-shadow:inset 0 0 0 2px var(--tc)}
+.j-fixpt b{font:400 17px var(--disp);color:var(--tc)}.j-fixpt span{display:flex;gap:6px}.j-fixpt .l2-b{flex:1;padding:6px 0}
+.j-sndg{position:fixed;left:50%;bottom:18px;z-index:85;display:grid;justify-items:center;gap:6px;transform:translateX(-50%)}
+.j-sndg small{color:#fff;font-weight:800;text-shadow:0 2px 4px #000}
+.j-sndg .l2-b:focus-visible{outline:4px solid #fff;outline-offset:4px}
+
 /* ===== foto finish: carrera de caballitos ===== */
 .hr{--hw:44px;position:relative;display:grid;gap:4px;margin:4px 0;padding:8px 8px 6px;border-radius:14px;background:repeating-linear-gradient(180deg,#1f7a3e 0 22%,#23894a 22% 44%);box-shadow:inset 0 0 0 2px rgba(255,255,255,.18);overflow:hidden;text-align:left;color:#fff}
 .hr-lane{display:grid;grid-template-columns:minmax(0,6.2em) 1fr 5.4em;align-items:center;gap:6px;min-height:calc(var(--hw)*.77);font:800 13px/1.1 Rubik,sans-serif}
@@ -1219,6 +1236,17 @@ button.ctk:active .ctk-d{transform:scale(.88)}
 .cmdbar .ctk-t b{font-size:15px}
 .cmdbar .ctk.can{background:rgba(var(--kg),.16);box-shadow:inset 0 0 0 1.5px rgba(var(--kg),.6)}
 .cmdbar .ctk:not(.can):not(.used) .ctk-t small{color:#9aa3d6}
+
+/* ===== modo ligero: sin luces ni adornos pesados (lo importante se sigue viendo) ===== */
+.lite .marq canvas.l,.lite .rim canvas.l{animation:none!important;opacity:0!important}
+.lite #board .tile:not(.on) .front::after,.lite .l3-half::before{display:none!important}
+.lite .l3-rays,.lite .logo img.rays,.lite .wmul img,.lite .l2-fire i,.lite .l2-flame span,.lite .l3-wsw.sway,.lite .vs::before{animation:none!important}
+.lite #wst.fast::after,.lite #wst.fire::after{filter:none!important}
+.lite *{backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
+.lite .ctk.can .ctk-d{animation:none!important;box-shadow:inset 0 -3px 0 rgba(0,0,0,.22),0 0 0 2px #fff,0 0 0 4px rgba(var(--kg),.6)}
+.lite #board .tile.l2-sur .back{animation:none!important}
+.lite-note{position:fixed;left:50%;top:max(12px,env(safe-area-inset-top));z-index:200;transform:translateX(-50%);display:flex;align-items:center;gap:8px;width:max-content;max-width:94vw;padding:8px 10px 8px 14px;border-radius:14px;background:#0b0f3a;color:#fff;font:700 13px Rubik,sans-serif;box-shadow:0 0 0 2px #ffd76a,0 10px 30px rgba(0,0,0,.6)}
+.lite-note button{flex:none;padding:6px 10px;border:0;border-radius:10px;background:#ffd76a;color:#3a1a00;font:800 12px Rubik,sans-serif}
 </style>
 </head>
 <body>
@@ -1272,6 +1300,8 @@ button.ctk:active .ctk-d{transform:scale(.88)}
   <div class="l3-xbig" id="xbig" aria-hidden="true">✕</div>
 
   <div class="l3-ctl" id="ctl"></div>
+  <div class="j-fixrow"><button type="button" class="l2-b l3-x" id="nocb" hidden>↩ No contaba</button><button type="button" class="l2-b l2-gh j-fixb" id="fixb" aria-label="Correcciones">🛠 Corregir</button></div>
+  <p class="j-admb" id="admb" hidden>📱 Controla <b></b></p>
   <p class="l3-note" id="note"></p>
 </div>
 
@@ -1302,6 +1332,7 @@ button.ctk:active .ctk-d{transform:scale(.88)}
         <div class="l3-rule j-cfg" data-k="wheel"><span>Ruleta que multiplica los puntos</span><button type="button" data-v="1">Sí</button><button type="button" data-v="0">No</button></div>
         <div class="l3-rule j-cfg" data-k="ans"><span>¿Quién escribe la respuesta?</span><button type="button" data-v="turnos">Por turnos</button><button type="button" data-v="equipo">Cualquiera del equipo</button></div>
         <div class="l3-rule" id="rule"><span>Si alguien toca antes del ¡YA!</span><button type="button" data-r="foul" aria-pressed="true">Pierde el turno</button><button type="button" data-r="soft" aria-pressed="false">Solo espera tantito</button></div>
+        <div class="l3-rule j-lite"><span>🐢 Modo ligero (en esta pantalla, si se ve lenta)</span><button type="button" data-lite="auto">Auto</button><button type="button" data-lite="on">Sí</button><button type="button" data-lite="off">No</button></div>
       </div>
     </section>
     <p class="j-hint" id="lobhint"></p>
@@ -1366,13 +1397,20 @@ button.ctk:active .ctk-d{transform:scale(.88)}
   </div>
 </div>
 <div class="ban" id="ban" aria-hidden="true"><div class="dim"></div><div class="rib" id="rib"><b id="ribB"></b><small id="ribS"></small></div></div>
+<div class="j-fixs" id="fixs" hidden role="dialog" aria-modal="true" aria-labelledby="fixt"><div class="j-fixp">
+  <header><b id="fixt">🛠 Correcciones</b><button type="button" class="l2-b l2-gh" id="fixx" aria-label="Cerrar">✕</button></header>
+  <div class="j-fixg"><button type="button" class="l2-b" data-f="undox" id="fixux">Quitar la última ✕</button><button type="button" class="l2-b" data-f="cover" id="fixcv">Tapar una ficha</button>
+  <button type="button" class="l2-b" data-f="redo" id="fixre">Repetir la ronda</button><button type="button" class="l2-b" data-f="skip" id="fixsk">Cambiar la pregunta</button>
+  <button type="button" class="l2-b l3-x" data-f="black" id="fixbl">👎 Quitar esta pregunta para siempre</button></div>
+  <div class="j-fixpts" id="fixpts"></div></div></div>
+<div class="j-sndg" id="sndg" hidden><button type="button" class="l2-b l2-gd big" id="sndgb" autofocus>🔊 Activar el sonido</button><small>Con el control de la tele: presiona OK</small></div>
 <div class="toast" id="toast" role="status"></div>
 
 <script src="vendor/paho-mqtt.min.js"></script>
 <script src="vendor/qrcode.js"></script>
 <script>
 {
-const APPV='botones-v22';
+const APPV='botones-v23';
 const $=(s,r)=>(r||document).querySelector(s),$$=(s,r)=>[...(r||document).querySelectorAll(s)];
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const S={mute:false,music:'baja',gm:'j1',anime:true,order:'orden'};const view=()=>'tablero';let introOn=false;let flowTok=0;
@@ -1496,7 +1534,7 @@ function take(list,used,n){
   return JSON.parse(JSON.stringify(out));
 }
 /* el único confeti del juego: para los ganadores */
-function confetti(){if(RM())return;const cs=['#ff2e88','#14b8a6','#ffc42e','#fff8ec','#8b5cf6','#ff8a1a'];for(let i=0;i<90;i++){const p=document.createElement('i');p.className='conf';p.style.left=Math.random()*100+'vw';p.style.background=cs[i%cs.length];p.style.borderRadius=i%3?'2px':'50%';document.body.appendChild(p);
+function confetti(){if(RM())return;const cs=['#ff2e88','#14b8a6','#ffc42e','#fff8ec','#8b5cf6','#ff8a1a'];for(let i=0,N=document.documentElement.classList.contains('lite')?30:90;i<N;i++){const p=document.createElement('i');p.className='conf';p.style.left=Math.random()*100+'vw';p.style.background=cs[i%cs.length];p.style.borderRadius=i%3?'2px':'50%';document.body.appendChild(p);
   const d=2400+Math.random()*1800,x=(Math.random()-.5)*200;try{p.animate([{transform:'translate(0,0) rotate(0deg)'},{transform:`translate(${x}px,110vh) rotate(${(Math.random()-.5)*1080}deg)`}],{duration:d,delay:Math.random()*600,easing:'cubic-bezier(.3,.1,.6,1)',fill:'both'}).onfinish=()=>p.remove()}catch(e){p.remove()}}}
 
 /* ===================== ESCENARIO QUE REACCIONA ===================== */
@@ -1765,6 +1803,20 @@ const CMDN={p:'Pista',s:'Silencio',c:'Junta'};
 function ctkHTML(k,o){o=o||{};const tag=o.tag||'span';return `<${tag} class="ctk ctk-${k}${o.used?' used':''}${o.can&&!o.used?' can':''}" ${o.attrs||''}><span class="ctk-d">${CMDI[k]}</span>`+
   (o.label===false?'':`<span class="ctk-t"><b>${CMDN[k]}</b>${o.sub?`<small>${o.sub}</small>`:''}</span>`)+`</${tag}>`}
 
+/* ===================== MODO LIGERO =====================
+   Si el aparato se traba (menos de 30 cuadros por segundo casi todo el rato), se apagan las luces y adornos pesados.
+   También se puede poner o quitar a mano: auto / on / off (se guarda en este aparato). */
+const LITE={mode:(()=>{try{return localStorage.getItem('lite')||'auto'}catch(e){return'auto'}})(),on:false,bad:0};
+function liteApply(){const on=LITE.mode==='on'||(LITE.mode==='auto'&&(()=>{try{return localStorage.getItem('lite-auto')==='1'}catch(e){return false}})());LITE.on=on;document.documentElement.classList.toggle('lite',on);try{dispatchEvent(new Event('litechange'))}catch(e){}}
+function liteMode(m){LITE.mode=m;try{localStorage.setItem('lite',m);if(m!=='auto')localStorage.removeItem('lite-auto')}catch(e){}liteApply()}
+function liteNote(){if(window.top!==window||!document.body)return;const d=document.createElement('div');d.className='lite-note';d.innerHTML='<span>🐢 Este aparato iba lento: activé el <b>modo ligero</b>.</span><button type="button">Quitarlo</button>';
+  d.querySelector('button').onclick=()=>{liteMode('off');d.remove()};document.body.appendChild(d);setTimeout(()=>d.remove(),12000)}
+liteApply();addEventListener('storage',e=>{if(e.key==='lite'||e.key==='lite-auto'){LITE.mode=(()=>{try{return localStorage.getItem('lite')||'auto'}catch(x){return'auto'}})();liteApply()}});
+(function liteWatch(){if(window.top!==window)return;let last=performance.now(),t0=last,n=0,slow=0;
+  const f=t=>{const d=t-last;last=t;if(!document.hidden&&d<500){n++;if(d>34)slow++}
+    if(t-t0>4000){if(n>40&&slow/n>.45){LITE.bad++;if(LITE.bad>=2&&LITE.mode==='auto'&&!LITE.on){try{localStorage.setItem('lite-auto','1')}catch(e){}liteApply();liteNote()}}else LITE.bad=0;n=0;slow=0;t0=t}
+    if(!LITE.on)requestAnimationFrame(f)};requestAnimationFrame(f)})();
+
 /* núcleo de conexión compartido con la app de botones */
 const LSN={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v)}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
 const LOCAL=/^(localhost|127\.0\.0\.1)$/.test(location.hostname);
@@ -1860,6 +1912,7 @@ function nhMsg(topic,m){const uid=String(m.u||'').slice(0,40);if(!uid)return;
   if(m.t==='typing'||m.t==='answer'){NH.on.msg(pl,m);return}
   if(m.t==='wthrow'){NH.on.wthrow(pl,m);return}
   if(m.t==='cmd'||m.t==='say'||m.t==='chatok'){NH.on.cmdmsg(pl,m);return}
+  if(m.t==='adm'||m.t==='adm-hi'){if(NH.on.adm)NH.on.adm(pl,m);return}
   if(m.t==='early')nhEarly(pl,m);else if(m.t==='press')nhPress(pl,m)}
 function nhPing(){if(!NH.net||!NH.net.up)return;const now=performance.now();let gone=false;
   NH.P.forEach((p,k)=>{if(!p.local&&now-(p.last||now)>9000){nhDrop(p);NH.P.delete(k);gone=true}});if(gone){NH.on.players();nhState()}
@@ -1929,7 +1982,7 @@ function note(t){$('#note').textContent=t}
 function pop(el,text,cls,dy){if(RM()||!el)return;const r=el.getBoundingClientRect(),p=document.createElement('div');p.className='l2-pop '+(cls||'');p.textContent=text;p.style.left=(r.left+r.width/2)+'px';p.style.top=(r.top+(dy||0))+'px';document.body.appendChild(p);
   p.animate([{transform:'translate(-50%,-30%) scale(.2) rotate(-10deg)',opacity:0},{transform:'translate(-50%,-110%) scale(1.15) rotate(-4deg)',opacity:1,offset:.25},{transform:'translate(-50%,-110%) scale(1) rotate(-4deg)',opacity:1,offset:.75},{transform:'translate(-50%,-170%) scale(.9) rotate(-4deg)',opacity:0}],{duration:1600,easing:'ease-out'}).onfinish=()=>p.remove()}
 function shakeEl(el,amp){if(RM()||!el)return;el.animate([0,-1,.9,-.7,.5,-.3,0].map(k=>({transform:`translateX(${k*(amp||12)}px)`})),{duration:460,easing:'ease-out'})}
-function spk(el,n,cols){if(RM()||!el)return;const r=el.getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height/2;
+function spk(el,n,cols){if(RM()||!el)return;if(document.documentElement.classList.contains('lite'))n=Math.ceil(n*.35);const r=el.getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height/2;
   for(let i=0;i<n;i++){const p=document.createElement('i');p.className='l3-spk';p.style.left=cx+'px';p.style.top=cy+'px';p.style.background=cols[i%cols.length];p.style.boxShadow=`0 0 8px ${cols[i%cols.length]}`;document.body.appendChild(p);
     const a=Math.random()*Math.PI*2,d=r.width*.45+Math.random()*r.width*.6;p.animate([{transform:'translate(-50%,-50%) scale(1.3)',opacity:1},{transform:`translate(calc(-50% + ${Math.cos(a)*d}px),calc(-50% + ${Math.sin(a)*d}px)) scale(.2)`,opacity:0}],{duration:600+Math.random()*450,easing:'cubic-bezier(.15,.7,.35,1)'}).onfinish=()=>p.remove()}}
 
@@ -2258,7 +2311,7 @@ function openSheet(t){SHEET=t;const s=$('#avsheet');s.style.setProperty('--tc',T
 $('#avtitle').addEventListener('click',()=>avSecretTap($('#avtitle'),()=>{openSheet(SHEET);sfr('rec',.8);toast('🥚 ¡Encontraste los íconos secretos!');$$('#avgrid .av-sec').forEach((b,k)=>{b.classList.add('av-new');later(k*140,()=>spk(b,14,['#ffd23f','#fff','#ff5c9a']))})}));
 
 /* ===================== FLUJO DE LA PARTIDA ===================== */
-function nextQ(){let pool=DB.r.map((q,i)=>i).filter(i=>!G.used.includes(i));if(!pool.length){G.used=[];pool=DB.r.map((q,i)=>i)}const i=pool[Math.floor(Math.random()*pool.length)];G.used.push(i);saveG();return DB.r[i]}
+function nextQ(){const bl=new Set(LSx.get('j-black',[])),ok=i=>!bl.has(DB.r[i].q);let pool=DB.r.map((q,i)=>i).filter(i=>!G.used.includes(i)&&ok(i));if(!pool.length){G.used=[];pool=DB.r.map((q,i)=>i).filter(ok)}const i=pool[Math.floor(Math.random()*pool.length)];G.used.push(i);saveG();return DB.r[i]}
 function ctl(mode){const c=$('#ctl');
   c.innerHTML=mode==='end'?`<button class="l2-b l2-gd big" type="button" data-a="again">🎉 Otra partida</button><button class="l2-b" type="button" data-a="sala">Sala y equipos</button>`
   :mode==='idle'?`<button class="l2-b l2-gd big" type="button" data-a="start">🎡 Empezar la ronda</button><button class="l2-b" type="button" data-a="sala">Sala y equipos</button>`
@@ -2267,8 +2320,8 @@ function ctl(mode){const c=$('#ctl');
   :mode==='done'?`<button class="l2-b" type="button" data-a="rest">Destapar las que faltan</button>${lastRound()?'<button class="l2-b l2-gd big" type="button" data-a="end">🏆 ¡Ver quién ganó!</button>':'<button class="l2-b l2-gd big" type="button" data-a="next">⏭ Siguiente ronda</button>'}<button class="l2-b l2-gh" type="button" data-a="new">Nueva partida</button>`
   :`<button class="l2-b l2-gh" type="button" data-a="skip">Cambiar la pregunta</button>`}
 function closeAll(){F.tok++;clearWarn();if(R&&R.chat)chatEnd(false);if(R)R.silP=null;clearBZ();nhCancel();closeAsk();if(R)clearGrace();hideSay();const b=$('#bz');b.hidden=true;$('#bzc').hidden=true;const w=$('#wov');if(!w.hidden){w.hidden=true;rimIdle(false)}document.body.classList.remove('ovl','steal');stIdle()}
-function startRound(skip){ac();loadSounds();closeAll();
-  const q=nextQ();R={q,n:Math.min(q.a.length,Math.max(4,7-(G.ri%4))),m:skip&&R?R.m:0,bank:0,ctl:-1,x:0,rev:[],phase:'wheel'};G.st.t.forEach(x=>x.cur=0);
+function startRound(skip,fq){ac();loadSounds();closeAll();
+  const q=fq||nextQ();R={q,n:Math.min(q.a.length,Math.max(4,7-(G.ri%4))),m:skip&&R?R.m:0,bank:0,ctl:-1,x:0,rev:[],phase:'wheel'};G.st.t.forEach(x=>x.cur=0);
   rnLabel();setTurn(-1);qReset();ckReset();drawBoard();drawX();bankShow();MUS.sync();
   if(skip&&R.m){R.phase='q';ctl('q');T(500,qReveal);return}
   $('#mult').hidden=true;nhInfo(`Ronda ${G.ri+1}`,scoreLine());
@@ -2442,7 +2495,7 @@ function onAskMsg(pl,m){if(!ASK||!ASK.open||m.a!==ASK.id||!ASK.uids.includes(pl.
   const s=$('#say');s.classList.remove('typing');$('#sayn').textContent=pl.name;$('#sayst').textContent='contestó:';
   const end=flapText($('#saytx'),text);T(end+750,()=>judge(A))}
 function judge(A){if(ASK!==A||!R)return;ASK=null;const r=matchAns(A.text);
-  if(r.kind==='hit'){sayState('hit','¡SÍ ESTÁ!');ckDraw('ok');tellAsk(A,{res:'hit',ans:R.q.a[r.i][0],pts:R.q.a[r.i][1],by:A.by});if(!A.steal)R.ai++;T(450,()=>{R.by={uid:A.writer||A.uids[0],name:A.by};reveal(r.i)});return}
+  if(r.kind==='hit'){sayState('hit','¡SÍ ESTÁ!');ckDraw('ok');tellAsk(A,{res:'hit',ans:R.q.a[r.i][0],pts:R.q.a[r.i][1],by:A.by});if(!A.steal)R.ai++;T(450,()=>{R.by={uid:A.writer||A.uids[0],name:A.by};if(!A.steal)R.lastHit={i:r.i,at:Date.now(),txt:`${A.by||''}: «${A.text||''}» → ${R.q.a[r.i][0]}`};reveal(r.i)});return}
   if(r.kind==='dup'){sayState('dup','¡ESA YA SALIÓ!');tellAsk(A,{res:'dup',ans:R.q.a[r.i][0],by:A.by});sfr('peg',.7);shakeEl(tile(r.i),8);note('Esa ya estaba en el tablero: cuenta como error.');T(1700,()=>{if(!R||(R.phase!=='play'&&R.phase!=='steal'))return;if(!A.steal)R.ai++;strike()});return}
   /* no está: unos segundos para que la pantalla diga si sí contaba */
   sayState('miss','NO ESTÁ EN EL TABLERO');tellAsk(A,{res:'miss',by:A.by});$('#say').classList.add('grace');
@@ -2804,6 +2857,103 @@ setInterval(updCheck,90000);addEventListener('visibilitychange',()=>{if(!documen
 {let a=null;try{a=sessionStorage.getItem('j-auto');sessionStorage.removeItem('j-auto')}catch(e){}
   if(a==='1')setTimeout(()=>{const s=rLoad();if(s&&!R){$('#lobby').hidden=true;ac();loadSounds();restoreRound(s)}},1200)}
 window.__j.upd={rSnap,rLoad,restoreRound,updCheck,UPD};
+
+/* ===================== MODO ANFITRIÓN =====================
+   El celular del anfitrión (el que sabe el PIN) controla esta pantalla: todo lo que hay en sus botones y más.
+   Del PIN solo se guarda una versión cifrada; el celular manda una llave derivada y aquí se comprueba. */
+const ADM_KH='4f741ec379e0261a59ed966dc79a20b779d74af2cdd4efdcded1cb9859fedea1';
+async function sha256(s){const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(s));return[...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('')}
+const ADM={last:'',hide:LSx.get('adm-hide',true)};let SND_TAPPED=false;
+const admPs=()=>[...NH.P.values()].filter(p=>p.adm&&!p.local);
+const admOn=()=>admPs().length>0;
+NH.on.adm=async(pl,m)=>{
+  if(m.t==='adm-hi'){if(typeof m.k!=='string'||m.k.length!==64)return;if(await sha256(m.k)!==ADM_KH){nhTo(pl,{t:'adm-no'},1);return}
+    const was=pl.adm;pl.adm=true;if(Array.isArray(m.black))blkMerge(m.black);nhTo(pl,{t:'adm-ok'},1);ADM.last='';admTick();if(!was){toast(`📱 ${pl.name} controla la pantalla`);admBody()}return}
+  if(!pl.adm)return;admCmd(m,pl)};
+/* lo que ve el anfitrión en su panel */
+function admState(){const lob=!$('#lobby').hidden,fin=!$('#fin').hidden;
+  return{t:'adm-st',lob,saved:lob&&!$('#saved').hidden,cont:lob&&!$('#cont').hidden,fresh:lob&&!$('#saved').hidden,start:lob&&!$('#lobok').hidden?$('#lobok').textContent:'',
+    ctl:lob||fin?[]:$$('#ctl button').map(b=>({a:b.dataset.a,l:b.textContent.trim(),c:b.classList.contains('l3-x')?'x':b.classList.contains('l2-gd')?'gd':b.classList.contains('l2-gh')?'gh':''})),
+    fin,wauto:!!(R&&R.phase==='wheel'&&!WH.spin&&!$('#wauto').hidden&&!$('#wauto').disabled),
+    ph:R?R.phase:null,n:R?R.n:0,rev:R?Array.from({length:R.n},(_,i)=>!!R.rev[i]):[],x:R?R.x:0,sc:G.sc.slice(),names:NAMES.slice(),rn:R?G.ri+1:0,
+    nc:noOk()?(R.lastHit.txt||''):'',ux:undoOk(),q:R&&R.q&&R.phase!=='wheel'?R.q.q:'',
+    cfg:{secs:CFG.secs,rounds:CFG.rounds,wheel:!!CFG.wheel,ans:CFG.ans,prize:CFG.prize||'',modo:CEL?'celulares':'pantalla'},hide:ADM.hide,lite:LITE.mode,liteOn:LITE.on,
+    ps:[...NH.P.values()].filter(p=>p.team>=0&&!p.local).map(p=>({u:p.uid,n:p.name,t:p.team})),black:blkList()}}
+function admTick(){const ps=admPs();if(!ps.length)return;const s=admState(),k=JSON.stringify(s);if(k===ADM.last)return;ADM.last=k;ps.forEach(p=>nhTo(p,s,1))}
+setInterval(admTick,300);
+/* con el anfitrión conectado, esta pantalla esconde sus botones (se ve limpia, como programa) */
+function admBody(){document.body.classList.toggle('admon',admOn()&&ADM.hide);$('#admb').hidden=!admOn();if(admOn())$('#admb b').textContent=admPs().map(p=>p.name).join(', ')}
+setInterval(admBody,1500);
+/* órdenes del panel */
+function admCmd(m,pl){const c=m.c;
+  const click=sel=>{const b=$(sel);if(b&&!b.disabled&&!b.hidden&&b.offsetParent!==null){b.click();return true}if(b&&!b.disabled){b.click();return true}return false};
+  if(c==='ctl'){const b=$(`#ctl button[data-a="${String(m.a).replace(/[^a-z]/g,'')}"]`);if(b)b.click()}
+  else if(c==='tile'){const t=tile(+m.i);if(t&&R&&!R.rev[+m.i])t.click()}
+  else if(c==='start')click('#lobok');else if(c==='cont')click('#cont');
+  else if(c==='fresh'){$('#fresh').click();$('#fresh').click()}
+  else if(c==='sala'){if(R)ctlAction('sala');else $('#lobby').hidden=false}
+  else if(c==='wauto')click('#wauto');else if(c==='finagain')click('#finagain');else if(c==='fincl')click('#fincl');
+  else if(c==='nocontaba')noContaba();else if(c==='undox')undoX();else if(c==='cover')coverTile(+m.i);
+  else if(c==='pts')addPts(+m.tm,+m.d);else if(c==='skipq')qSkip(false);else if(c==='blackq')qSkip(true);else if(c==='redo')qRedo();
+  else if(c==='blkdel')blkDel(m.q);
+  else if(c==='lite'){if(['auto','on','off'].includes(m.v)){liteMode(m.v);liteDraw()}}
+  else if(c==='hide'){ADM.hide=!!m.v;LSx.set('adm-hide',ADM.hide);admBody()}
+  else if(c==='cfg'){const b=$(`.j-cfg[data-k="${String(m.k).replace(/[^a-z]/g,'')}"] button[data-v="${String(m.v).replace(/[^a-z0-9]/g,'')}"]`);if(b)b.click()}
+  else if(c==='prize'){const i=$('#prize');if(i){i.value=String(m.v||'').slice(0,40);i.dispatchEvent(new Event('input',{bubbles:true}));i.dispatchEvent(new Event('change',{bubbles:true}))}}
+  else if(c==='move'){const p=NH.P.get(m.u);if(p)setTeam(m.u,1-p.team)}
+  else if(c==='kick'){if(NH.P.get(m.u))kick(m.u)}
+  else if(c==='tname'){const i=$(`.j-tname[data-t="${+m.tm}"]`);if(i){i.value=String(m.v||'').slice(0,14);i.dispatchEvent(new Event('input',{bubbles:true}));i.dispatchEvent(new Event('change',{bubbles:true}))}}
+  ADM.last='';later(60,admTick);later(500,admTick)}
+const ctlAction=a=>{const b=$(`#ctl button[data-a="${a}"]`);if(b){b.click();return}if(a==='sala')$('#lobby').hidden=false};
+
+/* ===== correcciones ===== */
+const noOk=()=>!!(R&&R.phase==='play'&&R.lastHit&&R.rev[R.lastHit.i]&&Date.now()-R.lastHit.at<25000);
+const undoOk=()=>!!(R&&((R.phase==='play'&&R.x>0)||(R.phase==='steal'&&R.x>=3)));
+/* tapa otra vez una ficha (y quita sus puntos del banco) */
+function coverTile(i){if(!R||!R.rev[i]||R.phase==='done'||R.phase==='end')return false;const a=R.q.a[i];R.rev[i]=false;R.bank=Math.max(0,(R.bank||0)-a[1]);bankShow();
+  const t=tile(i);if(t){t.classList.remove('on');$('.l2-flw',t).innerHTML='';$('.ap',t).innerHTML='';if(!RM())t.animate([{transform:'rotateX(0)'},{transform:'rotateX(90deg)'},{transform:'rotateX(0)'}],{duration:500})}
+  if(R.lastHit&&R.lastHit.i===i)R.lastHit=null;sfr('peg',.6);note(`Se tapó otra vez la ${i+1}.`);viewTick();return true}
+/* la última que dio por buena no contaba: se tapa y cuenta como error */
+function noContaba(){if(!noOk())return false;const i=R.lastHit.i;F.tok++;if(ASK)closeAsk();clearGrace();hideSay();coverTile(i);R.lastHit=null;
+  note('No contaba: cuenta como error.');toast('↩ No contaba: cuenta como error');strike();return true}
+/* quita la última ✕ (si fue la tercera, se deshace el robo) */
+function undoX(){if(!undoOk())return false;
+  if(R.phase==='steal'){F.tok++;if(ASK)closeAsk();clearGrace();hideSay();if(R.chat)chatEnd(false);R.phase='play';R.thief=null;R.x=2;document.body.classList.remove('steal');setTurn(R.ctl);ctl('play');ckReset();drawX();note('Se quitó la tercera ✕: sigue el mismo equipo.');T(700,turnStart)}
+  else{R.x--;drawX();if(R.x<2)clearWarn();note('Se quitó una ✕.')}
+  R.xs=Math.max(0,(R.xs||0)-1);sfr('peg',.6);viewTick();return true}
+function addPts(t,d){if((t!==0&&t!==1)||!d)return;G.sc[t]=Math.max(0,G.sc[t]+Math.max(-500,Math.min(500,d)));scoreShow();bump($('#tm'+t),1.06);saveG();nhState&&nhState();viewTick()}
+/* otra pregunta: la misma ronda con otra pregunta (y, si se pide, esta ya no vuelve a salir) */
+function qSkip(black){if(!R||!R.q)return;if(black)blkAdd(R.q.q);toast(black?'👎 Pregunta quitada: ya no vuelve a salir':'Cambio de pregunta');F.tok++;startRound(true)}
+/* repetir la ronda con la misma pregunta, desde el principio */
+function qRedo(){if(!R||!R.q)return;const q=R.q;toast('Se repite la ronda');F.tok++;startRound(true,q)}
+/* lista negra (por texto de la pregunta, así sobrevive aunque cambie el banco) */
+const blkList=()=>LSx.get('j-black',[]);
+function blkAdd(q){const L=blkList();if(!L.includes(q)){L.push(q);LSx.set('j-black',L)}}
+function blkDel(q){LSx.set('j-black',blkList().filter(x=>x!==q))}
+function blkMerge(a){const L=blkList();a.forEach(q=>{if(typeof q==='string'&&q.length<200&&!L.includes(q))L.push(q)});LSx.set('j-black',L)}
+
+/* ===== en esta misma pantalla: "↩ No contaba" y el menú de correcciones ===== */
+setInterval(()=>{const b=$('#nocb');if(b)b.hidden=!noOk()},400);
+$('#nocb').addEventListener('click',noContaba);
+$('#fixb').addEventListener('click',()=>{fixDraw();$('#fixs').hidden=false});
+$('#fixs').addEventListener('click',e=>{const b=e.target.closest('[data-f]');if(e.target.id==='fixs'||e.target.closest('#fixx')){$('#fixs').hidden=true;return}if(!b)return;const f=b.dataset.f;
+  if(f==='undox')undoX();else if(f==='skip')qSkip(false);else if(f==='black')qSkip(true);else if(f==='redo')qRedo();
+  else if(f==='pts')addPts(+b.dataset.t,+b.dataset.d);else if(f==='cover'){FIXC=true;toast('Toca la ficha que quieres tapar');$('#fixs').hidden=true;return}
+  if(!['pts'].includes(f))$('#fixs').hidden=true;else fixDraw()});
+let FIXC=false;
+$('#board').addEventListener('click',e=>{if(!FIXC)return;const t=e.target.closest('.tile');if(!t)return;e.stopImmediatePropagation();e.preventDefault();FIXC=false;coverTile(+t.dataset.i)},true);
+function fixDraw(){$('#fixux').disabled=!undoOk();const r=!!R&&R.phase!=='end';['#fixsk','#fixbl','#fixre'].forEach(s=>$(s).disabled=!r);$('#fixcv').disabled=!(R&&R.rev.some(Boolean)&&R.phase!=='done');
+  $('#fixpts').innerHTML=[0,1].map(t=>`<div class="j-fixpt" style="--tc:${TCOL[t]}"><b>${esc(NAMES[t])} · ${G.sc[t]}</b><span>${[-10,-5,5,10].map(d=>`<button type="button" class="l2-b" data-f="pts" data-t="${t}" data-d="${d}">${d>0?'+':''}${d}</button>`).join('')}</span></div>`).join('')}
+
+/* ===== tele: el sonido necesita un clic (o el OK del control remoto) una vez ===== */
+{const g=$('#sndg');const chk=()=>{try{const c=AC||null;return c&&c.state==='running'}catch(e){return false}};
+  setTimeout(()=>{if(!chk()&&!SND_TAPPED){g.hidden=false;try{$('#sndgb').focus()}catch(e){}}},1500);
+  $('#sndgb').addEventListener('click',()=>{ac();loadSounds();g.hidden=true;sfr('qok',.6)});
+  addEventListener('pointerdown',()=>{SND_TAPPED=true;g.hidden=true},{capture:true})}
+/* modo ligero a mano en esta pantalla */
+function liteDraw(){$$('.j-lite [data-lite]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.lite===LITE.mode)))}
+$('#tab-aj').addEventListener('click',e=>{const b=e.target.closest('[data-lite]');if(!b)return;liteMode(b.dataset.lite);liteDraw()});liteDraw();addEventListener('litechange',liteDraw);
+window.__j.adm={admState,noContaba,undoX,coverTile,addPts,qSkip,qRedo,blkList,admOn};
 
 }
 </script>

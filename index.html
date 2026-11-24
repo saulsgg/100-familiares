@@ -13,6 +13,7 @@
 <link rel="stylesheet" href="app.css">
 <link rel="stylesheet" href="race.css">
 <link rel="stylesheet" href="cmd.css">
+<link rel="stylesheet" href="lite.css">
 </head>
 <body>
 <div class="bg" aria-hidden="true"><i></i><i></i><i></i></div>
@@ -58,7 +59,8 @@
     <p class="err" id="joinerr" role="alert"></p>
   </form>
   <button type="button" class="ghost sm" data-go="host">Probar los botones</button>
-  <button type="button" id="install" class="ghost" hidden>Instalar la app en este aparato</button>
+  <button type="button" id="install" class="ghost">Instalar la app en este aparato</button>
+  <button type="button" class="ghost sm lite-btn" id="litebtn">🐢 Modo ligero: <b id="litev">Auto</b></button>
 </main>
 
 <!-- ============ PANTALLA GRANDE ============ -->
@@ -94,6 +96,7 @@
   <header class="pbar">
     <span class="me" id="me"></span>
     <span class="pill" id="pstat">Conectando…</span>
+    <button type="button" class="admk" id="admk" aria-label="Modo anfitrión">🔑</button>
   </header>
   <section class="gv" id="gv" hidden aria-label="El juego">
     <div class="gv-sc">
@@ -125,6 +128,15 @@
   </section>
   <div class="cmdbar" id="cmdbar" hidden aria-label="Comodines de tu equipo"></div>
   <div class="pres" id="pres" hidden></div>
+  <button type="button" class="admt" id="admt" hidden aria-label="Abrir el panel del anfitrión"><span>🎛</span><small>Control</small></button>
+  <section class="adm" id="adm" hidden role="dialog" aria-modal="true" aria-labelledby="admh">
+    <header class="adm-h"><b id="admh">🎛 Anfitrión</b><nav class="adm-tabs"><button type="button" data-tab="b" aria-pressed="true">Básico</button><button type="button" data-tab="a" aria-pressed="false">Avanzado</button></nav><button type="button" class="adm-x" id="admx" aria-label="Cerrar el panel">▾</button></header>
+    <div class="adm-body" id="admbody"></div>
+  </section>
+  <section class="pin" id="pin" hidden role="dialog" aria-modal="true" aria-labelledby="pinh">
+    <div class="pin-card"><b id="pinh">🔑 Modo anfitrión</b><p id="pinmsg">Escribe tu PIN</p><div class="pin-dots" id="pindots" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+      <div class="pin-pad" id="pinpad"></div><button type="button" class="ghost sm" id="pinx">Cancelar</button></div>
+  </section>
   <section class="chat" id="chat" hidden role="dialog" aria-modal="true" aria-labelledby="chatt">
     <header class="chat-h"><b id="chatt">💬 Junta de equipo</b><span class="chat-sec"><span id="chats">30</span> s</span></header>
     <div class="chat-bar" aria-hidden="true"><i id="chatbar"></i></div>
@@ -176,11 +188,20 @@
     <div class="ask-res" id="askres" hidden></div>
   </section>
 </main>
+  <section class="sheet-ov" id="instsh" hidden role="dialog" aria-modal="true" aria-labelledby="insth"><div class="sheet-card">
+    <b id="insth">📲 Instalar la app</b>
+    <p><b>Android (Chrome):</b> toca el menú <b>⋮</b> de arriba a la derecha y luego <b>“Instalar app”</b> o <b>“Agregar a la pantalla principal”</b>.</p>
+    <p><b>iPhone (Safari):</b> toca el botón <b>Compartir</b> (el cuadrito con flecha) y luego <b>“Agregar a inicio”</b>.</p>
+    <p class="mute">Se instala como una app normal y se actualiza sola.</p>
+    <button type="button" class="big" id="instok">¡Va!</button></div></section>
+  <section class="sheet-ov" id="newsh" hidden role="dialog" aria-modal="true" aria-labelledby="newh"><div class="sheet-card">
+    <b id="newh">✨ ¿Qué hay de nuevo?</b><ul id="newl"></ul><button type="button" class="big" id="newok">¡Va!</button></div></section>
 
 <div class="toast" id="toast" role="status"></div>
 <script src="vendor/paho-mqtt.min.js"></script>
 <script src="vendor/qrcode.js"></script>
 <script src="version.js"></script>
+<script src="news.js"></script>
 <script src="avatars.js"></script>
 <script src="app.js"></script>
 </body>
