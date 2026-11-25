@@ -60,6 +60,7 @@
   </form>
   <button type="button" class="ghost sm" data-go="host">Probar los botones</button>
   <button type="button" class="ghost sm" data-prof="1">🏅 Mi perfil y logros</button>
+  <button type="button" class="ghost sm" data-shop="1">🛒 La tiendita · 🪙 <b data-coins>0</b></button>
   <button type="button" class="ghost sm" data-tut="1">❓ ¿Cómo se juega? <small>(20 s)</small></button>
   <button type="button" id="install" class="ghost">Instalar la app en este aparato</button>
   <button type="button" class="ghost sm lite-btn" id="litebtn">🐢 Modo ligero: <b id="litev">Auto</b></button>
@@ -96,6 +97,7 @@
 <main id="v-play" class="view" hidden>
   <header class="pbar">
     <span class="me" id="me"></span>
+    <button type="button" class="coinb" id="mecoin" data-shop="1" aria-label="Tus fichas: abrir la tiendita">🪙 <b data-coins>0</b></button>
     <span class="pill" id="pstat" role="button" tabindex="0">Conectando…</span>
     <button type="button" class="admk" id="mutek" aria-label="Silenciar este celular" aria-pressed="false">🔊</button>
     <button type="button" class="admk" id="admk" aria-label="Modo anfitrión">🔑</button>
@@ -121,7 +123,7 @@
     <button type="button" class="myav" id="myavb" aria-label="Escoger tu animalito"><i id="myavi"></i><span><b>Tu animalito</b><small>Tócalo para cambiarlo</small></span></button>
     <h2>¿De qué equipo eres?</h2>
     <div class="pteams" id="pteams"></div>
-    <div class="pick-x"><button type="button" class="ghost sm" data-prof="1">🏅 Mi perfil</button><button type="button" class="ghost sm" id="pspec">👀 Solo quiero ver</button><button type="button" class="ghost sm" data-tut="1">❓ ¿Cómo se juega? <small>(20 s)</small></button></div>
+    <div class="pick-x"><button type="button" class="ghost sm" data-prof="1">🏅 Mi perfil</button><button type="button" class="ghost sm" data-shop="1">🛒 Tiendita</button><button type="button" class="ghost sm" id="pspec">👀 Solo quiero ver</button><button type="button" class="ghost sm" data-tut="1">❓ ¿Cómo se juega? <small>(20 s)</small></button></div>
   </section>
   <section class="pad" id="pad" hidden>
     <div class="plamps" id="plamps"><i></i><i></i><i></i></div>
@@ -158,6 +160,7 @@
       <div class="finph-av" id="finphav"></div>
       <h2 id="finpht"></h2>
       <p class="finph-s" id="finphs"></p>
+      <p class="finph-co" id="finphco" hidden></p>
       <div class="finph-pz" id="finphpz" hidden>🎁 Se llevan: <b id="finphpzt"></b></div>
       <div class="finph-ph" id="finphph" hidden>
         <button type="button" class="ghost" id="finphcam">📸 Foto de los ganadores <small>(si quieren)</small></button><input type="file" id="finphf" accept="image/*" hidden>
@@ -213,10 +216,39 @@
   </div></section>
   <section class="unl" id="unl" hidden aria-live="assertive"><div class="unl-bg" aria-hidden="true"></div><div class="unl-card" id="unlcard"><small id="unlr"></small><div class="unl-ic" id="unlic" aria-hidden="true"></div><b id="unln"></b><p id="unld"></p><span class="unl-t" id="unlt"></span></div></section>
   <section class="prof" id="prof" hidden role="dialog" aria-modal="true" aria-labelledby="proft"><div class="prof-in">
-    <header class="prof-h"><button type="button" class="prof-av" id="profav" aria-label="Cambiar tu animalito"></button><div><b id="proft"></b><small id="proftt"></small></div><button type="button" class="prof-x" id="profx" aria-label="Cerrar">✕</button></header>
+    <header class="prof-h"><button type="button" class="prof-av" id="profav" aria-label="Cambiar tu animalito"></button><div><b id="proft"></b><small id="proftt"></small></div><button type="button" class="coinb" data-shop="1" aria-label="Tus fichas: abrir la tiendita">🪙 <b data-coins>0</b></button><button type="button" class="prof-x" id="profx" aria-label="Cerrar">✕</button></header>
     <div class="prof-st" id="profst"></div>
     <h3>Lo que traes puesto</h3><div class="prof-eq" id="profeq"></div>
     <h3>Logros <small id="profn"></small></h3><div id="proflg"></div>
+    <h3>Pasar tu perfil a otro celular</h3><p class="prof-bkp">Así no pierdes tus logros, tus fichas ni lo que compraste si cambias de celular.</p><div class="prof-bk"><button type="button" class="ghost sm" id="bkout1">📤 Sacar mi código</button><button type="button" class="ghost sm" id="bkin1">📥 Tengo un código</button></div>
+  </div></section>
+  <section class="prof shop" id="shop" hidden role="dialog" aria-modal="true" aria-labelledby="shopt"><div class="prof-in">
+    <header class="prof-h"><span class="shop-ic" aria-hidden="true">🛒</span><div><b id="shopt">La tiendita</b><small id="shopcd"></small></div><span class="coinb">🪙 <b data-coins>0</b></span><button type="button" class="prof-x" id="shopx" aria-label="Cerrar">✕</button></header>
+    <p class="shop-s">Cosas de adorno para presumir (no ayudan a ganar). Cambia todos los días a medianoche y es igual para todos; lo más raro casi no sale.</p>
+    <div class="shop-g" id="shopg"></div>
+    <details class="shop-d"><summary>🪙 ¿Cómo gano fichas?</summary><ul id="shopern"></ul></details>
+    <details class="shop-d"><summary>🎲 ¿Qué tan seguido sale cada cosa?</summary><div id="shopodds"></div></details>
+    <button type="button" class="ghost sm shop-me" data-prof="1">🎒 Ponerme lo que ya tengo</button>
+  </div></section>
+  <section class="prof bk" id="bk" hidden role="dialog" aria-modal="true" aria-labelledby="bkt"><div class="prof-in">
+    <header class="prof-h"><span class="shop-ic" aria-hidden="true">📦</span><div><b id="bkt">Copia de tu perfil</b><small>Para pasarlo a otro celular</small></div><button type="button" class="prof-x" id="bkx" aria-label="Cerrar">✕</button></header>
+    <div id="bko">
+      <p class="shop-s">En el celular nuevo, <b>escanea este cuadro con la cámara</b>. O mándate el código por WhatsApp y pégalo allá en <b>Mi perfil → Tengo un código</b>.</p>
+      <div class="bk-qr" id="bkqr"></div>
+      <div class="prof-bk"><button type="button" class="ghost sm" id="bkcopy">📋 Copiar código</button><button type="button" class="ghost sm" id="bkshare">📤 Compartir</button></div>
+      <p class="bk-n">Úsalo en un solo celular a la vez: si dos celulares juegan juntos con el mismo perfil, se confunden.</p>
+    </div>
+    <div id="bki" hidden>
+      <p class="shop-s">Pega aquí el código que sacaste en tu otro celular.</p>
+      <textarea id="bkta" rows="4" spellcheck="false" autocapitalize="off" autocomplete="off" placeholder="F1…"></textarea>
+      <p class="err" id="bkerr" role="alert"></p>
+      <button type="button" class="big gold" id="bkgo">Revisar el código</button>
+    </div>
+    <div id="bkc" hidden>
+      <p class="shop-s" id="bkct"></p>
+      <button type="button" class="big gold" id="bkyes">Sí, pasarlo a este celular</button>
+      <button type="button" class="ghost" id="bkno">Cancelar</button>
+    </div>
   </div></section>
   <section class="tut" id="tut" hidden role="dialog" aria-modal="true" aria-labelledby="tutt"><div class="tut-card">
     <div class="tut-bar" aria-hidden="true"><i id="tutbar"></i></div>
@@ -239,6 +271,7 @@
 <script src="news.js"></script>
 <script src="avatars.js"></script>
 <script src="logros.js"></script>
+<script src="tienda.js"></script>
 <script src="app.js"></script>
 </body>
 </html>

@@ -1,5 +1,11 @@
 /* lo nuevo de cada versión (sale una vez en el celular después de actualizarse) */
-const NEWS=[{v:'botones-v28',t:[
+const NEWS=[{v:'botones-v29',t:[
+ '🛒 ¡La tiendita! Ganas 🪙 fichas jugando (terminar, ganar, atinar, ganar el botón, logros) y compras pieles, accesorios, fondos, auras, títulos, letras, caballos, burbujas del chat y celebraciones. Cambia cada día y lo más raro casi no sale.',
+ '🎁 Si ya habías jugado, te regalamos fichas por tus logros y partidas.',
+ '🎉 Celebración al ganar el botón: si te compras una, sale en la pantalla y en los celulares cuando ganas.',
+ '📅 Temporadas: cada mes hay tabla en la pestaña 🏆 Fama. El 1er lugar se lleva el título «Campeón de temporada» y fichas. Ahí mismo salen las últimas partidas.',
+ '📦 ¿Cambias de celular? En Mi perfil saca tu código y escanéalo con el celular nuevo.']},
+ {v:'botones-v28',t:[
  'La foto de los ganadores ya llega a la pantalla aunque estés conectado “por servidor”: se manda cifrada con una clave que solo viene en el QR.',
  'Toca la etiqueta de conexión (arriba) para ver qué significa.',
  'Tus reacciones 😀 ya salen también en tu propio celular.',

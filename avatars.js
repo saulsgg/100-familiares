@@ -124,14 +124,48 @@ const AVS3=[
     `<path d="M40 76 q20 18 42 0 q-21 6 -42 0z" fill="#7a1530" ${SK}/><path d="M44 77 l4 6 l4 -5 l4 6 l4 -6 l4 6 l4 -6 l4 6 l4 -6" fill="#fff" stroke="${OL}" stroke-width="1.6" stroke-linejoin="round"/>
     <path d="M30 50 q-4 -4 -2 -10 M92 50 q4 -4 2 -10" fill="none" ${SKt}/>`}
 ];
-const AVM={};AVS3.forEach(a=>AVM[a.id]=a);
+/* animalitos de la tiendita (solo salen en tu lista si los compraste) */
+const AVSHOP=[
+  {id:'pinguino',n:'Pingüino',bg:'#3aa0e0',shop:1,snd:'tucan',art:
+    `<ellipse cx="60" cy="62" rx="37" ry="36" fill="#2e3140" ${SK}/><path d="M60 30 q4 -9 9 -6 q-5 1 -5 7" fill="#2e3140" ${SKt}/>
+    <path d="M60 46 q-9 -10 -21 -4 q-12 8 -9 25 q4 19 30 21 q26 -2 30 -21 q3 -17 -9 -25 q-12 -6 -21 4z" fill="#fff"/>`+EYE(47,60,4.8)+EYE(73,60,4.8)+CHK(38,73)+CHK(82,73)+
+    `<path d="M51 70 q9 -6 18 0 q-9 10 -18 0z" fill="#f29a3b" ${SK}/>`},
+  {id:'zorro',n:'Zorro',bg:'#2f8f5b',shop:1,snd:'coyote',art:
+    MIR(`<path d="M24 18 L50 38 L28 56z" fill="#f07a3c" ${SK}/><path d="M30 30 L42 40 L32 48z" fill="#5a3520"/>`)+
+    `<path d="M24 18 L50 38 L28 56z" fill="#f07a3c" ${SK}/><path d="M30 30 L42 40 L32 48z" fill="#5a3520"/>
+    <path d="M60 32 q32 0 37 26 q3 15 -14 25 q-12 7 -23 17 q-11 -10 -23 -17 q-17 -10 -14 -25 q5 -26 37 -26z" fill="#f07a3c" ${SK}/>
+    <path d="M25 64 q16 2 27 13 q6 6 8 22 q2 -16 8 -22 q11 -11 27 -13 q-3 12 -12 19 q-12 7 -23 17 q-11 -10 -23 -17 q-9 -7 -12 -19z" fill="#fff4dc"/>`+
+    EYE(46,57,4.6)+EYE(74,57,4.6)+`<ellipse cx="60" cy="88" rx="5.5" ry="4" fill="${OL}"/><path d="M60 92 v3" ${SKt}/>`},
+  {id:'panda',n:'Panda',bg:'#6fbf5c',shop:1,snd:'armadillo',art:
+    `<g fill="#2e3140" ${SK}><circle cx="31" cy="33" r="12"/><circle cx="89" cy="33" r="12"/></g>
+    <circle cx="60" cy="63" r="36" fill="#fff" ${SK}/>
+    <ellipse cx="45" cy="60" rx="9" ry="12" transform="rotate(28 45 60)" fill="#2e3140"/><ellipse cx="75" cy="60" rx="9" ry="12" transform="rotate(-28 75 60)" fill="#2e3140"/>
+    <circle cx="46" cy="59" r="4.2" fill="#fff"/><circle cx="47" cy="59" r="2.4" fill="${OL}"/><circle cx="74" cy="59" r="4.2" fill="#fff"/><circle cx="75" cy="59" r="2.4" fill="${OL}"/>
+    <ellipse cx="60" cy="74" rx="6.5" ry="4.4" fill="${OL}"/>`+SMILE(60,79,7)+CHK(35,77)+CHK(85,77)+
+    `<path d="M92 96 q8 -10 14 -26" fill="none" stroke="#3f9a4c" stroke-width="5" stroke-linecap="round"/><path d="M104 74 q8 -4 10 2 q-6 4 -10 -2z" fill="#6cc96a" ${SKt}/>`},
+  {id:'dragon',n:'Dragón',bg:'#6b4fc4',shop:1,snd:'kaiju',art:
+    MIR(`<path d="M38 36 q-4 -18 -16 -24 q8 14 6 28z" fill="#ffe27a" ${SK}/>`)+`<path d="M38 36 q-4 -18 -16 -24 q8 14 6 28z" fill="#ffe27a" ${SK}/>
+    <g fill="#e8364b" ${SKt}><path d="M50 30 l4 -10 l4 9z"/><path d="M58 28 l4 -11 l4 11z"/><path d="M66 29 l4 -9 l4 10z"/></g>
+    <ellipse cx="60" cy="60" rx="37" ry="32" fill="#45b86a" ${SK}/>
+    <ellipse cx="60" cy="80" rx="22" ry="14" fill="#93d67d" ${SK}/><circle cx="53" cy="77" r="2.2" fill="${OL}"/><circle cx="67" cy="77" r="2.2" fill="${OL}"/>`+
+    EYEW(44,55,4.6,'#ffe36b')+EYEW(76,55,4.6,'#ffe36b')+`<path d="M50 88 q10 5 20 0" fill="none" ${SKt}/><path d="M53 88.5 l2.5 5 l2.5 -4z" fill="#fff" ${SKt}/>`},
+  {id:'fenix',n:'Fénix',bg:'#7a1530',shop:1,snd:'guacamaya',art:
+    MIR(`<path d="M34 70 q-16 0 -22 -16 q10 6 16 3 q-11 -9 -9 -23 q11 14 21 22z" fill="#ff8a1a" ${SK}/>`)+`<path d="M34 70 q-16 0 -22 -16 q10 6 16 3 q-11 -9 -9 -23 q11 14 21 22z" fill="#ff8a1a" ${SK}/>
+    <path d="M60 8 q11 14 3 27 q11 -6 15 -18 q9 17 -6 31 h-24 q-15 -14 -6 -31 q4 12 15 18 q-8 -13 3 -27z" fill="#ffb020" ${SK}/>
+    <circle cx="60" cy="66" r="30" fill="#ff5a1f" ${SK}/><ellipse cx="60" cy="73" rx="20" ry="15" fill="#ffd23f"/>`+EYE(48,62,4.6)+EYE(72,62,4.6)+
+    `<path d="M53 71 q7 -3 14 0 q-7 12 -14 0z" fill="#fff0a0" ${SK}/>`+CHK(42,74,'#ff2e88')+CHK(78,74,'#ff2e88')}];
+
+AVSHOP.forEach(a=>AVS3.push(a));
+const AVM=(()=>{const o={};AVS3.forEach(a=>o[a.id]=a);
+  /* "ajolote~sk_oro~ac_corona~fo_mar" (animalito con cosas de la tienda) cuenta como su animalito base */
+  return new Proxy(o,{get:(t,k)=>typeof k==='string'&&!(k in t)&&k.length<64&&k.includes('~')?t[k.split('~')[0]]:t[k]})})();
 /* íconos secretos: aparecen al tocar 5 veces el título de la hoja de animalitos */
 function avSecretOn(){try{return localStorage.getItem('av-secret')==='1'}catch(e){return false}}
-function avList(cur){const on=avSecretOn();return AVS3.filter(a=>!a.secret||on||(cur||[]).includes(a.id))}
+function avList(cur){const on=avSecretOn();return AVS3.filter(a=>(a.shop?typeof avOwn==='function'&&avOwn(a.id):!a.secret||on)||(cur||[]).includes(a.id))}
 function avSecretTap(el,onOpen){const now=performance.now();el._tp=(el._tp||[]).filter(t=>now-t<2500);el._tp.push(now);if(el._tp.length<5||avSecretOn())return false;
   el._tp=[];try{localStorage.setItem('av-secret','1')}catch(e){}if(onOpen)onOpen();return true}
 /* el dibujo en su placa redonda de color */
-function avSVG(id,cls){const a=AVM[id]||AVS3[0];return `<svg class="${cls||'l3-svg'}" viewBox="0 0 120 120" role="img" aria-label="${a.n}"><circle cx="60" cy="60" r="58" fill="${a.bg}"/><circle cx="60" cy="60" r="54.5" fill="none" stroke="rgba(0,0,0,.18)" stroke-width="3"/><ellipse cx="44" cy="30" rx="28" ry="14" fill="#fff" opacity=".16" transform="rotate(-25 44 30)"/><g>${a.art}</g><circle cx="60" cy="60" r="58" fill="none" stroke="#fff" stroke-width="3.5"/></svg>`}
+function avSVG(id,cls){if(typeof id==='string'&&id.includes('~')&&typeof avComp==='function'&&AVM[id])return avComp(id,cls);const a=AVM[id]||AVS3[0];return `<svg class="${cls||'l3-svg'}" viewBox="0 0 120 120" role="img" aria-label="${a.n}"><circle cx="60" cy="60" r="58" fill="${a.bg}"/><circle cx="60" cy="60" r="54.5" fill="none" stroke="rgba(0,0,0,.18)" stroke-width="3"/><ellipse cx="44" cy="30" rx="28" ry="14" fill="#fff" opacity=".16" transform="rotate(-25 44 30)"/><g>${a.art}</g><circle cx="60" cy="60" r="58" fill="none" stroke="#fff" stroke-width="3.5"/></svg>`}
 
 /* ===================== FOTO FINISH: CARRERA DE CABALLITOS =====================
    Cada jinete es la barra de tiempo: el que tocó más rápido llega primero a la meta.
@@ -147,9 +181,10 @@ const HLEG={/* cuadros del galope: [mano lejana, pata lejana, mano cercana, pata
   f4:['46 28L52 35L58 39','24 28L28 36L30 42','48 28L50 38L50 47','26 28L24 37L22 46'],
   fs:['46 28L46 38L46 47','24 28L23 38L23 47','49 28L49 38L49 47','27 28L26 38L26 47']};
 const hLeg=(p,c)=>{const e=p.split(/L|\s/).slice(-2);return `<path d="M${p}" fill="none" stroke="#2b1840" stroke-width="5.6"/><path d="M${p}" fill="none" stroke="${c}" stroke-width="3.2"/><circle cx="${e[0]}" cy="${e[1]}" r="2.1" fill="#2b1840"/>`};
-const HSKIN={fuego:['#c2410c','#ffb020'],uni:['#fbf8ff','url(#hrRain)'],fant:['rgba(210,230,255,.55)','rgba(170,200,255,.75)']};
+const HSKIN={fuego:['#c2410c','#ffb020'],uni:['#fbf8ff','url(#hrRain)'],fant:['rgba(210,230,255,.55)','rgba(170,200,255,.75)'],
+  /* de la tiendita */rosa:['#ffb3d1','#ff4f9a'],cebra:['url(#hrZeb)','#1d1d1d'],noche:['#1b1f4a','#7ab8ff'],dorado:['#f2c230','#fff3a8']};
 function horseSVG(i,hz){const[c,m]=HSKIN[hz]||COATS[i%COATS.length];const fr=(k,a,b)=>Object.keys(HLEG).map(f=>`<g class="hr-f ${f}">${hLeg(HLEG[f][a],k)}${hLeg(HLEG[f][b],k)}</g>`).join('');
-  return `<svg class="hr-h${hz?' hz-'+hz:''}" viewBox="0 0 80 50" aria-hidden="true">${hz==='uni'?'<defs><linearGradient id="hrRain" x1="0" x2="1"><stop offset="0" stop-color="#ff5ce1"/><stop offset=".33" stop-color="#ffd23f"/><stop offset=".66" stop-color="#3fe0cc"/><stop offset="1" stop-color="#8b5cf6"/></linearGradient></defs>':''}<g stroke-linecap="round" stroke-linejoin="round">
+  return `<svg class="hr-h${hz?' hz-'+hz:''}" viewBox="0 0 80 50" aria-hidden="true">${hz==='uni'?'<defs><linearGradient id="hrRain" x1="0" x2="1"><stop offset="0" stop-color="#ff5ce1"/><stop offset=".33" stop-color="#ffd23f"/><stop offset=".66" stop-color="#3fe0cc"/><stop offset="1" stop-color="#8b5cf6"/></linearGradient></defs>':''}${hz==='cebra'?'<defs><pattern id="hrZeb" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(18)"><rect width="7" height="7" fill="#f4f4f4"/><rect width="3" height="7" fill="#1d1d1d"/></pattern></defs>':''}<g stroke-linecap="round" stroke-linejoin="round">
   <path class="hr-tail" d="M21 21q-11-3-17 6q-3 5-2 11q4-7 10-9q6-2 10-4z" fill="${m}" stroke="#2b1840" stroke-width="2"/>
   ${fr(m,0,1)}
   <g stroke="#2b1840" stroke-width="2"><path d="M19 23q0-10 14-11h13q8 0 10 6l4 8q-2 6-10 7H30q-11 0-11-10z" fill="${c}"/>
@@ -157,7 +192,7 @@ function horseSVG(i,hz){const[c,m]=HSKIN[hz]||COATS[i%COATS.length];const fr=(k,
   <path class="hr-mane" d="M51 15q3-8 9-12" fill="none" stroke="${m}" stroke-width="3.6"/>
   <rect x="31" y="11" width="14" height="10" rx="2.5" fill="currentColor"/></g>
   <circle cx="67" cy="8.5" r="1.4" fill="#2b1840"/><circle cx="74.6" cy="13.2" r=".9" fill="#2b1840"/>
-  ${fr(c,2,3)}${hz==='uni'?'<path d="M66 4L74 -6L69 6z" fill="#ffe27a" stroke="#2b1840" stroke-width="1.6"/>':''}</g></svg>`}
+  ${fr(c,2,3)}${hz==='noche'?'<g fill="#fff6b0"><circle cx="36" cy="18" r="1.2"/><circle cx="44" cy="24" r=".9"/><circle cx="28" cy="26" r=".8"/></g>':''}${hz==='uni'?'<path d="M66 4L74 -6L69 6z" fill="#ffe27a" stroke="#2b1840" stroke-width="1.6"/>':''}</g></svg>`}
 function raceHTML(L,av,col,me){const A=p=>p.av&&AVM[p.av]?p.av:av[p.team];
   return `<div class="hr" role="img" aria-label="Carrera: ${L.map((p,i)=>`${i+1}. ${String(p.name).replace(/[<>"&]/g,'')}`).join(', ')}">`+
   L.map((p,i)=>`<div class="hr-lane${me&&p.uid===me?' me':''}" style="--c:${col[p.team]}"><span class="hr-nm">${avSVG(A(p),'hr-av')}<span>${String(p.name).replace(/[<>&]/g,'')}</span></span>`+

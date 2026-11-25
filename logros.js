@@ -37,12 +37,17 @@ const LGM={};LOGROS.forEach(l=>LGM[l.id]=l);
 /* premios que se equipan: aura (una por rareza que tengas), caballo (legendario o más) y letras (mítico o más) */
 const HORSES=[{id:'',n:'Normal',r:-1},{id:'fuego',n:'Caballo de fuego',r:4},{id:'uni',n:'Unicornio arcoíris',r:5},{id:'fant',n:'Caballo fantasma',r:6}];
 const WRITES=[{id:'',n:'Normales',r:-1},{id:'oro',n:'Letras de oro',r:5},{id:'rayo',n:'Letras de rayo',r:6}];
-const lgTitle=id=>LGM[id]?LGM[id].n:'';
+/* títulos que no salen de logros: el de campeón de temporada (lo da la pantalla) y los de la tienda */
+const TPTIT={tp_campeon:{n:'Campeón de temporada',r:5}};
+const shopIt=(k,id)=>typeof shopGet==='function'?shopGet(k,id):null;
+const lgTitle=id=>LGM[id]?LGM[id].n:TPTIT[id]?TPTIT[id].n:(shopIt('ti',id)||{}).n||'';
 /* aura alrededor del animalito: clase según la rareza */
-const auraCls=a=>a>=0&&a<RAR.length?' aura aura-'+RAR[a].k:'';
+const auraCls=a=>typeof a==='string'?(shopIt('au',a)?' aura aus-'+a.slice(3):''):a>=0&&a<RAR.length?' aura aura-'+RAR[a].k:'';
 /* lo que un jugador trae puesto, ya revisado (para que nadie mande cosas raras) */
-function eqClean(e){e=e&&typeof e==='object'?e:{};return{t:LGM[e.t]?e.t:'',a:Number.isInteger(e.a)&&e.a>=0&&e.a<RAR.length?e.a:-1,h:HORSES.some(x=>x.id===e.h)?e.h:'',w:WRITES.some(x=>x.id===e.w)?e.w:''}}
+function eqClean(e){e=e&&typeof e==='object'?e:{};const S=(k,v)=>typeof v==='string'&&shopIt(k,v)?v:'';
+  return{t:LGM[e.t]||TPTIT[e.t]||S('ti',e.t)?e.t:'',a:Number.isInteger(e.a)&&e.a>=0&&e.a<RAR.length?e.a:S('au',e.a)||-1,h:HORSES.some(x=>x.id===e.h)?e.h:S('hz',e.h),w:WRITES.some(x=>x.id===e.w)?e.w:S('wr',e.w),
+    sk:S('sk',e.sk),ac:S('ac',e.ac),fo:S('fo',e.fo),bu:S('bu',e.bu),ce:S('ce',e.ce)}}
 /* identificador corto y estable de cada pregunta (para recordar cuáles ya vio cada celular) */
 function qid(q){const s=String(q||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]/g,'');let h=5381;for(let i=0;i<s.length;i++)h=((h<<5)+h+s.charCodeAt(i))>>>0;return h.toString(36)}
 /* títulos míticos y secretos: se mueven poquito */
-const titCls=id=>LGM[id]&&LGM[id].r>=5?' tit-'+RAR[LGM[id].r].k:'';
+const titCls=id=>{const r=LGM[id]?LGM[id].r:TPTIT[id]?-2:(shopIt('ti',id)||{r:-1}).r;return r===-2?' tit-camp':r>=5?' tit-'+RAR[r].k:''};

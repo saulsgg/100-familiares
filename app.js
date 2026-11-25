@@ -80,8 +80,8 @@ function ac(){try{if(!AC){AC=new(window.AudioContext||window.webkitAudioContext)
 function loadSounds(){if(loading)return loading;if(!ac())return Promise.resolve();loading=Promise.all(FILES.map(f=>fetch('sounds/'+f+'.mp3').then(r=>{if(!r.ok)throw 0;return r.arrayBuffer()}).then(b=>new Promise((ok,ko)=>AC.decodeAudioData(b,ok,ko))).then(b=>{BUF[f]=b}).catch(()=>{})));return loading}
 function loadOne(n){if(BUF[n]||BUF['_'+n]||!ac())return;BUF['_'+n]=1;fetch('sounds/'+n+'.mp3').then(r=>{if(!r.ok)throw 0;return r.arrayBuffer()}).then(b=>new Promise((ok,ko)=>AC.decodeAudioData(b,ok,ko))).then(b=>{BUF[n]=b}).catch(()=>{delete BUF['_'+n]})}
 /* el grito del animalito de cada equipo (cuando se adelantan) */
-function animal(id,vol){const n='an_'+id;if(BUF[n])sf(n,vol==null?.9:vol);else loadOne(n)}
-const preAnimals=ids=>ids.forEach(id=>loadOne('an_'+id));
+function animal(id,vol){const n='an_'+(AVM[id]&&AVM[id].snd||id);if(BUF[n])sf(n,vol==null?.9:vol);else loadOne(n)}
+const preAnimals=ids=>ids.forEach(id=>loadOne('an_'+(AVM[id]&&AVM[id].snd||id)));
 function sf(n,vol){if(!AC||!BUF[n])return;try{const s=AC.createBufferSource(),g=AC.createGain();s.buffer=BUF[n];g.gain.value=vol==null?.85:vol;s.connect(g);g.connect(OUT);s.start()}catch(e){}}
 function tick(){if(!AC)return;try{const t=AC.currentTime,o=AC.createOscillator(),g=AC.createGain();o.type='triangle';o.frequency.setValueAtTime(900,t);o.frequency.exponentialRampToValueAtTime(260,t+.07);g.gain.setValueAtTime(.3,t);g.gain.exponentialRampToValueAtTime(.001,t+.09);o.connect(g);g.connect(OUT);o.start(t);o.stop(t+.12)}catch(e){}}
 document.addEventListener('pointerdown',()=>{ac();loadSounds()},{capture:true});
@@ -249,7 +249,7 @@ function playStart(code,name,bi){MODE='play';P.code=code;P.name=name;P.st=null;P
 function probe(){if(P.found||MODE!=='play'||!P.net)return;const nb=(P.bi+1)%BROKERS.length;if(BROKERS.length>1){P.net.switchTo(nb)}
   padState('idle',`Buscando la partida ${P.code}…`,'Revisen que la pantalla grande esté abierta y que el código sea el mismo.');
   clearTimeout(P.probeT);P.probeT=later(5000,probe)}
-function hello(){if(P.net)P.net.pub(ptp('h'),{t:'hello',u:P.uid,name:P.name,team:P.team,av:P.av,spec:P.spec?1:0,eq:PF.eq,seen:SEEN.slice(-400)},1)}
+function hello(){if(P.net)P.net.pub(ptp('h'),{t:'hello',u:P.uid,name:P.name,team:P.team,av:myAvF(),spec:P.spec?1:0,eq:PF.eq,seen:SEEN.slice(-400)},1)}
 function psend(m,q){if(dcOpen(P.dc)){try{P.dc.send(JSON.stringify(m));return}catch(e){}}if(P.net)P.net.pub(ptp('h'),{...m,u:P.uid},q||0)}
 function dropP(){try{P.pc&&P.pc.close()}catch(e){}P.pc=null;P.dc=null}
 async function playRTC(){if(!RTC_OK||P.pc||MODE!=='play')return;const pc=new RTCPeerConnection({iceServers:ICE});P.pc=pc;const dc=pc.createDataChannel('b',{ordered:true});
@@ -262,8 +262,8 @@ async function playRTC(){if(!RTC_OK||P.pc||MODE!=='play')return;const pc=new RTC
 P.av=(a=>AVM[a]?a:(()=>{const L=AVS3.filter(x=>!x.secret);const r=L[Math.floor(Math.random()*L.length)].id;LS.set('bt-myav',r);return r})())(LS.get('bt-myav',''));
 const myAv=()=>P.av;
 function drawMe(){const t=P.team,v=$('#v-play');v.classList.toggle('t1',t===1);
-  $('#me').innerHTML=`<i class="me-av${auraCls(PF.eq.a)}">${avSVG(P.av)}</i>`+`<span>${esc(P.name)}<small>${t>=0?NAMES[t]:P.spec?'👀 Viendo':'Sin equipo'}${PF.eq.t?` · <b class="${titCls(PF.eq.t)}">${esc(lgTitle(PF.eq.t))}</b>`:''}</small></span>`;
-  $('#pav').innerHTML=avSVG(P.av);$('#myavi').innerHTML=avSVG(P.av);
+  $('#me').innerHTML=`<i class="me-av${auraCls(PF.eq.a)}">${avSVG(myAvF())}</i>`+`<span>${esc(P.name)}<small>${t>=0?NAMES[t]:P.spec?'👀 Viendo':'Sin equipo'}${PF.eq.t?` · <b class="${titCls(PF.eq.t)}">${esc(lgTitle(PF.eq.t))}</b>`:''}</small></span>`;
+  $('#pav').innerHTML=avSVG(myAvF());$('#myavi').innerHTML=avSVG(myAvF());coinDraw();
   $('#chteam').hidden=!P.found}
 function playMsg(topic,m){
   if(topic.endsWith('/up')){if(m.t==='up'&&!P.found)hello();return}
@@ -336,7 +336,7 @@ function onRes(m){try{pfRes(m)}catch(e){}if(m.r!==P.r){if(P.phase!=='idle')retur
   showRes(cls,big,txt,sub,av);let hold=4500;
   /* la carrera de caballitos también en tu celular (tu caballito va marcado) */
   if(m.kind==='ok'&&Array.isArray(m.list)&&m.list.length&&P.st){const r=$('#pres'),L=m.list.slice(0,6);r.classList.add('hasrace');r.insertAdjacentHTML('beforeend',raceHTML(L,P.st.av,TCOL,P.uid));
-    if(first||!isFinite(P.raceAt))P.raceAt=performance.now()+250;const tok=P.raceTok=(P.raceTok||0)+1,el=performance.now()-P.raceAt,go=()=>{if(tok===P.raceTok)raceRun(r,L,!RM(),null,Math.max(0,performance.now()-P.raceAt))};
+    if(first||!isFinite(P.raceAt))P.raceAt=performance.now()+250;const tok=P.raceTok=(P.raceTok||0)+1,el=performance.now()-P.raceAt,cel=()=>{if(P.celR!==P.r&&L[0].ce&&tok===P.raceTok){P.celR=P.r;celebFx(L[0].ce,r.querySelector('.hr-lane'))}},go=()=>{if(tok===P.raceTok){const rr=raceRun(r,L,!RM(),cel,Math.max(0,performance.now()-P.raceAt));if(!rr.first)cel()}};
     if(el<0)later(-el,go);else go();hold=Math.max(hold,P.raceAt-performance.now()+Math.min(2800,1000+(L[L.length-1].rt-L[0].rt)*4)+1800)}
   if(first){if(cls==='win')sf('bz'+me,.85);else if(cls==='foul'&&m.foul.uid!==P.uid)animal(myAv(),.8);vib(cls==='win'?[40,40,80]:60)}
   clearTimeout(P.resT);P.resT=later(hold,()=>{hideRes();if(P.phase==='res'){P.phase='idle';showPad()}})}
@@ -436,7 +436,7 @@ function chatPop(){if(!AC||MUTED)return;try{const t=AC.currentTime,o=AC.createOs
   g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.22,t+.015);g.gain.exponentialRampToValueAtTime(.0001,t+.16);o.connect(g);g.connect(OUT);o.start(t);o.stop(t+.18)}catch(e){}}
 function chatAdd(m){if(m.id&&m.id!==CH.id)return;const box=$('#chatm'),d=document.createElement('div'),me=m.uid===P.uid;
   if(m.sys){d.className='sys';d.textContent=m.text}
-  else{d.className='bub'+(me?' me':'');d.innerHTML=(me?'':`<i class="${auraCls(m.au==null?-1:m.au)}">${avSVG(AVM[m.av]?m.av:'ajolote')}</i>`)+`<p>${me?'':`<b>${esc(m.from)}</b>`}${esc(m.text)}</p>`;if(m.uid)delete CH.ty[m.uid];
+  else{d.className='bub'+(me?' me':'')+(typeof m.bu==='string'&&/^bu_[a-z]+$/.test(m.bu)?' bu-'+m.bu.slice(3):'');d.innerHTML=(me?'':`<i class="${auraCls(m.au==null?-1:m.au)}">${avSVG(AVM[m.av]?m.av:'ajolote')}</i>`)+`<p>${me?'':`<b>${esc(m.from)}</b>`}${esc(m.text)}</p>`;if(m.uid)delete CH.ty[m.uid];
     CH.last=(me?'Tú':m.from)+': '+m.text;if($('#chat').classList.contains('min'))$('#chatsub').textContent=CH.last}
   box.appendChild(d);box.scrollTop=box.scrollHeight;if(!RM()&&!m.sys)d.animate([{opacity:0,transform:'translateY(10px) scale(.92)'},{opacity:1,transform:'none'}],{duration:240,easing:'cubic-bezier(.3,1.4,.5,1)'});
   if(!m.sys&&!me){vib(15);chatPop()}}
@@ -461,8 +461,8 @@ function finMe(m){if(!P.found||(P.team<0&&!P.spec))return;FPH=m;clearTimeout(FIN
   /* en modo celulares primero se ve la ceremonia completa en la pantalla del juego */
   const wait=gvOn()?2700+(+m.n||0)*1300+3500:2600;
   FINT=later(wait,()=>{const won=m.w===P.team,tie=m.w<0,mine=Array.isArray(m.mine)?m.mine:[];
-    $('#finphav').innerHTML=avSVG(myAv());$('#finpht').textContent=tie?'¡Empate!':won?'🏆 ¡GANARON!':'¡Buen juego!';
-    $('#finphs').textContent=`${NAMES[0]} ${m.sc[0]} · ${NAMES[1]} ${m.sc[1]}`;$('#finphpz').hidden=!(won&&m.prize);$('#finphpzt').textContent=m.prize||'';
+    $('#finphav').innerHTML=avSVG(myAvF());$('#finpht').textContent=tie?'¡Empate!':won?'🏆 ¡GANARON!':'¡Buen juego!';
+    $('#finphs').textContent=`${NAMES[0]} ${m.sc[0]} · ${NAMES[1]} ${m.sc[1]}`;coinFin();$('#finphpz').hidden=!(won&&m.prize);$('#finphpzt').textContent=m.prize||'';
     $('#finphmt').textContent=mine.length?(mine.length===1?'Tu medalla':'Tus medallas'):'Esta vez no te tocó medalla. ¡A la próxima!';
     $('#finphm').innerHTML=mine.map(x=>`<div class="finph-med" style="--mc:${esc(x.c||'#ffc42e')}"><span class="dk">${esc(x.ic)}</span><div><b>${esc(x.t)}${x.team?' <small>(tu equipo)</small>':''}</b><small>${esc(x.d)}</small></div></div>`).join('');
     $('#finphph').hidden=!(won||tie||(AD&&AD.ok));$('#finphpic').hidden=true;$('#finphcam').hidden=false;$('#finphnote').textContent='';
@@ -721,7 +721,7 @@ function rxShow(){$('#rxbar').hidden=!(MODE==='play'&&!P.picking)}
 function rxAuto(){clearTimeout(RXC);RXC=later(6000,()=>{$('#rxp').hidden=true;$('#rxk').setAttribute('aria-expanded','false')})}
 $('#rxk').addEventListener('click',()=>{const o=$('#rxp').hidden;$('#rxp').hidden=!o;$('#rxk').setAttribute('aria-expanded',String(o));if(o)rxAuto()});
 $('#rxp').addEventListener('click',e=>{const b=e.target.closest('[data-e]');if(!b)return;const now=performance.now();if(now-RXT<500)return;RXT=now;const i=+b.dataset.e;
-  psend({t:'react',e:i});reactFx({e:i,av:P.av,tm:P.team});vib(12);rxAuto();if(!RM())b.animate([{transform:'scale(1)'},{transform:'scale(1.35)'},{transform:'scale(1)'}],{duration:260})});
+  psend({t:'react',e:i});reactFx({e:i,av:myAvF(),tm:P.team});vib(12);rxAuto();if(!RM())b.animate([{transform:'scale(1)'},{transform:'scale(1.35)'},{transform:'scale(1)'}],{duration:260})});
 /* ===================== CÓMO SE JUEGA (20 s, opcional) ===================== */
 const TUT=[['🚦','Gana el botón','Cuando la luz se ponga verde, ¡toca tu botón! El más rápido gana el turno para su equipo. Si tocas antes, lo pierden.'],
   ['✍️','Adivina qué dijeron','Escribe en tu celular lo que crees que dijeron las 100 personas. Si está en el tablero, se destapa y suma puntos.'],
@@ -775,42 +775,44 @@ $('#finphsave').addEventListener('click',async()=>{const u=$('#finphimg').src;if
   try{if(navigator.canShare){const b=await (await fetch(u)).blob(),file=new File([b],'100-familiares-ganadores.jpg',{type:'image/jpeg'});if(navigator.canShare({files:[file]})){await navigator.share({files:[file],title:'100 Familiares Dijeron'});return}}}catch(e){if(e&&e.name==='AbortError')return}
   const a=document.createElement('a');a.href=u;a.download='100-familiares-ganadores.jpg';document.body.appendChild(a);a.click();a.remove()});
 /* ===================== MI PERFIL: contadores, logros y premios (todo se guarda en este celular; no hay cuentas) ===================== */
-const PF=(p=>{p=p&&typeof p==='object'?p:{};p.c=p.c&&typeof p.c==='object'?p.c:{};p.ach=p.ach&&typeof p.ach==='object'?p.ach:{};p.eq=eqClean(p.eq);return p})(LS.get('bt-prof',null));
+const PF=(p=>{p=p&&typeof p==='object'?p:{};p.c=p.c&&typeof p.c==='object'?p.c:{};p.ach=p.ach&&typeof p.ach==='object'?p.ach:{};p.eq=eqClean(p.eq);p.coin=Number.isFinite(p.coin)&&p.coin>0?Math.floor(p.coin):0;p.own=p.own&&typeof p.own==='object'?p.own:{};p.tp=p.tp&&typeof p.tp==='object'?p.tp:{};return p})(LS.get('bt-prof',null));
 let SEEN=(a=>Array.isArray(a)?a.filter(x=>typeof x==='string').slice(-500):[])(LS.get('bt-seen',[]));
 const PEN=new Set(),UNQ=[];let UNON=false;
 function pfSave(){LS.set('bt-prof',PF)}
 function pfAdd(k,v){PF.c[k]=(PF.c[k]||0)+(v==null?1:v);pfCheck()}
-function pfCheck(){const nu=[];LOGROS.forEach(l=>{if(PF.ach[l.id])return;const v=l.k==='streak'?(PF.c.streakMax||0):(PF.c[l.k]||0);if(v>=l.goal){PF.ach[l.id]=Date.now();nu.push(l)}});pfSave();
+function pfCheck(){const nu=[];LOGROS.forEach(l=>{if(PF.ach[l.id])return;const v=l.k==='streak'?(PF.c.streakMax||0):(PF.c[l.k]||0);if(v>=l.goal){PF.ach[l.id]=Date.now();nu.push(l)}});pfSave();if(nu.length)coinAdd(nu.reduce((a,l)=>a+COIN.ach[l.r],0));
   if(nu.length){nu.sort((a,b)=>a.r-b.r).forEach(l=>UNQ.push(l));unlNext();if(!$('#prof').hidden)profDraw()}}
 /* lo que tengo desbloqueado para ponerme */
 const pfRmax=()=>Math.max(-1,...Object.keys(PF.ach).filter(k=>LGM[k]).map(k=>LGM[k].r));
 const pfHasR=r=>Object.keys(PF.ach).some(k=>LGM[k]&&LGM[k].r===r);
-function meSend(){psend({t:'me',av:P.av,eq:PF.eq},1)}
+function meSend(){psend({t:'me',av:myAvF(),eq:PF.eq},1)}
 /* avisos de la pantalla grande sobre lo que hiciste */
 function onPe(m){const key=P.code+':'+m.n;if(m.n!=null){if(PEN.has(key))return;PEN.add(key);if(PEN.size>400)PEN.delete(PEN.values().next().value)}const v=m.v||{};
   switch(m.e){
     case 'q':if(typeof m.id==='string'&&!SEEN.includes(m.id)){SEEN.push(m.id);if(SEEN.length>500)SEEN=SEEN.slice(-500);LS.set('bt-seen',SEEN)}return;
-    case 'hit':PF.c.hits=(PF.c.hits||0)+1;if(v.i===0)PF.c.ones=(PF.c.ones||0)+1;if(v.steal)PF.c.steals=(PF.c.steals||0)+1;if(v.hive)PF.c.hive=(PF.c.hive||0)+1;pfCheck();return;
+    case 'hit':PF.c.hits=(PF.c.hits||0)+1;if(v.i===0)PF.c.ones=(PF.c.ones||0)+1;if(v.steal)PF.c.steals=(PF.c.steals||0)+1;coinAdd(COIN.hit+(v.i===0?COIN.one:0)+(v.steal?COIN.steal:0));if(v.hive)PF.c.hive=(PF.c.hive||0)+1;pfCheck();return;
     case 'gend':PF.c.games=(PF.c.games||0)+1;if(v.won){PF.c.wins=(PF.c.wins||0)+1;PF.c.streak=(PF.c.streak||0)+1;PF.c.streakMax=Math.max(PF.c.streakMax||0,PF.c.streak);
         if(v.diff>=300)PF.c.win300=(PF.c.win300||0)+1;if(v.perfect)PF.c.perfect=(PF.c.perfect||0)+1;if(v.comeback)PF.c.comeback=(PF.c.comeback||0)+1;if(v.edge)PF.c.edge=(PF.c.edge||0)+1}
-      else if(!v.tie)PF.c.streak=0;pfCheck();return;
-    case 'fm':if(v.solo>=150)PF.c.fm150=(PF.c.fm150||0)+1;if(v.team>=200)PF.c.fm200=(PF.c.fm200||0)+1;pfCheck();return;
+      else if(!v.tie)PF.c.streak=0;
+      {const d=shopDay(),k=v.rd==null||v.rd>=3?1:.5;coinAdd(k*(COIN.game+(v.won?COIN.win:v.tie?COIN.tie:0))+(PF.day!==d?COIN.day:0)+(v.won&&PF.c.streak>=3?COIN.streak:0));PF.day=d}pfCheck();return;
+    case 'fm':if(v.solo>0)coinAdd(Math.min(COIN.flMax,Math.round(v.solo/10)));if(v.solo>=150)PF.c.fm150=(PF.c.fm150||0)+1;if(v.team>=200)PF.c.fm200=(PF.c.fm200||0)+1;pfCheck();return;
+    case 'temp':tpPrize(v);return;
     default:if(['steal3','clean','sup','brk','brk4','cmd3'].includes(m.e))pfAdd(m.e)}}
 /* botones: lo cuenta el propio celular con el resultado que le llega */
 const RSD=new Set();
 function pfRes(m){const k=P.code+':'+m.r;if(RSD.has(k))return;
   if(m.kind==='foul'&&m.foul){RSD.add(k);if(m.foul.uid===P.uid)pfAdd('fouls');return}
   if(m.kind!=='ok'||!Array.isArray(m.list))return;const me=m.list.find(x=>x.uid===P.uid);if(!me)return;RSD.add(k);
-  if(PF.best==null||me.rt<PF.best)PF.best=me.rt;if(m.list[0].uid===P.uid){PF.c.bz=(PF.c.bz||0)+1;if(me.rt<180)PF.c.rayo=(PF.c.rayo||0)+1}
+  if(PF.best==null||me.rt<PF.best)PF.best=me.rt;if(m.list[0].uid===P.uid){PF.c.bz=(PF.c.bz||0)+1;coinAdd(COIN.bz);if(me.rt<180)PF.c.rayo=(PF.c.rayo||0)+1}
   if(me.rt===333)PF.c.t333=(PF.c.t333||0)+1;if(m.list.some(x=>x.uid!==P.uid&&x.team!==me.team&&x.rt===me.rt))PF.c.twin=(PF.c.twin||0)+1;pfCheck()}
 /* ===== animación al desbloquear (solo en tu celular; mientras más raro, más espectacular) ===== */
 const UNIC=['🏅','🎖️','💎','🔮','👑','🌈','🗝️'];
 /* los comunes y poco comunes salen arriba aunque estés contestando; los demás esperan un momento tranquilo */
 function unlNext(){if(UNON||!UNQ.length)return;const busy=['arm','wait','go'].includes(P.phase)||(WP&&(WP.spin||WP.drag))||(UNQ[0].r>=2&&(!$('#ask').hidden||!$('#chat').hidden||!$('#flp').hidden));if(busy){later(1500,unlNext);return}UNON=true;unlShow(UNQ.shift())}
 function unlShow(l){const r=l.r,R0=RAR[r],box=$('#unl'),card=$('#unlcard');box.className='unl r'+r;box.style.setProperty('--rc',R0.c);
-  $('#unlr').textContent=`${r===6?'¡Logro secreto!':'Logro desbloqueado'} · ${R0.n}`;$('#unlic').textContent=UNIC[r];$('#unld').textContent=l.d;
-  const first=Object.keys(PF.ach).filter(k=>LGM[k]&&LGM[k].r===r).length===1,extra=[`Título nuevo: «${l.n}»`];if(first)extra.push(`Aura ${R0.n.toLowerCase()}`);
-  const hz=HORSES.find(h=>h.r===r),wr=WRITES.find(w=>w.r===r);if(first&&hz)extra.push(hz.n);if(first&&wr)extra.push(wr.n);$('#unlt').textContent='🎁 '+extra.join(' · ');
+  $('#unlr').textContent=l.x?'¡Temporada!':`${r===6?'¡Logro secreto!':'Logro desbloqueado'} · ${R0.n}`;$('#unlic').textContent=l.ic||UNIC[r];$('#unld').textContent=l.d;
+  const first=!l.x&&Object.keys(PF.ach).filter(k=>LGM[k]&&LGM[k].r===r).length===1,extra=[`Título nuevo: «${l.n}»`];if(first)extra.push(`Aura ${R0.n.toLowerCase()}`);
+  const hz=HORSES.find(h=>h.r===r),wr=WRITES.find(w=>w.r===r);if(first&&hz)extra.push(hz.n);if(first&&wr)extra.push(wr.n);extra.push(`+${COIN.ach[r]} 🪙`);$('#unlt').textContent='🎁 '+(l.x||extra.join(' · '));
   const nm=$('#unln');box.hidden=false;const rm=RM(),dur=[2800,3200,3800,4800,6000,7000,7200][r];
   if(r>=5&&!rm){nm.textContent='';const s=r===6?'!¿#%&$@*?':'',T0=performance.now(),L=l.n.length;
     const tk=setInterval(()=>{const k=Math.min(L,Math.floor((performance.now()-T0)/(r===6?55:85)));nm.textContent=l.n.slice(0,k)+(r===6&&k<L?Array.from({length:Math.min(3,L-k)},()=>s[Math.floor(Math.random()*s.length)]).join(''):'');if(k>=L)clearInterval(tk)},40)}
@@ -827,23 +829,27 @@ $('#unl').addEventListener('click',unlHide);
 /* ===== hoja "Mi perfil" ===== */
 function profOpen(){profDraw();$('#prof').hidden=false;if(!RM())$('.prof-in').animate([{transform:'translateY(40px)',opacity:0},{transform:'none',opacity:1}],{duration:300,easing:'cubic-bezier(.2,.9,.3,1)'})}
 function profDraw(){const c=PF.c,got=Object.keys(PF.ach).filter(k=>LGM[k]),rm=pfRmax();
-  $('#profav').innerHTML=avSVG(P.av);$('#profav').className='prof-av'+auraCls(PF.eq.a);$('#proft').textContent=P.name||LS.get('bt-name','')||'Tú';$('#proftt').textContent=PF.eq.t?'«'+lgTitle(PF.eq.t)+'»':'Sin título';$('#proftt').className=PF.eq.t?titCls(PF.eq.t).trim():'';
+  $('#profav').innerHTML=avSVG(myAvF());$('#profav').className='prof-av'+auraCls(PF.eq.a);$('#proft').textContent=P.name||LS.get('bt-name','')||'Tú';$('#proftt').textContent=PF.eq.t?'«'+lgTitle(PF.eq.t)+'»':'Sin título';$('#proftt').className=PF.eq.t?titCls(PF.eq.t).trim():'';
   const st=[['🎮','Partidas',c.games||0],['🏆','Ganadas',c.wins||0],['🔔','Botones ganados',c.bz||0],['🎯','Atinadas',c.hits||0],['⭐','La #1',c.ones||0],['🕵️','Robos',c.steals||0],['⚡','Mejor tiempo',PF.best!=null?(PF.best/1000).toFixed(2)+' s':'—'],['🔥','Racha',(c.streak||0)+' (máx. '+(c.streakMax||0)+')']];
   $('#profst').innerHTML=st.map(([i,n,v])=>`<div><span>${i}</span><b>${esc(String(v))}</b><small>${n}</small></div>`).join('');
   const chip=(g,v,lab,on,col)=>`<button type="button" class="prof-chip${on?' on':''}" data-g="${g}" data-v="${esc(String(v))}" aria-pressed="${on}"${col?` style="--rc:${col}"`:''}>${lab}</button>`;
-  const tit=chip('t','','Ninguno',!PF.eq.t)+got.sort((a,b)=>LGM[b].r-LGM[a].r).map(k=>chip('t',k,esc(LGM[k].n),PF.eq.t===k,RAR[LGM[k].r].c)).join('');
-  const aur=chip('a',-1,'Ninguna',PF.eq.a<0)+RAR.map((R0,i)=>pfHasR(i)?chip('a',i,`<i class="prof-dot${auraCls(i)}"></i>${R0.n}`,PF.eq.a===i,R0.c):'').join('');
-  const hor=HORSES.map(h=>h.r<0||pfHasR(h.r)?chip('h',h.id,h.n,PF.eq.h===h.id,h.r>=0?RAR[h.r].c:''):'').join('');
-  const wri=WRITES.map(w=>w.r<0||pfHasR(w.r)?chip('w',w.id,w.n,PF.eq.w===w.id,w.r>=0?RAR[w.r].c:''):'').join('');
+  const mine=k=>SHOP.filter(x=>x.k===k&&own(k,x.id)).sort((a,b)=>b.r-a.r),sc=x=>RAR[x.r].c,camp=Object.values(PF.tp).includes(1);
+  const tit=chip('t','','Ninguno',!PF.eq.t)+(camp?chip('t','tp_campeon','👑 Campeón de temporada',PF.eq.t==='tp_campeon','#ffd23f'):'')+mine('ti').map(x=>chip('t',x.id,'🛒 '+esc(x.n),PF.eq.t===x.id,sc(x))).join('')+got.sort((a,b)=>LGM[b].r-LGM[a].r).map(k=>chip('t',k,esc(LGM[k].n),PF.eq.t===k,RAR[LGM[k].r].c)).join('');
+  const aur=chip('a',-1,'Ninguna',PF.eq.a===-1)+mine('au').map(x=>chip('a',x.id,`<i class="prof-dot${auraCls(x.id)}"></i>${esc(x.n.replace(/^Aura (de )?/,'').replace(/^./,c=>c.toUpperCase()))}`,PF.eq.a===x.id,sc(x))).join('')+RAR.map((R0,i)=>pfHasR(i)?chip('a',i,`<i class="prof-dot${auraCls(i)}"></i>${R0.n}`,PF.eq.a===i,R0.c):'').join('');
+  const hor=HORSES.map(h=>h.r<0||pfHasR(h.r)?chip('h',h.id,h.n,PF.eq.h===h.id,h.r>=0?RAR[h.r].c:''):'').join('')+mine('hz').map(x=>chip('h',x.id,esc(x.n),PF.eq.h===x.id,sc(x))).join('');
+  const wri=WRITES.map(w=>w.r<0||pfHasR(w.r)?chip('w',w.id,w.n,PF.eq.w===w.id,w.r>=0?RAR[w.r].c:''):'').join('')+mine('wr').map(x=>chip('w',x.id,esc(x.n),PF.eq.w===x.id,sc(x))).join('');
+  const grp=(k,g,lab,none)=>{const L=mine(k);return `<div><small>${lab}</small>${L.length?`<div class="prof-chips">${chip(g,'',none,!PF.eq[g])}${L.map(x=>chip(g,x.id,esc(x.n.replace(/^(Piel|Fondo|Burbuja|Celebración:?) (de )?/i,'').replace(/^./,c=>c.toUpperCase())),PF.eq[g]===x.id,sc(x))).join('')}</div>`:'<em>Cómpralos en la <button type="button" class="lnk" data-shop="1">🛒 tiendita</button></em>'}</div>`};
   $('#profeq').innerHTML=`<div><small>Título</small><div class="prof-chips">${tit}</div></div><div><small>Aura</small><div class="prof-chips">${aur}</div></div>`+
-    `<div><small>Caballo de carrera</small><div class="prof-chips">${hor}</div>${rm<4?'<em>Se desbloquean con logros legendarios o mejores</em>':''}</div><div><small>Letras de tus respuestas</small><div class="prof-chips">${wri}</div>${rm<5?'<em>Se desbloquean con logros míticos o mejores</em>':''}</div>`;
+    grp('sk','sk','Piel de tu animalito','Normal')+grp('ac','ac','Accesorio','Ninguno')+grp('fo','fo','Fondo','Normal')+
+    `<div><small>Caballo de carrera</small><div class="prof-chips">${hor}</div>${rm<4?'<em>Se desbloquean con logros legendarios o mejores (o en la tiendita)</em>':''}</div><div><small>Letras de tus respuestas</small><div class="prof-chips">${wri}</div>${rm<5?'<em>Se desbloquean con logros míticos o mejores (o en la tiendita)</em>':''}</div>`+
+    grp('bu','bu','Burbuja del chat','Normal')+grp('ce','ce','Celebración al ganar el botón','Ninguna');
   $('#profn').textContent=`${got.length} de ${LOGROS.length}`;
   $('#proflg').innerHTML=RAR.map((R0,i)=>{const L=LOGROS.filter(l=>l.r===i);return `<div class="prof-rg" style="--rc:${R0.c}"><h4>${R0.n}</h4>`+L.map(l=>{const ok=!!PF.ach[l.id],sec=l.r===6&&!ok,v=l.k==='streak'?(c.streakMax||0):(c[l.k]||0);
     return `<div class="prof-lg${ok?' ok':''}${sec?' sec':''}"><span class="prof-li">${ok?UNIC[l.r]:sec?'❔':'🔒'}</span><div><b>${sec?'???':esc(l.n)}</b><small>${sec?'Es secreto: descúbrelo jugando':esc(l.d)}</small>${!ok&&!sec&&l.goal>1?`<i class="prof-pg"><i style="width:${Math.min(100,Math.round(v/l.goal*100))}%"></i></i><small>${Math.min(v,l.goal)} de ${l.goal}</small>`:''}</div></div>`}).join('')+'</div>'}).join('')}
-$('#profeq').addEventListener('click',e=>{const b=e.target.closest('.prof-chip');if(!b)return;const g=b.dataset.g,v=b.dataset.v;if(g==='a')PF.eq.a=+v;else PF.eq[g]=v;PF.eq=eqClean(PF.eq);pfSave();profDraw();tick();if(MODE==='play')meSend()});
+$('#profeq').addEventListener('click',e=>{const b=e.target.closest('.prof-chip');if(!b)return;const g=b.dataset.g,v=b.dataset.v;if(g==='a')PF.eq.a=/^-?\d+$/.test(v)?+v:v;else PF.eq[g]=v;PF.eq=eqClean(PF.eq);pfSave();profDraw();tick();try{drawMe()}catch(er){}if(MODE==='play')meSend()});
 $('#profav').addEventListener('click',()=>{ac();loadSounds();myAvSheet()});
 $('#profx').addEventListener('click',()=>{$('#prof').hidden=true});
-document.addEventListener('click',e=>{if(e.target.closest('[data-prof]')){ac();loadSounds();profOpen()}});
+document.addEventListener('click',e=>{if(e.target.closest('[data-prof]')){ac();loadSounds();$('#shop').hidden=true;profOpen()}if(e.target.closest('[data-shop]')){ac();loadSounds();shopOpen()}});
 window.__pf={PF,get SEEN(){return SEEN},pfCheck,onPe};
 /* ===================== TARJETA DE RESULTADOS PARA COMPARTIR (se arma en el celular) ===================== */
 function wrapTx(x,t,max){const w=String(t).split(' '),L=[];let c='';w.forEach(p=>{const n=c?c+' '+p:p;if(x.measureText(n).width>max&&c){L.push(c);c=p}else c=n});if(c)L.push(c);return L}
@@ -891,5 +897,100 @@ $('#flpme').addEventListener('click',()=>{psend({t:'flme'},1);tick();$('#flpme')
 const STAT_I={'Conectado directo (Wi-Fi)':'📶 Directo por Wi-Fi: tu celular y la pantalla se hablan sin pasar por internet.','Conectado directo':'📶 Directo: tu celular habla directo con la pantalla (aunque estén lejos, como en otra ciudad).',
   'Conectado por relevo':'🌐 Por relevo: van por un servidor de paso, cifrado de punta a punta.','Conectado por servidor':'🌐 Por servidor: los mensajes pasan por un servidor de internet. El juego va igual de parejo. Pasa cuando el módem no deja que los aparatos se hablen directo; la foto de los ganadores se manda cifrada.'};
 $('#pstat').addEventListener('click',()=>{const t=STAT_I[$('#pstat').title];if(t)toast(t)});
+/* ===================== FICHAS 🪙 Y LA TIENDITA (todo se guarda en este celular) ===================== */
+/* cuánto da cada cosa: una partida normal deja como 55–70 fichas */
+const COIN={game:20,win:25,tie:10,day:15,streak:10,hit:3,one:3,steal:6,bz:2,flMax:20,ach:[10,20,40,70,120,200,300],tp:[300,150,75]};
+function myAvF(){return avJoin(P.av,PF.eq.sk,PF.eq.ac,PF.eq.fo)}
+window.avOwn=id=>own('av',id);
+const own=(k,id)=>!!PF.own[k+':'+id];
+let COINQ=0,COINT=0;
+function coinDraw(){$$('[data-coins]').forEach(b=>b.textContent=String(PF.coin||0))}
+function coinAdd(n){n=Math.round(n);if(!(n>0))return;PF.coin=(PF.coin||0)+n;if(!PF.ge||PF.ge.code!==P.code)PF.ge={code:P.code,n:0};PF.ge.n+=n;pfSave();coinDraw();
+  COINQ+=n;clearTimeout(COINT);COINT=later(450,coinPop);if(!$('#finph').hidden)coinFin()}
+/* "+5 🪙" que sube junto a tus fichas */
+function coinPop(){const n=COINQ;COINQ=0;if(!n||!document.body)return;const vis=[...$$('.coinb')].find(b=>b.offsetParent);const d=document.createElement('i');d.className='coin-pop';d.textContent=`+${n} 🪙`;
+  const r=vis?vis.getBoundingClientRect():{left:innerWidth/2,top:60,width:0,height:0};d.style.left=Math.min(innerWidth-50,r.left+r.width/2)+'px';d.style.top=(r.top+r.height)+'px';document.body.appendChild(d);
+  if(vis&&!RM())vis.animate([{transform:'scale(1)'},{transform:'scale(1.25)'},{transform:'scale(1)'}],{duration:380});
+  if(RM()){later(1400,()=>d.remove());return}d.animate([{opacity:0,transform:'translate(-50%,0) scale(.7)'},{opacity:1,transform:'translate(-50%,6px) scale(1.05)',offset:.2},{opacity:1,transform:'translate(-50%,10px)',offset:.75},{opacity:0,transform:'translate(-50%,-14px)'}],{duration:1500,easing:'ease-out'}).onfinish=()=>d.remove()}
+function coinFin(){const e=$('#finphco');if(!e)return;const g=PF.ge&&PF.ge.code===P.code?PF.ge.n:0;e.hidden=!g;e.innerHTML=g?`🪙 <b>+${g}</b> fichas en esta partida · tienes <b>${PF.coin||0}</b> <button type="button" class="lnk" data-shop="1">🛒 ir a la tiendita</button>`:''}
+/* premio de temporada (lo manda la pantalla grande; se cobra una sola vez por mes) */
+function tpPrize(v){if(!v||typeof v.m!=='string'||!/^\d{4}-\d{2}$/.test(v.m)||!(v.pl>=1&&v.pl<=3)||PF.tp[v.m])return;PF.tp[v.m]=v.pl;coinAdd(COIN.tp[v.pl-1]);pfSave();const mn=String(v.mn||v.m).slice(0,20);
+  if(v.pl===1){UNQ.push({id:'tp',r:5,ic:'👑',n:'Campeón de temporada',d:`Quedaste en 1er lugar de la temporada de ${mn} (${+v.pts||0} puntos)`,x:`Título nuevo: «Campeón de temporada» · +${COIN.tp[0]} 🪙`});unlNext()}
+  else toast(`${v.pl===2?'🥈':'🥉'} Quedaste ${v.pl}° en la temporada de ${mn}: +${COIN.tp[v.pl-1]} fichas`);if(!$('#prof').hidden)profDraw()}
+/* bono de bienvenida: lo que ya habías jugado antes de que existiera la tiendita también cuenta */
+if(!PF.wel){PF.wel=1;const b=Object.keys(PF.ach).filter(k=>LGM[k]).reduce((a,k)=>a+COIN.ach[LGM[k].r],0)+Math.min(40,PF.c.games||0)*10;if(b>0){PF.coin=(PF.coin||0)+b;later(1800,()=>toast(`🎁 ¡Ya hay tiendita! Te regalamos ${b} fichas por lo que ya habías jugado`))}pfSave()}
+/* ===== la tiendita ===== */
+let SHOPT=0,SHOPD='',SHOPS=null;
+function shopPrev(it){const id=it.id,base=P.av;switch(it.k){
+  case 'av':return avSVG(id);case 'sk':return avSVG(avJoin(base,id));case 'ac':return avSVG(avJoin(base,'',id));case 'fo':return avSVG(avJoin(base,'','',id));
+  case 'au':return `<i class="shop-au${auraCls(id)}">${avSVG(base)}</i>`;
+  case 'ti':return `<b class="shop-ti${titCls(id)}">«${esc(it.n)}»</b>`;
+  case 'wr':return `<span class="wrp w-${id}"><b>${'¡Tamales!'.split('').map(c=>`<i class="l2-c">${esc(c)}</i>`).join('')}</b></span>`;
+  case 'hz':return `<span class="shop-hz">${horseSVG(0,id)}</span>`;
+  case 'bu':return `<span class="shop-bu bu-${id.slice(3)}"><p>¡Vamos, equipo!</p></span>`;
+  case 'ce':return `<span class="shop-ce">${CEIC[id]||'🎉'}<small>Toca para verla</small></span>`}return ''}
+function shopLeft(){const d=new Date(),m=new Date(d.getFullYear(),d.getMonth(),d.getDate()+1)-d,h=Math.floor(m/36e5),mi=Math.floor(m%36e5/6e4);return h?`${h} h ${mi} min`:`${Math.max(1,mi)} min`}
+function shopOpen(){shopDraw();const s=$('#shop');s.hidden=false;if(!RM())$('.prof-in',s).animate([{transform:'translateY(40px)',opacity:0},{transform:'none',opacity:1}],{duration:300,easing:'cubic-bezier(.2,.9,.3,1)'});
+  clearInterval(SHOPT);SHOPT=setInterval(()=>{if(s.hidden){clearInterval(SHOPT);return}if(shopDay()!==SHOPD)shopDraw();else $('#shopcd').textContent='Cambia en '+shopLeft()},20000)}
+function shopDraw(){SHOPD=shopDay();SHOPS=shopToday(SHOPD);coinDraw();$('#shopcd').textContent='Cambia en '+shopLeft();
+  $('#shopg').innerHTML=SHOPS.map((o,i)=>{const it=o.it,R0=RAR[it.r],mine=own(it.k,it.id),on=mine&&shopOn(it);
+    return `<div class="shop-c r${it.r}${o.star?' star':''}${mine?' own':''}" style="--rc:${R0.c}">${o.star?`<em class="shop-st">⭐ Destacado · −15 %</em>`:''}`+
+      `<button type="button" class="shop-pv" data-pv="${i}" aria-label="Ver ${esc(it.n)}">${shopPrev(it)}</button><small class="shop-r">${R0.n} · ${SHOPK[it.k]}</small><b class="shop-n">${esc(it.n)}</b>`+
+      `<button type="button" class="shop-b${mine?(on?' on':' wear'):(PF.coin||0)<o.p?' poor':''}" data-buy="${i}">${mine?(on?'✔ Lo traes puesto':'✨ Ponértelo'):`🪙 ${o.p}${o.star?` <s>${it.p}</s>`:''}`}</button></div>`}).join('');
+  $('#shopern').innerHTML=[['🎮','Terminar una partida',`${COIN.game} (la mitad si fue de 1 o 2 rondas)`],['🏆','Ganarla',`+${COIN.win} (empate +${COIN.tie})`],['☀️','La primera partida del día',`+${COIN.day}`],['🔥','Ganar 3 o más seguidas',`+${COIN.streak}`],
+    ['🎯','Cada respuesta que atinas',`${COIN.hit} (la #1: +${COIN.one} · en robo: +${COIN.steal})`],['🔔','Ganar el botón',COIN.bz],['⚡','Ronda Relámpago','1 por cada 10 puntos tuyos (hasta '+COIN.flMax+')'],
+    ['🏅','Cada logro',`de ${COIN.ach[0]} a ${COIN.ach[6]} según lo raro`],['📅','Temporada del mes',`🥇 ${COIN.tp[0]} · 🥈 ${COIN.tp[1]} · 🥉 ${COIN.tp[2]}`]].map(([i,a,b])=>`<li><span>${i}</span>${a}<b>${b}</b></li>`).join('');
+  const tot=SHOPW.reduce((a,b)=>a+b,0);$('#shopodds').innerHTML='<p>Cada lugar de la tienda sale así (el destacado siempre es raro o mejor y sale con descuento):</p><ul>'+SHOPW.map((w,r)=>`<li style="--rc:${RAR[r].c}"><b>${RAR[r].n}</b><span>${String(Math.round(w/tot*1000)/10).replace('.',',')} %</span><small>🪙 ${PRICE[r]}</small></li>`).join('')+'</ul>'}
+/* ¿ya lo traigo puesto? */
+const SHG={sk:'sk',ac:'ac',fo:'fo',au:'a',ti:'t',wr:'w',hz:'h',bu:'bu',ce:'ce'};
+const shopOn=it=>it.k==='av'?P.av===it.id:PF.eq[SHG[it.k]]===it.id;
+function shopWear(it){if(it.k==='av'){myAvSet(it.id);return}PF.eq[SHG[it.k]]=it.id;PF.eq=eqClean(PF.eq);pfSave();try{drawMe()}catch(e){}if(MODE==='play')meSend();if(!$('#prof').hidden)profDraw()}
+$('#shopg').addEventListener('click',e=>{const pv=e.target.closest('[data-pv]'),b=e.target.closest('[data-buy]');
+  if(pv){const o=SHOPS&&SHOPS[+pv.dataset.pv];if(o&&o.it.k==='ce')celebFx(o.it.id,pv);else if(!RM())pv.animate([{transform:'scale(1)'},{transform:'scale(1.08)'},{transform:'scale(1)'}],{duration:300});return}
+  if(!b||!SHOPS)return;const o=SHOPS[+b.dataset.buy];if(!o)return;const it=o.it;
+  if(own(it.k,it.id)){if(!shopOn(it)){shopWear(it);sf('rec',.6);toast('¡Listo! Ya lo traes puesto');shopDraw()}return}
+  if((PF.coin||0)<o.p){toast(`Te faltan ${o.p-(PF.coin||0)} fichas. ¡Sigue jugando!`);if(!RM())b.animate([{transform:'translateX(0)'},{transform:'translateX(-6px)'},{transform:'translateX(6px)'},{transform:'translateX(0)'}],{duration:260});vib(30);return}
+  if(b.dataset.sure!=='1'){b.dataset.sure='1';b.classList.add('sure');b.textContent=`¿Comprar por ${o.p}? Toca otra vez`;clearTimeout(b._t);b._t=later(3500,()=>{if(b.isConnected){b.dataset.sure='';b.classList.remove('sure');shopDraw()}});return}
+  if(shopDay()!==SHOPD){toast('La tiendita acaba de cambiar.');shopDraw();return}
+  PF.coin-=o.p;PF.own[it.k+':'+it.id]=1;pfSave();coinDraw();sf(it.r>=3?'medf':'rec',.8);vib([30,30,60]);shopDraw();
+  const card=$$('.shop-c',$('#shopg'))[SHOPS.indexOf(o)];if(card&&!RM()){card.animate([{transform:'scale(.9)'},{transform:'scale(1.06)'},{transform:'scale(1)'}],{duration:420,easing:'cubic-bezier(.3,1.5,.5,1)'});spk(card,[14,18,24,34,48,60][it.r],[RAR[it.r].c,'#fff','#ffd76a'])}
+  toast(`¡${it.n} ya es tuyo! Toca «Ponértelo» para usarlo`)});
+$('#shopx').addEventListener('click',()=>{$('#shop').hidden=true});
+/* ===================== COPIA DEL PERFIL: pasarlo a otro celular ===================== */
+const BKK='100familiares-perfil';
+const bkX=u=>u.map((b,i)=>b^BKK.charCodeAt(i%BKK.length)^(i*31&255));
+const b64e=u=>{let s='';for(let i=0;i<u.length;i+=4096)s+=String.fromCharCode.apply(null,u.subarray(i,i+4096));return btoa(s).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'')};
+const b64d=t=>{const s=atob(t.replace(/-/g,'+').replace(/_/g,'/'));const u=new Uint8Array(s.length);for(let i=0;i<s.length;i++)u[i]=s.charCodeAt(i);return u};
+const bkSum=t=>{let h=5381;for(let i=0;i<t.length;i++)h=((h<<5)+h+t.charCodeAt(i))>>>0;return(h%1679616).toString(36).padStart(4,'0')};
+async function zip(u,dir){const S=dir?CompressionStream:DecompressionStream;return new Uint8Array(await new Response(new Blob([u]).stream().pipeThrough(new S('deflate'))).arrayBuffer())}
+async function bkMake(){const d={v:1,n:P.name||LS.get('bt-name','')||'',av:P.av,u:P.uid,p:{c:PF.c,ach:PF.ach,eq:PF.eq,best:PF.best,coin:PF.coin||0,own:PF.own,tp:PF.tp,day:PF.day||'',wel:1}};
+  let u=new TextEncoder().encode(JSON.stringify(d)),z='0';if(typeof CompressionStream==='function'){try{u=await zip(u,1);z='1'}catch(e){}}
+  const body=b64e(bkX(u));return 'F'+z+body+'.'+bkSum(body)}
+async function bkRead(code){code=String(code||'').replace(/\s+/g,'');const m=code.match(/(?:#perfil=)?(F[01])([A-Za-z0-9_-]{20,})\.([0-9a-z]{4})$/);if(!m)throw new Error('formato');if(bkSum(m[2])!==m[3])throw new Error('suma');
+  let u=bkX(b64d(m[2]));if(m[1]==='F1'){if(typeof DecompressionStream!=='function')throw new Error('viejo');u=await zip(u,0)}
+  const d=JSON.parse(new TextDecoder().decode(u));if(!d||d.v!==1||!d.p||typeof d.p!=='object')throw new Error('datos');return d}
+async function bkOpen(inp){const s=$('#bk');$('#bko').hidden=!!inp;$('#bki').hidden=!inp;$('#bkc').hidden=true;$('#bkerr').textContent='';s.hidden=false;
+  if(inp)return;$('#bkqr').innerHTML='<p class="shop-s">Armando tu código…</p>';
+  try{const c=await bkMake();BKC=c;const url=location.origin+location.pathname+'#perfil='+c;try{const q=qrcode(0,'L');q.addData(url);q.make();$('#bkqr').innerHTML=q.createSvgTag({cellSize:4,margin:3,scalable:true,alt:'Código QR con tu perfil'})}
+    catch(e){$('#bkqr').innerHTML='<p class="shop-s">Tu perfil es muy grande para el cuadro; usa «Copiar código» o «Compartir».</p>'}}catch(e){$('#bkqr').innerHTML='<p class="err">No se pudo armar el código.</p>'}}
+let BKC='',BKD=null;
+$('#bkout1').addEventListener('click',()=>bkOpen(false));$('#bkin1').addEventListener('click',()=>{bkOpen(true);later(200,()=>$('#bkta').focus())});
+$('#bkx').addEventListener('click',()=>{$('#bk').hidden=true});$('#bkno').addEventListener('click',()=>{$('#bk').hidden=true;BKD=null});
+$('#bkcopy').addEventListener('click',async()=>{if(!BKC)return;try{await navigator.clipboard.writeText(BKC);toast('¡Código copiado! Pégalo en el otro celular')}catch(e){$('#bkta').value=BKC;bkOpen(true);$('#bkta').select();toast('Cópialo de aquí')}});
+$('#bkshare').addEventListener('click',async()=>{if(!BKC)return;const url=location.origin+location.pathname+'#perfil='+BKC;try{if(navigator.share){await navigator.share({title:'Mi perfil de 100 Familiares',text:'Ábrelo en el otro celular para pasar mi perfil:',url});return}}catch(e){if(e&&e.name==='AbortError')return}
+  try{await navigator.clipboard.writeText(url);toast('¡Enlace copiado!')}catch(e){toast('No se pudo compartir; usa «Copiar código».')}});
+async function bkCheck(code){$('#bkerr').textContent='';try{const d=await bkRead(code);BKD=d;const p=d.p,na=Object.keys(p.ach||{}).filter(k=>LGM[k]).length,no=Object.keys(p.own||{}).length,ma=Object.keys(PF.ach).filter(k=>LGM[k]).length;
+    $('#bko').hidden=true;$('#bki').hidden=true;$('#bkc').hidden=false;$('#bk').hidden=false;
+    $('#bkct').innerHTML=`Este código trae el perfil de <b>${esc(String(d.n||'alguien').slice(0,14))}</b>: 🪙 <b>${+p.coin||0}</b> fichas, <b>${na}</b> logros y <b>${no}</b> cosas de la tiendita.<br><br>Va a <b>reemplazar</b> lo que tiene este celular ahorita (🪙 ${PF.coin||0}, ${ma} logros).`}
+  catch(e){bkOpen(true);$('#bkerr').textContent=e&&e.message==='viejo'?'Este celular es muy viejito para abrir ese código. Prueba actualizando el navegador.':'Ese código no está completo o tiene un error. Cópialo otra vez completito.'}}
+$('#bkgo').addEventListener('click',()=>bkCheck($('#bkta').value));
+$('#bkyes').addEventListener('click',()=>{const d=BKD;if(!d)return;if(MODE==='play'){toast('Hazlo cuando no estés en una partida.');return}
+  const p=d.p;LS.set('bt-prof',{c:p.c||{},ach:p.ach||{},eq:p.eq||{},best:p.best==null?null:p.best,coin:+p.coin||0,own:p.own||{},tp:p.tp||{},day:p.day||'',wel:1});
+  if(d.n)LS.set('bt-name',String(d.n).slice(0,14));if(typeof d.av==='string'&&AVM[d.av])LS.set('bt-myav',d.av);if(typeof d.u==='string'&&d.u.length<=40)LS.set('bt-uid',d.u);
+  toast('¡Listo! Tu perfil ya está en este celular');later(900,()=>{location.hash='';location.reload()})});
+/* abrir con el cuadro escaneado (…#perfil=CÓDIGO) */
+{const h=location.hash;if(/^#perfil=F[01]/.test(h)){const c=decodeURIComponent(h.slice(8));try{history.replaceState(null,'',location.pathname+location.search)}catch(e){}later(600,()=>{$('#bkta').value=c;bkCheck(c)})}}
+coinDraw();
+window.__shop={PF,coinAdd,shopDraw,bkMake,bkRead,COIN};
 window.__bt={H,P,WP,UPD,updCheck,AD};
 }

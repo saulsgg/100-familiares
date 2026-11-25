@@ -138,3 +138,56 @@ button.ctk:active .ctk-d{transform:scale(.88)}
 .tit-sec{display:inline-block;color:#ff4d6d!important;text-shadow:0 0 6px #b3122e;animation:titSec 2.6s steps(1) infinite}
 @keyframes titSec{0%,84%{transform:none}86%{transform:translate(1px,-1px);text-shadow:0 0 14px #ff2b4d}90%{transform:translate(-1px,1px)}94%{transform:none;text-shadow:0 0 10px #ff2b4d}}
 .lite .tit-mit,.lite .tit-sec{animation:none}
+/* ===================== COSAS DE LA TIENDITA (iguales en todas las pantallas) ===================== */
+/* auras de la tienda */
+.aus-menta{box-shadow:0 0 0 3px #3fe0cc,0 0 10px #3fe0cc}
+.aus-neon{box-shadow:0 0 0 3px #ff2bd6,0 0 12px #ff2bd6;animation:ausNeon 1.4s steps(1) infinite}
+@keyframes ausNeon{50%{box-shadow:0 0 0 3px #00e5ff,0 0 14px #00e5ff}}
+.aus-hielo{box-shadow:0 0 0 3px #bfe9ff,0 0 12px #7fd4ff,0 0 22px rgba(255,255,255,.55);animation:ausHie 2.2s ease-in-out infinite}
+@keyframes ausHie{50%{box-shadow:0 0 0 3px #fff,0 0 18px #bfe9ff,0 0 30px rgba(127,212,255,.7)}}
+.aus-corazon{box-shadow:0 0 0 3px #ff5c9a,0 0 12px #ff5c9a}
+.aus-corazon::after{content:'💗';position:absolute;right:-5px;top:-7px;font-size:15px;line-height:1;animation:ausHeart 1.6s ease-in-out infinite;pointer-events:none}
+@keyframes ausHeart{50%{transform:translateY(-4px) scale(1.18)}}
+.aus-galaxia{box-shadow:0 0 0 3px #6a3cff,0 0 14px #6a3cff,0 0 28px rgba(201,168,255,.5);animation:ausGal 4s linear infinite}
+@keyframes ausGal{33%{box-shadow:0 0 0 3px #2a1060,0 0 16px #c9a8ff,0 0 30px rgba(106,60,255,.6)}66%{box-shadow:0 0 0 3px #c9a8ff,0 0 14px #3b9bff,0 0 26px rgba(59,155,255,.5)}}
+.aus-oro{box-shadow:0 0 0 3px #ffd23f,0 0 14px #ffb020,0 0 30px rgba(255,210,63,.55);animation:ausOro 1.8s ease-in-out infinite}
+@keyframes ausOro{50%{box-shadow:0 0 0 4px #fff3a8,0 0 22px #ffd23f,0 0 40px rgba(255,176,32,.7)}}
+.aus-fantasma{box-shadow:0 0 0 3px rgba(220,230,255,.9),0 0 18px rgba(200,215,255,.8);animation:ausFan 3s ease-in-out infinite}
+@keyframes ausFan{50%{box-shadow:0 0 0 3px rgba(220,230,255,.3),0 0 26px rgba(200,215,255,.35);opacity:.78}}
+.aus-prisma{box-shadow:0 0 0 3px #fff,0 0 18px #ff5ce1;animation:ausPri 1.8s linear infinite}
+@keyframes ausPri{0%,100%{box-shadow:0 0 0 3px #ff5c9a,0 0 18px #ff5c9a,0 0 34px #ffd23f}20%{box-shadow:0 0 0 3px #ffd23f,0 0 18px #ffd23f,0 0 34px #3fe0cc}40%{box-shadow:0 0 0 3px #3fe0cc,0 0 18px #3fe0cc,0 0 34px #5b8cff}60%{box-shadow:0 0 0 3px #5b8cff,0 0 18px #5b8cff,0 0 34px #8b5cf6}80%{box-shadow:0 0 0 3px #8b5cf6,0 0 18px #8b5cf6,0 0 34px #ff5c9a}}
+.lite .aus-corazon::after{animation:none}
+/* título de campeón de temporada: oro que brilla */
+.tit-camp{display:inline-block;background:linear-gradient(100deg,#b37a00 0%,#ffd23f 35%,#fff6c8 50%,#ffd23f 65%,#b37a00 100%);background-size:220% 100%;-webkit-background-clip:text;background-clip:text;color:transparent!important;animation:titCamp 2.6s linear infinite}
+@keyframes titCamp{from{background-position:110% 0}to{background-position:-110% 0}}
+.lite .tit-camp{animation:none}
+/* letras de la tienda (en la pantalla grande y en la muestra del celular) */
+.j-say.w-neon #saytx .l2-c,.wrp.w-neon .l2-c{color:#ffe0f8;text-shadow:0 0 4px #fff,0 0 10px #ff2bd6,0 0 22px #ff2bd6;animation:wrNeon 3s steps(1) infinite}
+@keyframes wrNeon{0%,90%,96%{opacity:1}93%{opacity:.45}}
+.j-say.w-hielo #saytx .l2-c,.wrp.w-hielo .l2-c{color:#eafaff;text-shadow:0 0 6px #7fd4ff,0 0 14px #bfe9ff,0 2px 0 #3b8fd6}
+.j-say.w-fuego #saytx .l2-c,.wrp.w-fuego .l2-c{color:#ffe27a;text-shadow:0 -2px 6px #ff8a00,0 -5px 14px #ff3d00;animation:wrFue .45s ease-in-out infinite alternate}
+@keyframes wrFue{to{text-shadow:0 -3px 8px #ffb020,0 -8px 18px #ff3d00}}
+.j-say.w-arcoiris #saytx .l2-c,.wrp.w-arcoiris .l2-c{animation:wrArc 2.4s linear infinite;text-shadow:0 0 10px rgba(255,255,255,.35)}
+.j-say.w-arcoiris #saytx .l2-c:nth-child(4n+2),.wrp.w-arcoiris .l2-c:nth-child(4n+2){animation-delay:-.6s}
+.j-say.w-arcoiris #saytx .l2-c:nth-child(4n+3),.wrp.w-arcoiris .l2-c:nth-child(4n+3){animation-delay:-1.2s}
+.j-say.w-arcoiris #saytx .l2-c:nth-child(4n),.wrp.w-arcoiris .l2-c:nth-child(4n){animation-delay:-1.8s}
+@keyframes wrArc{0%,100%{color:#ff5c9a}20%{color:#ffd23f}40%{color:#3fe0cc}60%{color:#5b8cff}80%{color:#b46bff}}
+.lite .j-say[class*=" w-"] #saytx .l2-c,.lite .wrp .l2-c{animation:none}
+/* burbujas del chat */
+.chat-m .bub.bu-corazon p,.shop-bu.bu-corazon p{background:linear-gradient(135deg,#ff8ab1,#ff4f8f);color:#fff;box-shadow:none}
+.chat-m .bub.bu-corazon p::after,.shop-bu.bu-corazon p::after{content:' 💗'}
+.chat-m .bub.bu-neon p,.shop-bu.bu-neon p{background:#140a30;color:#d9fbff;box-shadow:inset 0 0 0 2px #00e5ff,0 0 12px rgba(0,229,255,.55)}
+.chat-m .bub.bu-oro p,.shop-bu.bu-oro p{background:linear-gradient(135deg,#fff0a0,#e0a816);color:#3a2600;box-shadow:0 0 12px rgba(255,210,63,.5)}
+.chat-m .bub.bu-oro p b{color:#7a4a00}
+.chat-m .bub.bu-galaxia p,.shop-bu.bu-galaxia p{background:radial-gradient(circle at 18% 20%,#9a75ff,#2a1060 55%,#07041a);color:#fff;box-shadow:0 0 14px rgba(122,77,255,.6)}
+/* caballos de la tienda */
+.hz-dorado{filter:drop-shadow(0 0 4px #ffd23f)}.hz-noche{filter:drop-shadow(0 0 4px #7ab8ff)}
+/* celebración al ganar el botón */
+.celeb{position:fixed;inset:0;z-index:95;pointer-events:none;overflow:hidden}
+.celeb.flash{animation:celFl .6s ease-out}
+@keyframes celFl{0%{background:rgba(255,246,176,.55)}100%{background:transparent}}
+.celeb-p{position:absolute;display:block;font-style:normal;line-height:1;font-size:clamp(18px,2.4vw,30px);will-change:transform}
+.celeb-p b{display:block;width:10px;height:6px;border-radius:2px}
+.celeb-p b.dot{width:8px;height:8px;border-radius:50%}
+.celeb-p b.ray{width:6px;height:clamp(90px,16vw,220px);border-radius:3px;background:linear-gradient(#fff6b0,rgba(255,210,63,0))}
+.celeb-p.big{font-size:clamp(36px,5vw,64px)}.celeb-p.huge{font-size:clamp(90px,14vw,200px)}.celeb-p.star{font-size:clamp(16px,2vw,26px)}
