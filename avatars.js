@@ -165,7 +165,7 @@ function avList(cur){const on=avSecretOn();return AVS3.filter(a=>(a.shop?typeof 
 function avSecretTap(el,onOpen){const now=performance.now();el._tp=(el._tp||[]).filter(t=>now-t<2500);el._tp.push(now);if(el._tp.length<5||avSecretOn())return false;
   el._tp=[];try{localStorage.setItem('av-secret','1')}catch(e){}if(onOpen)onOpen();return true}
 /* el dibujo en su placa redonda de color */
-function avSVG(id,cls){if(typeof id==='string'&&id.includes('~')&&typeof avComp==='function'&&AVM[id])return avComp(id,cls);const a=AVM[id]||AVS3[0];return `<svg class="${cls||'l3-svg'}" viewBox="0 0 120 120" role="img" aria-label="${a.n}"><circle cx="60" cy="60" r="58" fill="${a.bg}"/><circle cx="60" cy="60" r="54.5" fill="none" stroke="rgba(0,0,0,.18)" stroke-width="3"/><ellipse cx="44" cy="30" rx="28" ry="14" fill="#fff" opacity=".16" transform="rotate(-25 44 30)"/><g>${a.art}</g><circle cx="60" cy="60" r="58" fill="none" stroke="#fff" stroke-width="3.5"/></svg>`}
+function avSVG(id,cls){if(typeof id==='string'&&id.includes('~')&&AVM[id])try{return avComp(id,cls)}catch(e){id=id.split('~')[0]}const a=AVM[id]||AVS3[0];return `<svg class="${cls||'l3-svg'}" viewBox="0 0 120 120" role="img" aria-label="${a.n}"><circle cx="60" cy="60" r="58" fill="${a.bg}"/><circle cx="60" cy="60" r="54.5" fill="none" stroke="rgba(0,0,0,.18)" stroke-width="3"/><ellipse cx="44" cy="30" rx="28" ry="14" fill="#fff" opacity=".16" transform="rotate(-25 44 30)"/><g>${a.art}</g><circle cx="60" cy="60" r="58" fill="none" stroke="#fff" stroke-width="3.5"/></svg>`}
 
 /* ===================== FOTO FINISH: CARRERA DE CABALLITOS =====================
    Cada jinete es la barra de tiempo: el que tocó más rápido llega primero a la meta.
@@ -196,7 +196,7 @@ function horseSVG(i,hz){const[c,m]=HSKIN[hz]||COATS[i%COATS.length];const fr=(k,
 function raceHTML(L,av,col,me){const A=p=>p.av&&AVM[p.av]?p.av:av[p.team];
   return `<div class="hr" role="img" aria-label="Carrera: ${L.map((p,i)=>`${i+1}. ${String(p.name).replace(/[<>"&]/g,'')}`).join(', ')}">`+
   L.map((p,i)=>`<div class="hr-lane${me&&p.uid===me?' me':''}" style="--c:${col[p.team]}"><span class="hr-nm">${avSVG(A(p),'hr-av')}<span>${String(p.name).replace(/[<>&]/g,'')}</span></span>`+
-    `<span class="hr-trk"><i class="hr-gate"></i><span class="hr-go"><i class="hr-tr"></i><span class="hr-run"><i class="hr-dust"></i>${horseSVG(i,p.hz)}<i class="hr-jk${typeof auraCls==='function'?auraCls(p.au==null?-1:p.au):''}">${avSVG(A(p),'hr-avj')}</i></span></span><u class="hr-meta"></u></span>`+
+    `<span class="hr-trk"><i class="hr-gate"></i><span class="hr-go"><i class="hr-tr"></i><span class="hr-run"><i class="hr-dust"></i>${horseSVG(i,p.hz)}<i class="hr-jk${(()=>{try{return typeof auraCls==='function'}catch(e){return false}})()?auraCls(p.au==null?-1:p.au):''}">${avSVG(A(p),'hr-avj')}</i></span></span><u class="hr-meta"></u></span>`+
     `<span class="hr-t"><em>${i+1}°</em>${(p.rt/1000).toFixed(2)} s</span></div>`).join('')+`<span class="hr-flash"></span><span class="hr-slowt">📸 FOTO FINISH</span><span class="hr-photo">¡Por una nariz!</span></div>`}
 /* arranca la carrera (el: ms que ya pasaron, para seguirla si llega alguien tarde); regresa {first,total} en ms */
 function raceRun(box,L,anim,onFirst,el){const lanes=[...box.querySelectorAll('.hr-lane')],hr=box.querySelector('.hr');if(!hr||!L.length||lanes.length!==L.length)return{first:0,total:0};el=isFinite(el)&&el>0?el:0;
@@ -253,7 +253,7 @@ function ringSet(el,left,tot){if(!el)return;if(left==null||!(tot>0)){el.hidden=t
   el.querySelector('.rg-fg').style.strokeDashoffset=(100-100*f).toFixed(1);el.querySelector('b').textContent=Math.max(0,Math.ceil(left-.05));el.classList.toggle('hot',left<=5.05)}
 /* fila de animalitos del equipo: quién escribe (puntitos) y quién dijo "yo la digo" (✋) */
 function talkAvs(box,ps,ty,cl){if(!box)return;ty=ty||[];const k=ps.map(p=>p.u+p.av+p.a+(ty.includes(p.u)?'t':'')+(cl===p.u?'c':'')).join();if(box.dataset.k===k)return;box.dataset.k=k;
-  box.innerHTML=ps.map(p=>`<span class="tk${ty.includes(p.u)?' ty':''}${cl===p.u?' cl':''}"><i class="${typeof auraCls==='function'?auraCls(p.a==null?-1:p.a):''}">${avSVG(p.av)}</i><small>${avEsc(p.n)}</small>${ty.includes(p.u)?'<em class="tk-d" aria-label="escribiendo"><i></i><i></i><i></i></em>':''}${cl===p.u?'<em class="tk-c" aria-label="la va a decir">✋</em>':''}</span>`).join('')}
+  box.innerHTML=ps.map(p=>`<span class="tk${ty.includes(p.u)?' ty':''}${cl===p.u?' cl':''}"><i class="${(()=>{try{return typeof auraCls==='function'}catch(e){return false}})()?auraCls(p.a==null?-1:p.a):''}">${avSVG(p.av)}</i><small>${avEsc(p.n)}</small>${ty.includes(p.u)?'<em class="tk-d" aria-label="escribiendo"><i></i><i></i><i></i></em>':''}${cl===p.u?'<em class="tk-c" aria-label="la va a decir">✋</em>':''}</span>`).join('')}
 /* el cuadrito "se ponen de acuerdo para robar" (en la pantalla nunca se ven los mensajes: la ve el otro equipo) */
 function hudPanel(h){const p=document.getElementById('jhud');if(!p)return;if(!h){if(!p.hidden)p.hidden=true;return}
   if(p.hidden){p.hidden=false;if(!(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches))p.animate([{opacity:0,transform:'translateY(30px) scale(.9)'},{opacity:1,transform:'none'}],{duration:420,easing:'cubic-bezier(.3,1.4,.5,1)'})}

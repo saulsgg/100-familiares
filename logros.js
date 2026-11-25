@@ -39,7 +39,7 @@ const HORSES=[{id:'',n:'Normal',r:-1},{id:'fuego',n:'Caballo de fuego',r:4},{id:
 const WRITES=[{id:'',n:'Normales',r:-1},{id:'oro',n:'Letras de oro',r:5},{id:'rayo',n:'Letras de rayo',r:6}];
 /* títulos que no salen de logros: el de campeón de temporada (lo da la pantalla) y los de la tienda */
 const TPTIT={tp_campeon:{n:'Campeón de temporada',r:5}};
-const shopIt=(k,id)=>typeof shopGet==='function'?shopGet(k,id):null;
+const shopIt=(k,id)=>{try{return shopGet(k,id)}catch(e){return null}};
 const lgTitle=id=>LGM[id]?LGM[id].n:TPTIT[id]?TPTIT[id].n:(shopIt('ti',id)||{}).n||'';
 /* aura alrededor del animalito: clase según la rareza */
 const auraCls=a=>typeof a==='string'?(shopIt('au',a)?' aura aus-'+a.slice(3):''):a>=0&&a<RAR.length?' aura aura-'+RAR[a].k:'';

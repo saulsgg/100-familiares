@@ -1,5 +1,7 @@
 /* lo nuevo de cada versión (sale una vez en el celular después de actualizarse) */
-const NEWS=[{v:'botones-v33',t:[
+const NEWS=[{v:'botones-v34',t:[
+ '🛠️ Arreglado: si ya habías jugado desde la pantalla del juego, al abrirla de nuevo se trababa en «Reconectando» y no respondían los botones.']},
+ {v:'botones-v33',t:[
  '🔄 Las actualizaciones llegan al instante (antes el celular podía seguir con la versión anterior unos minutos).']},
  {v:'botones-v32',t:[
  '📶 Toca el letrero de conexión de la sala para ver qué está pasando y reconectar con otro servidor.']},
