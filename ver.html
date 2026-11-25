@@ -1195,6 +1195,7 @@ body{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-r
 .j-netlog pre{margin:8px 0;white-space:pre-wrap;font:12px/1.4 ui-monospace,monospace;color:#cfe3ff;max-height:40vh;overflow:auto}
 .j-netlog div{display:flex;gap:8px;flex-wrap:wrap}
 #lobstat{cursor:pointer}
+#toast{z-index:97}
 
 /* ===== foto finish: carrera de caballos (galope, polvo, cerca y meta) ===== */
 .hr{--hw:46px;position:relative;display:grid;gap:3px;margin:4px 0;padding:17px 8px 7px;border-radius:14px;overflow:hidden;text-align:left;color:#fff;
@@ -1650,7 +1651,7 @@ body.ver{overflow-x:hidden}
 
 <script>
 {
-const APPV='botones-v32';
+const APPV='botones-v33';
 const $=(s,r)=>(r||document).querySelector(s),$$=(s,r)=>[...(r||document).querySelectorAll(s)];
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const S={mute:false,music:'baja',gm:'j1',anime:true,order:'orden'};const view=()=>'tablero';let introOn=false;let flowTok=0;

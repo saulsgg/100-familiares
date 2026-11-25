@@ -1196,6 +1196,7 @@ body{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-r
 .j-netlog pre{margin:8px 0;white-space:pre-wrap;font:12px/1.4 ui-monospace,monospace;color:#cfe3ff;max-height:40vh;overflow:auto}
 .j-netlog div{display:flex;gap:8px;flex-wrap:wrap}
 #lobstat{cursor:pointer}
+#toast{z-index:97}
 
 /* ===== foto finish: carrera de caballos (galope, polvo, cerca y meta) ===== */
 .hr{--hw:46px;position:relative;display:grid;gap:3px;margin:4px 0;padding:17px 8px 7px;border-radius:14px;overflow:hidden;text-align:left;color:#fff;
@@ -1663,7 +1664,7 @@ button.ctk:active .ctk-d{transform:scale(.88)}
 <script src="vendor/qrcode.js"></script>
 <script>
 {
-const APPV='botones-v32';
+const APPV='botones-v33';
 const $=(s,r)=>(r||document).querySelector(s),$$=(s,r)=>[...(r||document).querySelectorAll(s)];
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const S={mute:false,music:'baja',gm:'j1',anime:true,order:'orden'};const view=()=>'tablero';let introOn=false;let flowTok=0;
@@ -2962,7 +2963,7 @@ function sdMiss(){if(R.phase==='steal'){if(R.sdA!=null)T(1300,()=>award(R.ctl,'�
 
 /* tocar el estado de la sala cuando dice «Reconectando»: reconecta ya, probando otro servidor */
 $('#lobstat').addEventListener('click',()=>{let d=$('#netlog');if(d){d.remove();return}if(!NH.net)return;d=document.createElement('div');d.id='netlog';d.className='j-netlog';
-  const draw=()=>{d.innerHTML=`<b>Conexión de esta pantalla</b><pre>${esc(NH.net.log.join('\n')||'—')}</pre><div><button type="button" class="l2-b" data-nl="re">🔄 Reconectar con otro servidor</button><button type="button" class="l2-b" data-nl="x">Cerrar</button></div>`};draw();
+  const draw=()=>{d.innerHTML=`<b>Conexión de esta pantalla</b> <small>${esc(APPV)}</small><pre>${esc(NH.net.log.join('\n')||'—')}</pre><div><button type="button" class="l2-b" data-nl="re">🔄 Reconectar con otro servidor</button><button type="button" class="l2-b" data-nl="x">Cerrar</button></div>`};draw();
   d.addEventListener('click',e=>{const b=e.target.closest('[data-nl]');if(!b)return;if(b.dataset.nl==='re'){NH.net.switchTo(NH.net.bi+1);toast('Reconectando con otro servidor…');later(400,draw)}else d.remove()});
   document.body.appendChild(d);const t=setInterval(()=>{if(!d.isConnected)clearInterval(t);else draw()},2000)});
 
