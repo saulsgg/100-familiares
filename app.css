@@ -538,3 +538,14 @@ body:has(#chat:not([hidden])) .rxbar,body:has(#ask:not([hidden])) .rxbar,body:ha
 .prof-li{flex:none;width:34px;font-size:22px;text-align:center}
 .prof-lg.sec b{color:var(--rc);letter-spacing:.2em}
 .prof-pg{display:block;height:6px;margin-top:2px;border-radius:99px;background:rgba(255,255,255,.12);overflow:hidden}.prof-pg i{display:block;height:100%;background:var(--rc)}
+
+/* Ronda Relámpago en el celular */
+.flp{position:fixed;inset:0;z-index:60;display:grid;place-items:center;padding:16px;background:radial-gradient(circle at 50% 20%,rgba(255,196,46,.25),rgba(5,8,30,.95) 65%)}
+.flp-in{display:grid;gap:12px;width:min(94vw,420px);padding:18px;border-radius:24px;background:linear-gradient(180deg,#232c86,#0e1240);box-shadow:0 0 0 3px #ffc42e,0 0 30px rgba(255,196,46,.4)}
+.flp-h{display:flex;align-items:center;gap:10px}.flp-h b{flex:1;font:400 26px var(--disp);color:#ffd23f}
+.flp-s{margin:0;color:#dfe4ff;font-weight:700;font-size:15px;line-height:1.35}
+.flp-q{display:grid;gap:6px;padding:14px;border-radius:16px;background:#0b0f3a}.flp-q small{color:#ffd76a;font-weight:800}.flp-q b{font:400 24px/1.15 var(--disp)}
+.flp-f{display:grid;gap:10px}.flp-f input{min-height:56px;padding:8px 14px;border:0;border-radius:14px;background:#fff8ec;color:var(--cink);font:700 19px Rubik,sans-serif}
+.flp-b{display:grid;grid-template-columns:auto 1fr;gap:8px}
+.flp-w{margin:0;color:var(--mute);font-weight:700;font-size:14px;text-align:center}.flp-w b{color:#fff}
+body:has(#flp:not([hidden])) .rxbar{display:none}

@@ -1,5 +1,9 @@
 /* lo nuevo de cada versión (sale una vez en el celular después de actualizarse) */
-const NEWS=[{v:'botones-v25',t:[
+const NEWS=[{v:'botones-v26',t:[
+ '⚡ Ronda Relámpago al final: dos de cada equipo contestan 5 preguntas en secreto en su celular, ¡y los puntos valen doble! (se puede apagar en Ajustes)',
+ '📚 300 preguntas nuevas: de todos los días, con trampa, de Mérida y México, familia y fiestas, nostalgia, y gamer/anime/internet. Ya son 524.',
+ 'En la pestaña 🏆 Fama ves cuántas preguntas ya salieron y cuántas faltan.']},
+ {v:'botones-v25',t:[
  'Tu perfil: toca tu nombre arriba para ver tus números, tus logros y lo que traes puesto.',
  'Logros de 7 rarezas (¡hay secretos!) que dan títulos, auras, caballos y letras especiales. Cuando sacas uno, sale una animación solo en tu celular.',
  'Ya no te tocan preguntas que ya viste en otras partidas.',

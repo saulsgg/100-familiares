@@ -289,6 +289,7 @@ function playMsg(topic,m){
   if(m.t==='askresume'){askResume(m.a,+m.sec,+m.end);return}
   if(m.t==='chat'){if(m.on)chatOpen(m);else chatClose(m);return}
   if(m.t==='pe'){onPe(m);return}
+  if(m.t==='fl'){flpMsg(m);return}
   if(m.t==='chatm'){chatAdd(m);return}
   if(m.t==='chtyp'){if(m.id===CH.id&&m.uid!==P.uid)CH.ty[m.uid]={name:String(m.name||''),at:performance.now()};return}
   if(m.t==='chclaim'){if(m.id===CH.id){CH.claim={u:m.uid,name:String(m.name||'')};chatClaimDraw();if(m.uid===P.uid)vib([30,30,60])}return}
@@ -623,7 +624,7 @@ $('#pname').value=P.name;
 const UPD={new:false,T:0};
 const updOn=()=>!LOCAL||LS.get('upd-test',false);
 async function updCheck(){if(UPD.new||!updOn()||typeof APPV==='undefined')return;try{const r=await fetch('version.txt?t='+Date.now(),{cache:'no-store'});if(!r.ok)return;const v=(await r.text()).trim();if(v&&v!==APPV){UPD.new=true;updTry()}}catch(e){}}
-function updSafe(){if(MODE==='host')return H.phase==='lobby';if(!$('#ask').hidden||!$('#chat').hidden)return false;if(['arm','wait','go'].includes(P.phase))return false;if(WP.spin||WP.drag)return false;return true}
+function updSafe(){if(MODE==='host')return H.phase==='lobby';if(!$('#ask').hidden||!$('#chat').hidden||!$('#flp').hidden)return false;if(['arm','wait','go'].includes(P.phase))return false;if(WP.spin||WP.drag)return false;return true}
 function updTry(){if(!UPD.new)return;clearTimeout(UPD.T);if(!updSafe()){UPD.T=later(3000,updTry);return}
   if(MODE==='play'&&P.code)try{sessionStorage.setItem('bt-auto',JSON.stringify({code:P.code,name:P.name,bi:P.bi,at:Date.now()}))}catch(e){}
   if(MODE==='host'){toast('Hay versión nueva: se instala la próxima vez que abras el juego.');return}
@@ -791,7 +792,7 @@ function pfRes(m){const k=P.code+':'+m.r;if(RSD.has(k))return;
 /* ===== animación al desbloquear (solo en tu celular; mientras más raro, más espectacular) ===== */
 const UNIC=['🏅','🎖️','💎','🔮','👑','🌈','🗝️'];
 /* los comunes y poco comunes salen arriba aunque estés contestando; los demás esperan un momento tranquilo */
-function unlNext(){if(UNON||!UNQ.length)return;const busy=['arm','wait','go'].includes(P.phase)||(WP&&(WP.spin||WP.drag))||(UNQ[0].r>=2&&(!$('#ask').hidden||!$('#chat').hidden));if(busy){later(1500,unlNext);return}UNON=true;unlShow(UNQ.shift())}
+function unlNext(){if(UNON||!UNQ.length)return;const busy=['arm','wait','go'].includes(P.phase)||(WP&&(WP.spin||WP.drag))||(UNQ[0].r>=2&&(!$('#ask').hidden||!$('#chat').hidden||!$('#flp').hidden));if(busy){later(1500,unlNext);return}UNON=true;unlShow(UNQ.shift())}
 function unlShow(l){const r=l.r,R0=RAR[r],box=$('#unl'),card=$('#unlcard');box.className='unl r'+r;box.style.setProperty('--rc',R0.c);
   $('#unlr').textContent=`${r===6?'¡Logro secreto!':'Logro desbloqueado'} · ${R0.n}`;$('#unlic').textContent=UNIC[r];$('#unld').textContent=l.d;
   const first=Object.keys(PF.ach).filter(k=>LGM[k]&&LGM[k].r===r).length===1,extra=[`Título nuevo: «${l.n}»`];if(first)extra.push(`Aura ${R0.n.toLowerCase()}`);
@@ -850,5 +851,27 @@ async function shareImg(u,name){try{if(navigator.canShare){const b=await (await 
   const a=document.createElement('a');a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove()}
 $('#finphshare').addEventListener('click',async()=>{if(!FPH)return;const b=$('#finphshare');b.disabled=true;try{await shareImg(await resCard(FPH),'100-familiares-resultados.png')}catch(e){toast('No se pudo armar la tarjeta.')}b.disabled=false});
 window.__res=()=>FPH?resCard(FPH):null;
+/* ===================== RONDA RELÁMPAGO en tu celular (en secreto) ===================== */
+const FLP={id:null,st:'',end:0,tot:0,qs:[],i:0,T:0,sent:false};
+function flpShow(on){const s=$('#flp');if(on&&s.hidden){s.hidden=false;if(!RM())s.animate([{opacity:0},{opacity:1}],{duration:250})}else if(!on)s.hidden=true}
+function flpTick(){const left=FLP.end?Math.max(0,(FLP.end-performance.now())/1000):null;ringSet($('#flpr'),left,FLP.tot);if(FLP.st==='ask'&&left!=null&&left<=0&&!FLP.sent)flpFinish()}
+function flpMsg(m){if(m.st==='off'){if(m.id===FLP.id||!FLP.id){FLP.st='';FLP.id=null;clearInterval(FLP.T);flpShow(false)}return}
+  if(m.id!==FLP.id){FLP.id=m.id;FLP.sent=false}FLP.st=m.st;FLP.end=m.end&&isFinite(P.hoff)?m.end-P.hoff:m.sec?performance.now()+m.sec*1000:0;FLP.tot=m.sec||FLP.tot||15;
+  clearInterval(FLP.T);FLP.T=setInterval(flpTick,200);flpTick();const b=$('#flpb');$('#flpq').hidden=true;$('#flpf').hidden=true;$('#flpme').hidden=true;
+  if(m.st==='pick'){$('#flpt').textContent='⚡ ¡Ronda Relámpago!';$('#flps').textContent=`Dos de tu equipo contestan 5 preguntas rápidas en secreto. Los puntos valen doble.`;
+    const who=(m.who||[]).filter(Boolean);b.innerHTML=who.length?`Van a jugar: <b>${who.map(esc).join('</b> y <b>')}</b>`:'Todavía nadie se apunta.';
+    $('#flpme').hidden=false;$('#flpme').disabled=!!m.me||who.length>=(m.max||2);$('#flpme').textContent=m.me?'✋ ¡Estás dentro!':who.length>=(m.max||2)?'Ya está lleno':'✋ ¡Yo juego!';
+    if(!m.who){vib([40,30,40]);sf('cmd',.8)}flpShow(true);return}
+  if(m.st==='rev'){FLP.st='rev';FLP.end=0;flpShow(false);if(!GV||!GV.on)toast('⚡ ¡Miren la pantalla: se destapan las respuestas!');return}
+  if(m.st==='wait'){$('#flpt').textContent='⚡ Ronda Relámpago';$('#flps').textContent=m.txt||'';b.textContent=m.sub||'';flpShow(true);return}
+  if(m.st==='ask'){FLP.qs=Array.isArray(m.qs)?m.qs.slice(0,5):[];FLP.i=0;FLP.sent=false;$('#flpt').textContent=m.b?'⚡ ¡Tu turno! (segunda tanda)':'⚡ ¡Tu turno!';
+    $('#flps').textContent=m.b?'Si repites lo que dijo tu compañero, vale 0.':'Contesta rápido: lo primero que se te ocurra.';b.textContent='';vib([60,40,60]);sf('cmd',.9);flpShow(true);flpAsk();return}}
+function flpAsk(){if(FLP.i>=FLP.qs.length){flpFinish();return}$('#flpq').hidden=false;$('#flpf').hidden=false;$('#flpn').textContent=`${FLP.i+1} de ${FLP.qs.length}`;$('#flpqt').textContent=FLP.qs[FLP.i];
+  const i=$('#flpi');i.value='';try{i.focus({preventScroll:true})}catch(e){}if(!RM())$('#flpq').animate([{opacity:0,transform:'translateX(30px)'},{opacity:1,transform:'none'}],{duration:220})}
+function flpNext(pass){const t=pass?'':$('#flpi').value.trim();psend({t:'fla',i:FLP.i,txt:t},1);tick();FLP.i++;flpAsk()}
+function flpFinish(){if(FLP.sent)return;FLP.sent=true;psend({t:'fld'},1);try{$('#flpi').blur()}catch(e){}$('#flpq').hidden=true;$('#flpf').hidden=true;$('#flpt').textContent='¡Listo!';$('#flps').textContent='Ya contestaste. La pantalla va a destapar sus respuestas…';$('#flpb').textContent='';vib(40)}
+$('#flpf').addEventListener('submit',e=>{e.preventDefault();flpNext(false)});
+$('#flpskip').addEventListener('click',()=>flpNext(true));
+$('#flpme').addEventListener('click',()=>{psend({t:'flme'},1);tick();$('#flpme').disabled=true});
 window.__bt={H,P,WP,UPD,updCheck,AD};
 }
