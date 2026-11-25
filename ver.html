@@ -1400,6 +1400,12 @@ button.ctk:active .ctk-d{transform:scale(.88)}
   .fl-h>b{font-size:clamp(26px,3.4vw,46px)}
 }
 @supports not (height:1dvh){.fl-in{max-height:96vh}}
+/* títulos míticos (arcoíris que corre) y secretos (rojo que chispea) */
+.tit-mit{display:inline-block;background:linear-gradient(90deg,#ff5ce1,#ffd23f,#3fe0cc,#8b5cf6,#ff5ce1);background-size:200% 100%;-webkit-background-clip:text;background-clip:text;color:transparent!important;animation:titRain 3s linear infinite}
+@keyframes titRain{to{background-position:200% 0}}
+.tit-sec{display:inline-block;color:#ff4d6d!important;text-shadow:0 0 6px #b3122e;animation:titSec 2.6s steps(1) infinite}
+@keyframes titSec{0%,84%{transform:none}86%{transform:translate(1px,-1px);text-shadow:0 0 14px #ff2b4d}90%{transform:translate(-1px,1px)}94%{transform:none;text-shadow:0 0 10px #ff2b4d}}
+.lite .tit-mit,.lite .tit-sec{animation:none}
 
 /* ===== modo ligero: sin luces ni adornos pesados (lo importante se sigue viendo) ===== */
 .lite .marq canvas.l,.lite .rim canvas.l{animation:none!important;opacity:0!important}
@@ -1572,7 +1578,7 @@ body.ver{overflow-x:hidden}
 
 <script>
 {
-const APPV='botones-v27';
+const APPV='botones-v28';
 const $=(s,r)=>(r||document).querySelector(s),$$=(s,r)=>[...(r||document).querySelectorAll(s)];
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const S={mute:false,music:'baja',gm:'j1',anime:true,order:'orden'};const view=()=>'tablero';let introOn=false;let flowTok=0;
@@ -2108,6 +2114,8 @@ const auraCls=a=>a>=0&&a<RAR.length?' aura aura-'+RAR[a].k:'';
 function eqClean(e){e=e&&typeof e==='object'?e:{};return{t:LGM[e.t]?e.t:'',a:Number.isInteger(e.a)&&e.a>=0&&e.a<RAR.length?e.a:-1,h:HORSES.some(x=>x.id===e.h)?e.h:'',w:WRITES.some(x=>x.id===e.w)?e.w:''}}
 /* identificador corto y estable de cada pregunta (para recordar cuáles ya vio cada celular) */
 function qid(q){const s=String(q||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]/g,'');let h=5381;for(let i=0;i<s.length;i++)h=((h<<5)+h+s.charCodeAt(i))>>>0;return h.toString(36)}
+/* títulos míticos y secretos: se mueven poquito */
+const titCls=id=>LGM[id]&&LGM[id].r>=5?' tit-'+RAR[LGM[id].r].k:'';
 
 /* ===================== RONDA RELÁMPAGO: lo que se ve en la pantalla grande (y en la vista del celular) =====================
    v = {ph:'pick'|'b1'|'b2'|'rev'|'done', id, left, tot, tn:[nombres], ps:[[{n,av,a},…],…], prog:[[n,n],[n,n]], bat, qs:[…], cells:[{b,k,t,txt,ans,pts,dup}], sum:[a,b], dbl} */

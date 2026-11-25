@@ -23,7 +23,7 @@ const sec=ms=>(Math.max(0,ms)/1000).toFixed(2)+' s';
 const yaWait=()=>{const r=Math.random();return r<.3?600+Math.random()*700:r<.7?1600+Math.random()*1400:3300+Math.random()*2200};
 const vib=p=>{try{navigator.vibrate&&navigator.vibrate(p)}catch(e){}};
 const rid=()=>Math.random().toString(36).slice(2,10)+Date.now().toString(36).slice(-4);
-let tt;function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(tt);tt=later(3600,()=>t.classList.remove('on'))}
+let tt;function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(tt);tt=later(Math.max(3600,String(m).length*60),()=>t.classList.remove('on'))}
 /* en celulares angostos, la etiqueta de conexión va cortita (la completa queda en title) */
 const STAT_S={'Conectado directo (Wi-Fi)':'📶 Wi-Fi','Conectado directo':'📶 Directo','Conectado por servidor':'🌐 Internet','Conectado por relevo':'🌐 Relevo'};
 function setStat(sel,text,cls){const p=$(sel);p.textContent=sel==='#pstat'&&innerWidth<430&&STAT_S[text]?STAT_S[text]:text;p.title=text;p.setAttribute('aria-label',text);p.className='pill '+(cls||'')}
@@ -262,7 +262,7 @@ async function playRTC(){if(!RTC_OK||P.pc||MODE!=='play')return;const pc=new RTC
 P.av=(a=>AVM[a]?a:(()=>{const L=AVS3.filter(x=>!x.secret);const r=L[Math.floor(Math.random()*L.length)].id;LS.set('bt-myav',r);return r})())(LS.get('bt-myav',''));
 const myAv=()=>P.av;
 function drawMe(){const t=P.team,v=$('#v-play');v.classList.toggle('t1',t===1);
-  $('#me').innerHTML=`<i class="me-av${auraCls(PF.eq.a)}">${avSVG(P.av)}</i>`+`<span>${esc(P.name)}<small>${t>=0?NAMES[t]:P.spec?'👀 Viendo':'Sin equipo'}${PF.eq.t?' · '+esc(lgTitle(PF.eq.t)):''}</small></span>`;
+  $('#me').innerHTML=`<i class="me-av${auraCls(PF.eq.a)}">${avSVG(P.av)}</i>`+`<span>${esc(P.name)}<small>${t>=0?NAMES[t]:P.spec?'👀 Viendo':'Sin equipo'}${PF.eq.t?` · <b class="${titCls(PF.eq.t)}">${esc(lgTitle(PF.eq.t))}</b>`:''}</small></span>`;
   $('#pav').innerHTML=avSVG(P.av);$('#myavi').innerHTML=avSVG(P.av);
   $('#chteam').hidden=!P.found}
 function playMsg(topic,m){
@@ -291,6 +291,8 @@ function playMsg(topic,m){
   if(m.t==='askresume'){askResume(m.a,+m.sec,+m.end);return}
   if(m.t==='chat'){if(m.on)chatOpen(m);else chatClose(m);return}
   if(m.t==='pe'){onPe(m);return}
+  if(m.t==='wphok'){$('#finphnote').textContent='¡Ya sale en la pantalla grande!';return}
+  if(m.t==='wphno'){$('#finphnote').textContent='No se pudo abrir en la pantalla grande (¿entraste con el QR de esta partida?).';return}
   if(m.t==='fl'){flpMsg(m);return}
   if(m.t==='chatm'){chatAdd(m);return}
   if(m.t==='chtyp'){if(m.id===CH.id&&m.uid!==P.uid)CH.ty[m.uid]={name:String(m.name||''),at:performance.now()};return}
@@ -620,7 +622,7 @@ $('#newok').addEventListener('click',()=>{$('#newsh').hidden=true;if(typeof NEWS
 later(1800,newsShow);
 if('serviceWorker' in navigator&&!LOCAL)navigator.serviceWorker.register('sw.js').catch(()=>{});
 $('#pname').value=P.name;
-{const m=location.hash.match(/^#j=([A-Za-z0-9]{4})(?:-(\d))?$/);if(m){$('#joinf').hidden=false;$('#code').value=m[1].toUpperCase();if(m[2]!=null)LINKBI=Math.min(+m[2],BROKERS.length-1);later(50,()=>$('#pname').focus())}}
+{const m=location.hash.match(/^#j=([A-Za-z0-9]{4})(?:-(\d))?(?:-([a-z0-9]{12,24}))?$/);if(m){$('#joinf').hidden=false;$('#code').value=m[1].toUpperCase();if(m[2]!=null)LINKBI=Math.min(+m[2],BROKERS.length-1);if(m[3])LS.set('bt-key',{code:m[1].toUpperCase(),k:m[3]});later(50,()=>$('#pname').focus())}}
 /* ===================== SE ACTUALIZA SOLO =====================
    Cada rato revisa si hay versión nueva; si la hay, recarga en un momento tranquilo y vuelve a entrar a la misma sala. */
 const UPD={new:false,T:0};
@@ -752,11 +754,21 @@ async function phFrame(im,m){try{await document.fonts.load('60px "Lilita One"')}
   x.font='bold 34px Rubik,sans-serif';x.fillStyle='#ffd76a';x.fillText(`${NAMES[0]} ${m.sc[0]} · ${NAMES[1]} ${m.sc[1]}`,W/2,P0+S+150);
   x.font='bold 26px Rubik,sans-serif';x.fillStyle='#b9c1f5';x.fillText('100 Familiares Dijeron · '+new Date().toLocaleDateString('es-MX',{day:'numeric',month:'long',year:'numeric'}),W/2,H-34);
   return c.toDataURL('image/jpeg',.9)}
+/* sin conexión directa: la foto va cifrada con la clave del QR, en pedazos, por el servidor (el servidor solo ve letras revueltas) */
+async function phRelay(img){const kk=LS.get('bt-key',null);if(!kk||kk.code!==P.code||!kk.k){$('#finphnote').textContent='Para mandarla a la pantalla grande, entra escaneando el QR (ahí viene la clave para mandarla cifrada). Aquí sí la puedes guardar.';return}
+  $('#finphnote').textContent='Mandando a la pantalla grande…';
+  try{const h=await crypto.subtle.digest('SHA-256',new TextEncoder().encode('100f-foto:'+kk.k)),key=await crypto.subtle.importKey('raw',h,'AES-GCM',false,['encrypt']),iv=crypto.getRandomValues(new Uint8Array(12));
+    const ct=new Uint8Array(await crypto.subtle.encrypt({name:'AES-GCM',iv},key,new TextEncoder().encode(img)));let bin='';for(let i=0;i<ct.length;i+=8192)bin+=String.fromCharCode.apply(null,ct.subarray(i,i+8192));
+    const b64=btoa(bin),CH=12000,n=Math.ceil(b64.length/CH),id=Date.now().toString(36),iv64=btoa(String.fromCharCode.apply(null,iv));
+    for(let i=0;i<n;i++){psend({t:'wph',id,i,n,iv:iv64,d:b64.slice(i*CH,(i+1)*CH)},1);await new Promise(r=>setTimeout(r,60))}
+    later(15000,()=>{if($('#finphnote').textContent==='Mandando a la pantalla grande…')$('#finphnote').textContent='No llegó a la pantalla grande. Aquí sí la puedes guardar.'})}
+  catch(e){$('#finphnote').textContent='No se pudo mandar a la pantalla grande, pero aquí la puedes guardar.'}}
 $('#finphcam').addEventListener('click',()=>$('#finphf').click());$('#finphre').addEventListener('click',()=>$('#finphf').click());
 $('#finphf').addEventListener('change',async e=>{const f=e.target.files&&e.target.files[0];e.target.value='';if(!f||!FPH)return;
   try{const im=await phLoad(f);const fr=await phFrame(im,FPH);$('#finphimg').src=fr;$('#finphpic').hidden=false;$('#finphcam').hidden=true;
-    if(dcOpen(P.dc)){try{P.dc.send(JSON.stringify({t:'wphoto',img:phScaled(im,640,.72)}));$('#finphnote').textContent='¡Ya sale en la pantalla grande!'}catch(er){$('#finphnote').textContent='No se pudo mandar a la pantalla grande, pero aquí la puedes guardar.'}}
-    else $('#finphnote').textContent='Solo se ve en tu celular: a la pantalla grande se manda únicamente con conexión directa (mismo Wi-Fi), para que no pase por internet.';
+    const small=phScaled(im,640,.72);
+    if(dcOpen(P.dc)){try{P.dc.send(JSON.stringify({t:'wphoto',img:small}));$('#finphnote').textContent='¡Ya sale en la pantalla grande!'}catch(er){phRelay(small)}}
+    else phRelay(small);
     if(!RM())$('#finphpic').animate([{opacity:0,transform:'rotate(-6deg) scale(.8)'},{opacity:1,transform:'rotate(-2deg) scale(1)'}],{duration:420,easing:'cubic-bezier(.3,1.4,.5,1)',fill:'forwards'});sf('rec',.7)}
   catch(er){toast('No se pudo abrir esa foto.')}});
 $('#finphsave').addEventListener('click',async()=>{const u=$('#finphimg').src;if(!u)return;
@@ -815,7 +827,7 @@ $('#unl').addEventListener('click',unlHide);
 /* ===== hoja "Mi perfil" ===== */
 function profOpen(){profDraw();$('#prof').hidden=false;if(!RM())$('.prof-in').animate([{transform:'translateY(40px)',opacity:0},{transform:'none',opacity:1}],{duration:300,easing:'cubic-bezier(.2,.9,.3,1)'})}
 function profDraw(){const c=PF.c,got=Object.keys(PF.ach).filter(k=>LGM[k]),rm=pfRmax();
-  $('#profav').innerHTML=avSVG(P.av);$('#profav').className='prof-av'+auraCls(PF.eq.a);$('#proft').textContent=P.name||LS.get('bt-name','')||'Tú';$('#proftt').textContent=PF.eq.t?'«'+lgTitle(PF.eq.t)+'»':'Sin título';
+  $('#profav').innerHTML=avSVG(P.av);$('#profav').className='prof-av'+auraCls(PF.eq.a);$('#proft').textContent=P.name||LS.get('bt-name','')||'Tú';$('#proftt').textContent=PF.eq.t?'«'+lgTitle(PF.eq.t)+'»':'Sin título';$('#proftt').className=PF.eq.t?titCls(PF.eq.t).trim():'';
   const st=[['🎮','Partidas',c.games||0],['🏆','Ganadas',c.wins||0],['🔔','Botones ganados',c.bz||0],['🎯','Atinadas',c.hits||0],['⭐','La #1',c.ones||0],['🕵️','Robos',c.steals||0],['⚡','Mejor tiempo',PF.best!=null?(PF.best/1000).toFixed(2)+' s':'—'],['🔥','Racha',(c.streak||0)+' (máx. '+(c.streakMax||0)+')']];
   $('#profst').innerHTML=st.map(([i,n,v])=>`<div><span>${i}</span><b>${esc(String(v))}</b><small>${n}</small></div>`).join('');
   const chip=(g,v,lab,on,col)=>`<button type="button" class="prof-chip${on?' on':''}" data-g="${g}" data-v="${esc(String(v))}" aria-pressed="${on}"${col?` style="--rc:${col}"`:''}>${lab}</button>`;
@@ -875,5 +887,9 @@ function flpFinish(){if(FLP.sent)return;FLP.sent=true;psend({t:'fld'},1);try{$('
 $('#flpf').addEventListener('submit',e=>{e.preventDefault();flpNext(false)});
 $('#flpskip').addEventListener('click',()=>flpNext(true));
 $('#flpme').addEventListener('click',()=>{psend({t:'flme'},1);tick();$('#flpme').disabled=true});
+/* tocar la etiqueta de conexión: qué significa */
+const STAT_I={'Conectado directo (Wi-Fi)':'📶 Directo por Wi-Fi: tu celular y la pantalla se hablan sin pasar por internet.','Conectado directo':'📶 Directo: tu celular habla directo con la pantalla (aunque estén lejos, como en otra ciudad).',
+  'Conectado por relevo':'🌐 Por relevo: van por un servidor de paso, cifrado de punta a punta.','Conectado por servidor':'🌐 Por servidor: los mensajes pasan por un servidor de internet. El juego va igual de parejo. Pasa cuando el módem no deja que los aparatos se hablen directo; la foto de los ganadores se manda cifrada.'};
+$('#pstat').addEventListener('click',()=>{const t=STAT_I[$('#pstat').title];if(t)toast(t)});
 window.__bt={H,P,WP,UPD,updCheck,AD};
 }

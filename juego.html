@@ -1401,6 +1401,12 @@ button.ctk:active .ctk-d{transform:scale(.88)}
   .fl-h>b{font-size:clamp(26px,3.4vw,46px)}
 }
 @supports not (height:1dvh){.fl-in{max-height:96vh}}
+/* títulos míticos (arcoíris que corre) y secretos (rojo que chispea) */
+.tit-mit{display:inline-block;background:linear-gradient(90deg,#ff5ce1,#ffd23f,#3fe0cc,#8b5cf6,#ff5ce1);background-size:200% 100%;-webkit-background-clip:text;background-clip:text;color:transparent!important;animation:titRain 3s linear infinite}
+@keyframes titRain{to{background-position:200% 0}}
+.tit-sec{display:inline-block;color:#ff4d6d!important;text-shadow:0 0 6px #b3122e;animation:titSec 2.6s steps(1) infinite}
+@keyframes titSec{0%,84%{transform:none}86%{transform:translate(1px,-1px);text-shadow:0 0 14px #ff2b4d}90%{transform:translate(-1px,1px)}94%{transform:none;text-shadow:0 0 10px #ff2b4d}}
+.lite .tit-mit,.lite .tit-sec{animation:none}
 
 /* ===== modo ligero: sin luces ni adornos pesados (lo importante se sigue viendo) ===== */
 .lite .marq canvas.l,.lite .rim canvas.l{animation:none!important;opacity:0!important}
@@ -1585,7 +1591,7 @@ button.ctk:active .ctk-d{transform:scale(.88)}
 <script src="vendor/qrcode.js"></script>
 <script>
 {
-const APPV='botones-v27';
+const APPV='botones-v28';
 const $=(s,r)=>(r||document).querySelector(s),$$=(s,r)=>[...(r||document).querySelectorAll(s)];
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const S={mute:false,music:'baja',gm:'j1',anime:true,order:'orden'};const view=()=>'tablero';let introOn=false;let flowTok=0;
@@ -2121,6 +2127,8 @@ const auraCls=a=>a>=0&&a<RAR.length?' aura aura-'+RAR[a].k:'';
 function eqClean(e){e=e&&typeof e==='object'?e:{};return{t:LGM[e.t]?e.t:'',a:Number.isInteger(e.a)&&e.a>=0&&e.a<RAR.length?e.a:-1,h:HORSES.some(x=>x.id===e.h)?e.h:'',w:WRITES.some(x=>x.id===e.w)?e.w:''}}
 /* identificador corto y estable de cada pregunta (para recordar cuáles ya vio cada celular) */
 function qid(q){const s=String(q||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]/g,'');let h=5381;for(let i=0;i<s.length;i++)h=((h<<5)+h+s.charCodeAt(i))>>>0;return h.toString(36)}
+/* títulos míticos y secretos: se mueven poquito */
+const titCls=id=>LGM[id]&&LGM[id].r>=5?' tit-'+RAR[LGM[id].r].k:'';
 
 /* ===================== RONDA RELÁMPAGO: lo que se ve en la pantalla grande (y en la vista del celular) =====================
    v = {ph:'pick'|'b1'|'b2'|'rev'|'done', id, left, tot, tn:[nombres], ps:[[{n,av,a},…],…], prog:[[n,n],[n,n]], bat, qs:[…], cells:[{b,k,t,txt,ans,pts,dup}], sum:[a,b], dbl} */
@@ -2212,7 +2220,9 @@ function nhOpen(){const code=LSN.get('bt-code',null)||nhCode();NH.code=code;NH.o
 /* aviso guardado en el servidor: "aquí hay pantalla grande" */
 function nhUp(){if(NH.net)NH.net.pub(NHtp('up'),{t:'up',at:Date.now()},1,true);nhState()}
 /* el QR lleva a la app de botones (index), con el código y el servidor */
-const nhURL=()=>location.origin+location.pathname.replace(/[^/]*$/,'')+'#j='+NH.code+'-'+NH.bi;
+/* clave secreta de la sala: solo viaja dentro del QR/enlace (nunca por el servidor); sirve para cifrar la foto de los ganadores */
+const NHKEY=(()=>{let k=LSN.get('bt-key',null);if(!/^[a-z0-9]{12,24}$/.test(k||'')){const a=new Uint8Array(12);crypto.getRandomValues(a);k=[...a].map(x=>(x%36).toString(36)).join('');LSN.set('bt-key',k)}return k})();
+const nhURL=()=>location.origin+location.pathname.replace(/[^/]*$/,'')+'#j='+NH.code+'-'+NH.bi+'-'+NHKEY;
 const nhPlayers=()=>[...NH.P.values()];
 const nhCount=t=>nhPlayers().filter(p=>p.team===t).length;
 const nhReady=()=>!!NH.net&&NH.net.up&&nhPlayers().some(p=>p.team>=0&&!p.local);
@@ -2246,6 +2256,7 @@ function nhMsg(topic,m){const uid=String(m.u||'').slice(0,40);if(!uid)return;
   if(m.t==='typing'||m.t==='answer'){NH.on.msg(pl,m);return}
   if(m.t==='wthrow'){NH.on.wthrow(pl,m);return}
   if(m.t==='wphoto'){if(topic==='dc'&&NH.on.wphoto)NH.on.wphoto(pl,m);return}
+  if(m.t==='wph'){if(NH.on.wph)NH.on.wph(pl,m);return}
   if(m.t==='flme'||m.t==='fla'||m.t==='fld'){if(NH.on.fl)NH.on.fl(pl,m);return}
   if(m.t==='react'){if(NH.on.react)NH.on.react(pl,m);return}
   if(m.t==='cmd'||m.t==='say'||m.t==='chatok'||m.t==='chtyp'||m.t==='claim'){NH.on.cmdmsg(pl,m);return}
@@ -2938,7 +2949,7 @@ function synced(kind,go,ann){const D=syncD();if(D<25){go();viewTick();return}con
 {const mq=new URLSearchParams(location.search).get('modo');if(mq==='celulares'||mq==='pantalla'){CEL=mq==='celulares';LSx.set('j-cel',CEL)}}
 const KIND3={casa:'directo por Wi-Fi',internet:'directo por internet',relevo:'por relevo'};
 function pLi(p){const st=p.local?'<small class="good">en esta pantalla</small>':`<small class="${p.ping==null?'':p.ping<120?'good':p.ping<300?'mid':'slow'}">${p.ping==null?'conectando…':(dcOpen(p.dc)?(KIND3[p.kind]||'directo'):'por servidor')+' · '+p.ping+' ms'}</small>`;
-  const ti=pTit(p);return `<li><span class="j-pav${auraCls(pAu(p))}">${avSVG(pAv(p))}</span><span class="j-pn"><span>${esc(p.name)}${ti?` <em class="j-ptit">«${esc(ti)}»</em>`:''}</span>${st}</span><button type="button" class="j-pb" data-mv="${esc(p.uid)}" data-to="${1-p.team}" aria-label="Pasar a ${esc(NAMES[1-p.team])}" title="Pasar al otro equipo">⇄</button><button type="button" class="j-pb x" data-kick="${esc(p.uid)}" aria-label="Sacar a ${esc(p.name)} de la sala" title="Sacar de la sala">✕</button></li>`}
+  const ti=pTit(p);return `<li><span class="j-pav${auraCls(pAu(p))}">${avSVG(pAv(p))}</span><span class="j-pn"><span>${esc(p.name)}${ti?` <em class="j-ptit${titCls(p.eq.t)}">«${esc(ti)}»</em>`:''}</span>${st}</span><button type="button" class="j-pb" data-mv="${esc(p.uid)}" data-to="${1-p.team}" aria-label="Pasar a ${esc(NAMES[1-p.team])}" title="Pasar al otro equipo">⇄</button><button type="button" class="j-pb x" data-kick="${esc(p.uid)}" aria-label="Sacar a ${esc(p.name)} de la sala" title="Sacar de la sala">✕</button></li>`}
 function drawLobby(){$('#lobcode').textContent=NH.code||'····';drawSala();
   if(NH.net&&NH.net.up){const u=nhURL();$('#qrlink').textContent=u.replace(/^https?:\/\//,'');if($('#qr').dataset.u!==u){try{const q=qrcode(0,'M');q.addData(u);q.make();$('#qr').innerHTML=q.createSvgTag({cellSize:8,margin:2,scalable:true,alt:'Código QR para unirse'});$('#qr').dataset.u=u}catch(e){}}}
   const L=nhPlayers(),ae=document.activeElement;
@@ -3313,6 +3324,16 @@ NH.on.wphoto=(pl,m)=>{const img=String(m.img||'');if(!/^data:image\/jpeg;base64,
   if($('#fin').hidden)finShow(R.fin);FINPICF=R.fin;const box=$('#finpic');$('#finpicimg').src=img;$('#finpicby').textContent=`📸 Foto de ${pl.name}`;box.hidden=false;
   if(!RM())box.animate([{opacity:0,transform:'rotate(-14deg) scale(.4)'},{opacity:1,transform:'rotate(4deg) scale(1.06)',offset:.7},{opacity:1,transform:'rotate(3deg) scale(1)'}],{duration:700,easing:'cubic-bezier(.3,1.4,.5,1)',fill:'forwards'});
   sparks(box,30,true);sfr('pts',.7)};
+
+/* foto por el servidor cuando no hay conexión directa: llega en pedazos y cifrada con la clave del QR (el servidor no la puede ver) */
+const WPH={};
+async function wphKey(){const h=await crypto.subtle.digest('SHA-256',new TextEncoder().encode('100f-foto:'+NHKEY));return crypto.subtle.importKey('raw',h,'AES-GCM',false,['decrypt'])}
+NH.on.wph=async(pl,m)=>{const id=String(m.id||''),n=m.n|0,i=m.i|0;if(!id||n<1||n>80||i<0||i>=n||typeof m.d!=='string'||m.d.length>20000)return;
+  const k=pl.uid+':'+id,b=WPH[k]||(WPH[k]={n,iv:String(m.iv||''),parts:[],got:0,at:Date.now()});if(b.parts[i]==null){b.parts[i]=m.d;b.got++}
+  Object.keys(WPH).forEach(x=>{if(Date.now()-WPH[x].at>120000)delete WPH[x]});if(b.got<b.n)return;delete WPH[k];
+  try{const raw=Uint8Array.from(atob(b.parts.join('')),c=>c.charCodeAt(0)),iv=Uint8Array.from(atob(b.iv),c=>c.charCodeAt(0));
+    const img=new TextDecoder().decode(await crypto.subtle.decrypt({name:'AES-GCM',iv},await wphKey(),raw));NH.on.wphoto(pl,{t:'wphoto',img});nhTo(pl,{t:'wphok'},1)}
+  catch(e){nhTo(pl,{t:'wphno'},1)}};
 
 /* ===================== LA RONDA SE GUARDA Y EL JUEGO SE ACTUALIZA SOLO ===================== */
 /* --- la ronda en curso se guarda: si esta pantalla se recarga, sigue donde iba --- */

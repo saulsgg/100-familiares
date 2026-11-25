@@ -44,3 +44,5 @@ const auraCls=a=>a>=0&&a<RAR.length?' aura aura-'+RAR[a].k:'';
 function eqClean(e){e=e&&typeof e==='object'?e:{};return{t:LGM[e.t]?e.t:'',a:Number.isInteger(e.a)&&e.a>=0&&e.a<RAR.length?e.a:-1,h:HORSES.some(x=>x.id===e.h)?e.h:'',w:WRITES.some(x=>x.id===e.w)?e.w:''}}
 /* identificador corto y estable de cada pregunta (para recordar cuáles ya vio cada celular) */
 function qid(q){const s=String(q||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]/g,'');let h=5381;for(let i=0;i<s.length;i++)h=((h<<5)+h+s.charCodeAt(i))>>>0;return h.toString(36)}
+/* títulos míticos y secretos: se mueven poquito */
+const titCls=id=>LGM[id]&&LGM[id].r>=5?' tit-'+RAR[LGM[id].r].k:'';

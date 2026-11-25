@@ -1,5 +1,10 @@
 /* lo nuevo de cada versión (sale una vez en el celular después de actualizarse) */
-const NEWS=[{v:'botones-v27',t:[
+const NEWS=[{v:'botones-v28',t:[
+ 'La foto de los ganadores ya llega a la pantalla aunque estés conectado “por servidor”: se manda cifrada con una clave que solo viene en el QR.',
+ 'Toca la etiqueta de conexión (arriba) para ver qué significa.',
+ 'Tus reacciones 😀 ya salen también en tu propio celular.',
+ 'Los títulos míticos y secretos ahora se mueven.']},
+ {v:'botones-v27',t:[
  'Arreglos: la tele ya no se actualiza sola a media Ronda Relámpago, se puede saltar la ronda desde la tele, y la tabla de respuestas ya cabe completa.',
  'Si se te recarga el celular a media Ronda Relámpago, vuelves a donde ibas.',
  'La barra de arriba ya cabe bien en celulares angostos.']},
