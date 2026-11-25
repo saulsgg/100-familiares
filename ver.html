@@ -1189,6 +1189,8 @@ body{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-r
 .j-hs li{display:grid;gap:3px;padding:8px 12px;border-radius:12px;background:rgba(0,0,0,.25)}
 .j-hs b{font-weight:800}.j-hs b span{font-weight:800}.j-hs b span.w::before{content:'🏆 '}.j-hs b em{font:400 20px var(--disp);font-style:normal;color:#fff}
 .j-hs small{color:#b9c1f5;font-size:12px}.j-hs small i{color:var(--mute)}.j-hs .j-hd{color:var(--mute)}.j-hs .j-hm{color:#ffd76a}
+.j-mehint{flex-basis:100%;color:#ffd76a;font:700 13px/1.35 Rubik,sans-serif;text-align:center}
+@media (pointer:coarse){.j-sndg small{display:none}}
 
 /* ===== foto finish: carrera de caballos (galope, polvo, cerca y meta) ===== */
 .hr{--hw:46px;position:relative;display:grid;gap:3px;margin:4px 0;padding:17px 8px 7px;border-radius:14px;overflow:hidden;text-align:left;color:#fff;
@@ -1644,7 +1646,7 @@ body.ver{overflow-x:hidden}
 
 <script>
 {
-const APPV='botones-v29';
+const APPV='botones-v30';
 const $=(s,r)=>(r||document).querySelector(s),$$=(s,r)=>[...(r||document).querySelectorAll(s)];
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const S={mute:false,music:'baja',gm:'j1',anime:true,order:'orden'};const view=()=>'tablero';let introOn=false;let flowTok=0;

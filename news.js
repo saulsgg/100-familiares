@@ -1,5 +1,8 @@
 /* lo nuevo de cada versión (sale una vez en el celular después de actualizarse) */
-const NEWS=[{v:'botones-v29',t:[
+const NEWS=[{v:'botones-v30',t:[
+ '✍️ Si juegas desde la pantalla del juego (aunque estés solo), ya te sale dónde escribir tu respuesta.',
+ '📺 Si intentas unirte desde el mismo celular que es la pantalla del juego, te avisa: esa pantalla tiene que quedarse abierta y al frente.']},
+ {v:'botones-v29',t:[
  '🛒 ¡La tiendita! Ganas 🪙 fichas jugando (terminar, ganar, atinar, ganar el botón, logros) y compras pieles, accesorios, fondos, auras, títulos, letras, caballos, burbujas del chat y celebraciones. Cambia cada día y lo más raro casi no sale.',
  '🎁 Si ya habías jugado, te regalamos fichas por tus logros y partidas.',
  '🎉 Celebración al ganar el botón: si te compras una, sale en la pantalla y en los celulares cuando ganas.',

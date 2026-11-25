@@ -1190,6 +1190,8 @@ body{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-r
 .j-hs li{display:grid;gap:3px;padding:8px 12px;border-radius:12px;background:rgba(0,0,0,.25)}
 .j-hs b{font-weight:800}.j-hs b span{font-weight:800}.j-hs b span.w::before{content:'🏆 '}.j-hs b em{font:400 20px var(--disp);font-style:normal;color:#fff}
 .j-hs small{color:#b9c1f5;font-size:12px}.j-hs small i{color:var(--mute)}.j-hs .j-hd{color:var(--mute)}.j-hs .j-hm{color:#ffd76a}
+.j-mehint{flex-basis:100%;color:#ffd76a;font:700 13px/1.35 Rubik,sans-serif;text-align:center}
+@media (pointer:coarse){.j-sndg small{display:none}}
 
 /* ===== foto finish: carrera de caballos (galope, polvo, cerca y meta) ===== */
 .hr{--hw:46px;position:relative;display:grid;gap:3px;margin:4px 0;padding:17px 8px 7px;border-radius:14px;overflow:hidden;text-align:left;color:#fff;
@@ -1552,7 +1554,7 @@ button.ctk:active .ctk-d{transform:scale(.88)}
     </div>
     <div class="j-tabs" role="tablist"><button type="button" role="tab" data-tab="eq" aria-selected="true">👥 Equipos</button><button type="button" role="tab" data-tab="aj" aria-selected="false">⚙ Ajustes</button><button type="button" role="tab" data-tab="fama" aria-selected="false">🏆 Fama</button></div>
     <section class="j-tab" id="tab-eq" role="tabpanel">
-      <div class="l3-rule j-me" id="mebox"><span>¿Juegas desde esta pantalla?</span><input id="mename" maxlength="14" placeholder="Tu nombre" autocomplete="off" aria-label="Tu nombre"><button type="button" data-t="0" aria-pressed="false" class="mt0">Equipo 1</button><button type="button" data-t="1" aria-pressed="false" class="mt1">Equipo 2</button><button type="button" data-t="-1" aria-pressed="true">No</button></div>
+      <div class="l3-rule j-me" id="mebox"><span>¿Juegas desde esta pantalla?</span><input id="mename" maxlength="14" placeholder="Tu nombre" autocomplete="off" aria-label="Tu nombre"><button type="button" data-t="0" aria-pressed="false" class="mt0">Equipo 1</button><button type="button" data-t="1" aria-pressed="false" class="mt1">Equipo 2</button><button type="button" data-t="-1" aria-pressed="true">No</button><small class="j-mehint" id="mehint" hidden>¿Tú también juegas desde este celular? Escribe tu nombre aquí y elige equipo. No abras la app de jugador aparte: esta pantalla se congela y todos se quedan «Reconectando».</small></div>
       <div class="j-lgrid">
         <div class="j-qr"><div id="qr"></div><p>Escaneen con la cámara del celular<br><b id="qrlink"></b></p><div class="j-code">Código <b id="lobcode">····</b></div></div>
         <div class="j-teams" id="lteams"></div>
@@ -1657,7 +1659,7 @@ button.ctk:active .ctk-d{transform:scale(.88)}
 <script src="vendor/qrcode.js"></script>
 <script>
 {
-const APPV='botones-v29';
+const APPV='botones-v30';
 const $=(s,r)=>(r||document).querySelector(s),$$=(s,r)=>[...(r||document).querySelectorAll(s)];
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const S={mute:false,music:'baja',gm:'j1',anime:true,order:'orden'};const view=()=>'tablero';let introOn=false;let flowTok=0;
@@ -3029,7 +3031,8 @@ function matchAns(text){const n=R.n;let best=0,list=[];
 
 /* ===================== RESPUESTAS ESCRITAS EN EL CELULAR ===================== */
 let ASK=null,ASKN=0;
-const teamPhones=t=>nhReady()?nhPlayers().filter(p=>p.team===t):[];
+/* quien juega desde esta misma pantalla también contesta aunque todavía no haya otros celulares (por ejemplo, probando solo) */
+const teamPhones=t=>{const net=nhReady();return nhPlayers().filter(p=>p.team===t&&(net||p.local))};
 /* orden en que contesta cada quien del equipo: empieza el que ganó el botón */
 function orderFor(t,first){const L=teamPhones(t).map(p=>p.uid);if(first&&L.includes(first)){L.splice(L.indexOf(first),1);L.unshift(first)}return L}
 function ckPause(){clearInterval(CK.id);CK.run=false}
@@ -3037,7 +3040,7 @@ function clearGrace(){if(R&&R.grace){clearTimeout(R.grace);R.grace=0;$('#say').c
 /* le toca a alguien: el reloj corre y a su celular le sale el recuadro */
 function turnStart(again){if(!R||(R.phase!=='play'&&R.phase!=='steal')||CK.run||R.grace||ASK)return;
   const steal=R.phase==='steal',t=steal?1-R.ctl:R.ctl;ckStart();
-  if(openAsk(t,steal,again))note(steal?`${losN(t,1)} escriben en su celular. También pueden tocar la ficha o “Falló el robo”.`:`Contesta${ASK.uids.length>1?'n '+losN(t):' '+ASK.name} en su celular. Si lo dicen en voz alta, también pueden tocar la ficha o ✕ Error.`)}
+  if(openAsk(t,steal,again))note(ASK.uids.length===1&&ASK.uids[0]==='me'?`${ASK.name} contesta aquí en esta pantalla. Si lo dicen en voz alta, también pueden tocar la ficha o ✕ Error.`:steal?`${losN(t,1)} escriben en su celular. También pueden tocar la ficha o “Falló el robo”.`:`Contesta${ASK.uids.length>1?'n '+losN(t):' '+ASK.name} en su celular. Si lo dicen en voz alta, también pueden tocar la ficha o ✕ Error.`)}
 function openAsk(t,steal,again){let ps=teamPhones(t);if(!ps.length)return null;let tg;
   /* a quien silenciaron no le toca esta vez */
   if(R.silenced&&ps.length>1)ps=ps.filter(p=>p.uid!==R.silenced);
@@ -3154,6 +3157,13 @@ function synced(kind,go,ann){const D=syncD();if(D<25){go();viewTick();return}con
     synced('aw',()=>{R.pendA=0;a0(t,why,id)},()=>({aw:{id,t,pts:R.bank*R.m,why}}))};
   qReveal=function(){if(!R||R.pendQ)return;R.pendQ=1;synced('q',()=>{R.pendQ=0;q0()},()=>({n:R.n}))}}
 
+/* este celular/compu es la pantalla de esta partida: lo apunta para que la app de jugador del mismo aparato lo sepa */
+function aliveMark(){if(document.visibilityState==='visible'&&NH.code)LSx.set('j-alive',{code:NH.code,ts:Date.now()})}
+setInterval(aliveMark,3000);
+/* si esta pantalla se fue a segundo plano con jugadores conectados, avisa al volver */
+{let hidAt=0;document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden'){hidAt=Date.now();return}aliveMark();
+  if(hidAt&&Date.now()-hidAt>6000&&[...NH.P.values()].some(p=>!p.local&&p.team>=0))toast('Esta pantalla estuvo en segundo plano y los celulares no recibían nada. Déjala abierta mientras juegan.');hidAt=0})}
+
 /* ===================== SALA: equipos y ajustes ===================== */
 /* el inicio manda el modo: pantalla grande o cada quien en su celular */
 {const mq=new URLSearchParams(location.search).get('modo');if(mq==='celulares'||mq==='pantalla'){CEL=mq==='celulares';LSx.set('j-cel',CEL)}}
@@ -3170,7 +3180,7 @@ function drawLobby(){$('#lobcode').textContent=NH.code||'····';drawSala();
   const a=L.filter(p=>p.team===0).length,b=L.filter(p=>p.team===1).length;$('#shuffle').hidden=L.length<2;
   $('#lobhint').textContent=CEL?'Cada quien ve la pregunta, el tablero y el marcador en su celular. Esta pantalla dirige el juego: no la cierren ni cambien de app mientras juegan.'
     :Math.abs(a-b)>1?'Los equipos están disparejos: usen 🔀 Revolver equipos o ⇄ para pasar a alguien.':'La pantalla grande muestra el juego y cada celular es un botón. Sin celulares también se puede: los botones salen en esta pantalla.';
-  $('#mebox').classList.toggle('want',CEL&&!(ME&&ME.name));
+  $('#mebox').classList.toggle('want',CEL&&!(ME&&ME.name));$('#mehint').hidden=!(CEL&&matchMedia('(pointer:coarse)').matches&&!(ME&&ME.name));
   drawSaved();drawOpts();drawCfg();$$('#rule button').forEach(b=>b.setAttribute('aria-pressed',String((b.dataset.r==='foul')===FOUL)))}
 /* mover, sacar y revolver jugadores */
 function setTeam(uid,t,quiet){if(uid==='me'){if(ME){ME.team=t;LSx.set('j-me',ME);meSync()}}else{const p=NH.P.get(uid);if(!p)return;p.team=t;NH.mem[uid]=t}
@@ -3681,9 +3691,9 @@ function fixDraw(){$('#fixux').disabled=!undoOk();const r=!!R&&R.phase!=='end';[
 
 /* ===== tele: el sonido necesita un clic (o el OK del control remoto) una vez ===== */
 {const g=$('#sndg');const chk=()=>{try{const c=AC||null;return c&&c.state==='running'}catch(e){return false}};
-  setTimeout(()=>{if(!chk()&&!SND_TAPPED){g.hidden=false;try{$('#sndgb').focus()}catch(e){}}},1500);
+  setTimeout(()=>{if(!chk()&&!SND_TAPPED&&!matchMedia('(pointer:coarse)').matches){g.hidden=false;try{$('#sndgb').focus()}catch(e){}}},1500);
   $('#sndgb').addEventListener('click',()=>{ac();loadSounds();g.hidden=true;sfr('qok',.6)});
-  addEventListener('pointerdown',()=>{SND_TAPPED=true;g.hidden=true},{capture:true})}
+  addEventListener('pointerdown',()=>{if(!SND_TAPPED)try{ac()}catch(e){}SND_TAPPED=true;g.hidden=true},{capture:true})}
 /* modo ligero a mano en esta pantalla */
 function liteDraw(){$$('.j-lite [data-lite]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.lite===LITE.mode)))}
 $('#tab-aj').addEventListener('click',e=>{const b=e.target.closest('[data-lite]');if(!b)return;liteMode(b.dataset.lite);liteDraw()});liteDraw();addEventListener('litechange',liteDraw);

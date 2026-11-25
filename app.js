@@ -604,7 +604,11 @@ $$('[data-go]').forEach(b=>b.addEventListener('click',()=>{ac();loadSounds();con
 $('#code').addEventListener('input',e=>{e.target.value=e.target.value.toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,4)});
 let LINKBI=-1;
 $('#joinf').addEventListener('submit',e=>{e.preventDefault();const code=$('#code').value.toUpperCase().replace(/[^A-Z0-9]/g,''),name=$('#pname').value.trim().slice(0,14)||'Jugador';
-  if(code.length!==4){$('#joinerr').textContent='El código tiene 4 letras o números.';return}$('#joinerr').textContent='';ac();loadSounds();playStart(code,name,LINKBI)});
+  if(code.length!==4){$('#joinerr').textContent='El código tiene 4 letras o números.';return}$('#joinerr').textContent='';
+  /* ¿este mismo aparato es la pantalla de esa partida? (cambiarse de app la congela) */
+  const al=LS.get('j-alive',null);if(!SAMEOK&&al&&al.code===code&&Date.now()-al.ts<432e5){$('#samehost').hidden=false;$('#samehost').scrollIntoView({block:'nearest'});return}
+  ac();loadSounds();playStart(code,name,LINKBI)});
+let SAMEOK=false;$('#sameyes').addEventListener('click',()=>{SAMEOK=true;$('#samehost').hidden=true;$('#joinf').requestSubmit()});
 /* instalar la app: si el navegador lo permite, sale su ventana; si no, los pasos para Android y iPhone */
 const STANDALONE=matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
 let DEF=null;$('#install').hidden=STANDALONE;addEventListener('beforeinstallprompt',e=>{e.preventDefault();DEF=e;$('#install').hidden=false});
