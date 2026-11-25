@@ -1659,7 +1659,7 @@ button.ctk:active .ctk-d{transform:scale(.88)}
 <script src="vendor/qrcode.js"></script>
 <script>
 {
-const APPV='botones-v30';
+const APPV='botones-v31';
 const $=(s,r)=>(r||document).querySelector(s),$$=(s,r)=>[...(r||document).querySelectorAll(s)];
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const S={mute:false,music:'baja',gm:'j1',anime:true,order:'orden'};const view=()=>'tablero';let introOn=false;let flowTok=0;
@@ -2387,15 +2387,20 @@ function Net(o){
     try{c=new Paho.Client(uri,(o.id+'-'+Math.random().toString(36).slice(2,8)).slice(0,23))}catch(e){fail();return}
     N.c=c;
     c.onMessageArrived=msg=>{if(N.c!==c)return;let m;try{m=JSON.parse(msg.payloadString)}catch(e){return}if(m&&typeof m==='object')o.onMsg(msg.destinationName,m)};
-    c.onConnectionLost=()=>{if(N.c!==c||N.closed)return;N.up=false;o.onDown&&o.onDown('lost');later(1200,go)};
+    /* si se cae seguido justo después de conectarse, ese servidor anda mal: se prueba otro */
+    c.onConnectionLost=()=>{if(N.c!==c||N.closed)return;N.up=false;N.lost=N.upAt&&Date.now()-N.upAt<20000?(N.lost||0)+1:1;o.onDown&&o.onDown('lost');if(N.lost>=3&&o.rotate){N.lost=0;N.bi++}later(1200,go)};
     const opts={timeout:7,keepAliveInterval:20,cleanSession:true,mqttVersion:4,
-      onSuccess:()=>{if(N.c!==c)return;N.fails=0;let n=o.subs.length;const done=()=>{N.up=true;o.onUp&&o.onUp(N.bi%BROKERS.length)};if(!n)done();
-        o.subs.forEach(s=>c.subscribe(s,{qos:1,onSuccess:()=>{if(--n===0)done()},onFailure:()=>{if(--n===0)done()}}))},
+      onSuccess:()=>{if(N.c!==c)return;N.fails=0;let n=o.subs.length;const done=()=>{if(N.c!==c||N.up)return;N.up=true;N.upAt=Date.now();clearTimeout(N.wd);o.onUp&&o.onUp(N.bi%BROKERS.length)};if(!n)done();
+        o.subs.forEach(s=>c.subscribe(s,{qos:1,timeout:6,onSuccess:()=>{if(--n===0)done()},onFailure:()=>{if(--n===0)done()}}))},
       onFailure:()=>{if(N.c===c)fail()}};
     if(uri.startsWith('wss'))opts.useSSL=true;
+    /* por si se queda atorado sin conectar ni fallar */
+    clearTimeout(N.wd);N.wd=later(16000,()=>{if(N.c===c&&!N.up&&!N.closed){N.c=null;try{c.isConnected()&&c.disconnect()}catch(e){}fail()}});
     try{c.connect(opts)}catch(e){fail()}}
   function fail(){N.fails++;if(o.rotate)N.bi++;o.onDown&&o.onDown('fail');if(!N.closed)later(Math.min(5000,700+N.fails*500),go)}
   N.switchTo=bi=>{N.bi=bi;const c=N.c;N.c=null;N.up=false;try{c&&c.isConnected()&&c.disconnect()}catch(e){}go()};
+  /* al volver el internet o regresar a la app, reconectar de una vez sin esperar */
+  const kick=()=>{if(!N.closed&&!N.up)N.switchTo(N.bi)};addEventListener('online',kick);document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')later(300,kick)});
   go();return N}
 
 
@@ -2949,6 +2954,9 @@ function sdHit(i){if(R.phase==='steal'){const w=R.sdA!=null&&R.sdA<i?R.ctl:1-R.c
   if(i===0){T(1500,()=>award(R.ctl,'¡La #1! Ganan el desempate'));return}R.sdA=i;T(1900,startSteal)}
 function sdMiss(){if(R.phase==='steal'){if(R.sdA!=null)T(1300,()=>award(R.ctl,'¡No la superaron!'));else T(1500,()=>{cinta('¡NADIE ATINÓ!','Va otra pregunta','c-pink');T(2400,()=>startRound(false))});return}
   R.sdA=null;T(1500,startSteal)}
+
+/* tocar el estado de la sala cuando dice «Reconectando»: reconecta ya, probando otro servidor */
+$('#lobstat').addEventListener('click',()=>{if(NH.net&&!NH.net.up){NH.net.switchTo(NH.net.bi+1);toast('Reconectando con otro servidor…')}});
 
 /* ===================== ¿ESTÁ EN EL TABLERO? (compara lo que escribieron con las respuestas) =====================
    Cada respuesta tiene varias formas de decirse (la principal y sus alias). Para que cuente, lo que escribieron

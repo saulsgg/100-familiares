@@ -38,15 +38,20 @@ function Net(o){
     try{c=new Paho.Client(uri,(o.id+'-'+Math.random().toString(36).slice(2,8)).slice(0,23))}catch(e){fail();return}
     N.c=c;
     c.onMessageArrived=msg=>{if(N.c!==c)return;let m;try{m=JSON.parse(msg.payloadString)}catch(e){return}if(m&&typeof m==='object')o.onMsg(msg.destinationName,m)};
-    c.onConnectionLost=()=>{if(N.c!==c||N.closed)return;N.up=false;o.onDown&&o.onDown('lost');later(1200,go)};
+    /* si se cae seguido justo después de conectarse, ese servidor anda mal: se prueba otro */
+    c.onConnectionLost=()=>{if(N.c!==c||N.closed)return;N.up=false;N.lost=N.upAt&&Date.now()-N.upAt<20000?(N.lost||0)+1:1;o.onDown&&o.onDown('lost');if(N.lost>=3&&o.rotate){N.lost=0;N.bi++}later(1200,go)};
     const opts={timeout:7,keepAliveInterval:20,cleanSession:true,mqttVersion:4,
-      onSuccess:()=>{if(N.c!==c)return;N.fails=0;let n=o.subs.length;const done=()=>{N.up=true;o.onUp&&o.onUp(N.bi%BROKERS.length)};if(!n)done();
-        o.subs.forEach(s=>c.subscribe(s,{qos:1,onSuccess:()=>{if(--n===0)done()},onFailure:()=>{if(--n===0)done()}}))},
+      onSuccess:()=>{if(N.c!==c)return;N.fails=0;let n=o.subs.length;const done=()=>{if(N.c!==c||N.up)return;N.up=true;N.upAt=Date.now();clearTimeout(N.wd);o.onUp&&o.onUp(N.bi%BROKERS.length)};if(!n)done();
+        o.subs.forEach(s=>c.subscribe(s,{qos:1,timeout:6,onSuccess:()=>{if(--n===0)done()},onFailure:()=>{if(--n===0)done()}}))},
       onFailure:()=>{if(N.c===c)fail()}};
     if(uri.startsWith('wss'))opts.useSSL=true;
+    /* por si se queda atorado sin conectar ni fallar */
+    clearTimeout(N.wd);N.wd=later(16000,()=>{if(N.c===c&&!N.up&&!N.closed){N.c=null;try{c.isConnected()&&c.disconnect()}catch(e){}fail()}});
     try{c.connect(opts)}catch(e){fail()}}
   function fail(){N.fails++;if(o.rotate)N.bi++;o.onDown&&o.onDown('fail');if(!N.closed)later(Math.min(5000,700+N.fails*500),go)}
   N.switchTo=bi=>{N.bi=bi;const c=N.c;N.c=null;N.up=false;try{c&&c.isConnected()&&c.disconnect()}catch(e){}go()};
+  /* al volver el internet o regresar a la app, reconectar de una vez sin esperar */
+  const kick=()=>{if(!N.closed&&!N.up)N.switchTo(N.bi)};addEventListener('online',kick);document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')later(300,kick)});
   go();return N}
 
 /* conexión directa entre la pantalla y cada celular (cuando el Wi-Fi lo permite): casi sin retraso.
@@ -241,10 +246,12 @@ function playStart(code,name,bi){MODE='play';P.code=code;P.name=name;P.st=null;P
   /* si el link trae el servidor, se usa ese; si no, se prueban uno por uno hasta encontrar la pantalla grande */
   P.bi=bi>=0?bi:0;P.fixed=bi>=0;
   P.net=Net({id:'p'+P.uid.slice(0,8),bi:P.bi,rotate:!P.fixed,subs:[ptp('a'),ptp('p/'+P.uid),ptp('up')],onMsg:playMsg,
-    onUp:bi=>{P.bi=bi;setStat('#pstat','Buscando la pantalla grande…','');hello();clearTimeout(P.probeT);if(!P.fixed)P.probeT=later(4500,probe)},
+    onUp:bi=>{P.bi=bi;P.upAt=performance.now();setStat('#pstat','Buscando la pantalla grande…','');hello();clearTimeout(P.probeT);if(!P.fixed)P.probeT=later(4500,probe)},
     onDown:()=>{setStat('#pstat','Sin internet, reintentando…','bad')}});
   clearInterval(P.helloT);P.helloT=setInterval(()=>{if(!P.net||!P.net.up)return;
-    if(!P.found||performance.now()-P.lastHost>7000){if(P.found)setStat('#pstat','Se perdió la pantalla grande…','bad');hello()}},2500)}
+    if(!P.found||performance.now()-P.lastHost>7000){if(P.found)setStat('#pstat','Se perdió la pantalla grande…','bad');hello();
+      /* la pantalla grande pudo cambiarse de servidor: después de un rato se busca en los demás */
+      if(P.fixed&&BROKERS.length>1&&performance.now()-(P.found?P.lastHost:P.upAt||performance.now())>16000){P.fixed=false;P.found=false;clearTimeout(P.probeT);P.probeT=later(300,probe)}}},2500)}
 /* no está la pantalla grande en este servidor: probar el siguiente */
 function probe(){if(P.found||MODE!=='play'||!P.net)return;const nb=(P.bi+1)%BROKERS.length;if(BROKERS.length>1){P.net.switchTo(nb)}
   padState('idle',`Buscando la partida ${P.code}…`,'Revisen que la pantalla grande esté abierta y que el código sea el mismo.');

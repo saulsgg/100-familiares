@@ -1,5 +1,8 @@
 /* lo nuevo de cada versión (sale una vez en el celular después de actualizarse) */
-const NEWS=[{v:'botones-v30',t:[
+const NEWS=[{v:'botones-v31',t:[
+ '📶 La pantalla del juego ya no se queda atorada en «Reconectando»: si el servidor falla, prueba otro sola. También puedes tocar el letrero para reconectar al instante.',
+ '📱 Los celulares encuentran solos la pantalla del juego si esta tuvo que cambiarse de servidor.']},
+ {v:'botones-v30',t:[
  '✍️ Si juegas desde la pantalla del juego (aunque estés solo), ya te sale dónde escribir tu respuesta.',
  '📺 Si intentas unirte desde el mismo celular que es la pantalla del juego, te avisa: esa pantalla tiene que quedarse abierta y al frente.']},
  {v:'botones-v29',t:[
