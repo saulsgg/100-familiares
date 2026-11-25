@@ -787,7 +787,7 @@ $('#finphsave').addEventListener('click',async()=>{const u=$('#finphimg').src;if
   try{if(navigator.canShare){const b=await (await fetch(u)).blob(),file=new File([b],'100-familiares-ganadores.jpg',{type:'image/jpeg'});if(navigator.canShare({files:[file]})){await navigator.share({files:[file],title:'100 Familiares Dijeron'});return}}}catch(e){if(e&&e.name==='AbortError')return}
   const a=document.createElement('a');a.href=u;a.download='100-familiares-ganadores.jpg';document.body.appendChild(a);a.click();a.remove()});
 /* ===================== MI PERFIL: contadores, logros y premios (todo se guarda en este celular; no hay cuentas) ===================== */
-const PF=(p=>{p=p&&typeof p==='object'?p:{};p.c=p.c&&typeof p.c==='object'?p.c:{};p.ach=p.ach&&typeof p.ach==='object'?p.ach:{};p.eq=eqClean(p.eq);p.coin=Number.isFinite(p.coin)&&p.coin>0?Math.floor(p.coin):0;p.own=p.own&&typeof p.own==='object'?p.own:{};p.tp=p.tp&&typeof p.tp==='object'?p.tp:{};return p})(LS.get('bt-prof',null));
+const PF=(p=>{p=p&&typeof p==='object'?p:{};p.c=p.c&&typeof p.c==='object'?p.c:{};p.ach=p.ach&&typeof p.ach==='object'?p.ach:{};p.eq=eqClean(p.eq);p.coin=Number.isFinite(p.coin)&&p.coin>0?Math.floor(p.coin):0;p.own=p.own&&typeof p.own==='object'?p.own:{};p.tp=p.tp&&typeof p.tp==='object'?p.tp:{};p.cre=p.cre?1:0;return p})(LS.get('bt-prof',null));
 let SEEN=(a=>Array.isArray(a)?a.filter(x=>typeof x==='string').slice(-500):[])(LS.get('bt-seen',[]));
 const PEN=new Set(),UNQ=[];let UNON=false;
 function pfSave(){LS.set('bt-prof',PF)}
@@ -822,7 +822,7 @@ const UNIC=['🏅','🎖️','💎','🔮','👑','🌈','🗝️'];
 /* los comunes y poco comunes salen arriba aunque estés contestando; los demás esperan un momento tranquilo */
 function unlNext(){if(UNON||!UNQ.length)return;const busy=['arm','wait','go'].includes(P.phase)||(WP&&(WP.spin||WP.drag))||(UNQ[0].r>=2&&(!$('#ask').hidden||!$('#chat').hidden||!$('#flp').hidden));if(busy){later(1500,unlNext);return}UNON=true;unlShow(UNQ.shift())}
 function unlShow(l){const r=l.r,R0=RAR[r],box=$('#unl'),card=$('#unlcard');box.className='unl r'+r;box.style.setProperty('--rc',R0.c);
-  $('#unlr').textContent=l.x?'¡Temporada!':`${r===6?'¡Logro secreto!':'Logro desbloqueado'} · ${R0.n}`;$('#unlic').textContent=l.ic||UNIC[r];$('#unld').textContent=l.d;
+  $('#unlr').textContent=l.lab||(l.x?'¡Temporada!':'')||`${r===6?'¡Logro secreto!':'Logro desbloqueado'} · ${R0.n}`;$('#unlic').textContent=l.ic||UNIC[r];$('#unld').textContent=l.d;
   const first=!l.x&&Object.keys(PF.ach).filter(k=>LGM[k]&&LGM[k].r===r).length===1,extra=[`Título nuevo: «${l.n}»`];if(first)extra.push(`Aura ${R0.n.toLowerCase()}`);
   const hz=HORSES.find(h=>h.r===r),wr=WRITES.find(w=>w.r===r);if(first&&hz)extra.push(hz.n);if(first&&wr)extra.push(wr.n);extra.push(`+${COIN.ach[r]} 🪙`);$('#unlt').textContent='🎁 '+(l.x||extra.join(' · '));
   const nm=$('#unln');box.hidden=false;const rm=RM(),dur=[2800,3200,3800,4800,6000,7000,7200][r];
@@ -846,17 +846,17 @@ function profDraw(){const c=PF.c,got=Object.keys(PF.ach).filter(k=>LGM[k]),rm=pf
   $('#profst').innerHTML=st.map(([i,n,v])=>`<div><span>${i}</span><b>${esc(String(v))}</b><small>${n}</small></div>`).join('');
   const chip=(g,v,lab,on,col)=>`<button type="button" class="prof-chip${on?' on':''}" data-g="${g}" data-v="${esc(String(v))}" aria-pressed="${on}"${col?` style="--rc:${col}"`:''}>${lab}</button>`;
   const mine=k=>SHOP.filter(x=>x.k===k&&own(k,x.id)).sort((a,b)=>b.r-a.r),sc=x=>RAR[x.r].c,camp=Object.values(PF.tp).includes(1);
-  const tit=chip('t','','Ninguno',!PF.eq.t)+(camp?chip('t','tp_campeon','👑 Campeón de temporada',PF.eq.t==='tp_campeon','#ffd23f'):'')+mine('ti').map(x=>chip('t',x.id,'🛒 '+esc(x.n),PF.eq.t===x.id,sc(x))).join('')+got.sort((a,b)=>LGM[b].r-LGM[a].r).map(k=>chip('t',k,esc(LGM[k].n),PF.eq.t===k,RAR[LGM[k].r].c)).join('');
-  const aur=chip('a',-1,'Ninguna',PF.eq.a===-1)+mine('au').map(x=>chip('a',x.id,`<i class="prof-dot${auraCls(x.id)}"></i>${esc(x.n.replace(/^Aura (de )?/,'').replace(/^./,c=>c.toUpperCase()))}`,PF.eq.a===x.id,sc(x))).join('')+RAR.map((R0,i)=>pfHasR(i)?chip('a',i,`<i class="prof-dot${auraCls(i)}"></i>${R0.n}`,PF.eq.a===i,R0.c):'').join('');
-  const hor=HORSES.map(h=>h.r<0||pfHasR(h.r)?chip('h',h.id,h.n,PF.eq.h===h.id,h.r>=0?RAR[h.r].c:''):'').join('')+mine('hz').map(x=>chip('h',x.id,esc(x.n),PF.eq.h===x.id,sc(x))).join('');
-  const wri=WRITES.map(w=>w.r<0||pfHasR(w.r)?chip('w',w.id,w.n,PF.eq.w===w.id,w.r>=0?RAR[w.r].c:''):'').join('')+mine('wr').map(x=>chip('w',x.id,esc(x.n),PF.eq.w===x.id,sc(x))).join('');
-  const grp=(k,g,lab,none)=>{const L=mine(k);return `<div><small>${lab}</small>${L.length?`<div class="prof-chips">${chip(g,'',none,!PF.eq[g])}${L.map(x=>chip(g,x.id,esc(x.n.replace(/^(Piel|Fondo|Burbuja|Celebración:?) (de )?/i,'').replace(/^./,c=>c.toUpperCase())),PF.eq[g]===x.id,sc(x))).join('')}</div>`:'<em>Cómpralos en la <button type="button" class="lnk" data-shop="1">🛒 tiendita</button></em>'}</div>`};
+  const tit=chip('t','','Ninguno',!PF.eq.t)+(PF.cre?chip('t','tp_creador','👑 El Creador',PF.eq.t==='tp_creador','#ffd23f'):'')+(camp?chip('t','tp_campeon','👑 Campeón de temporada',PF.eq.t==='tp_campeon','#ffd23f'):'')+mine('ti').map(x=>chip('t',x.id,'🛒 '+esc(x.n),PF.eq.t===x.id,sc(x))).join('')+got.sort((a,b)=>LGM[b].r-LGM[a].r).map(k=>chip('t',k,esc(LGM[k].n),PF.eq.t===k,RAR[LGM[k].r].c)).join('');
+  const aur=chip('a',-1,'Ninguna',PF.eq.a===-1)+(PF.cre?chip('a','cr','<i class="prof-dot aura aus-creador"></i>Creador',PF.eq.a==='cr','#ffd23f'):'')+mine('au').map(x=>chip('a',x.id,`<i class="prof-dot${auraCls(x.id)}"></i>${esc(x.n.replace(/^Aura (de )?/,'').replace(/^./,c=>c.toUpperCase()))}`,PF.eq.a===x.id,sc(x))).join('')+RAR.map((R0,i)=>pfHasR(i)?chip('a',i,`<i class="prof-dot${auraCls(i)}"></i>${R0.n}`,PF.eq.a===i,R0.c):'').join('');
+  const hor=(PF.cre?chip('h','creador','👑 Del creador',PF.eq.h==='creador','#ffd23f'):'')+HORSES.map(h=>h.r<0||pfHasR(h.r)?chip('h',h.id,h.n,PF.eq.h===h.id,h.r>=0?RAR[h.r].c:''):'').join('')+mine('hz').map(x=>chip('h',x.id,esc(x.n),PF.eq.h===x.id,sc(x))).join('');
+  const wri=(PF.cre?chip('w','creador','👑 Del creador',PF.eq.w==='creador','#ffd23f'):'')+WRITES.map(w=>w.r<0||pfHasR(w.r)?chip('w',w.id,w.n,PF.eq.w===w.id,w.r>=0?RAR[w.r].c:''):'').join('')+mine('wr').map(x=>chip('w',x.id,esc(x.n),PF.eq.w===x.id,sc(x))).join('');
+  const grp=(k,g,lab,none,ex)=>{const L=mine(k),E=PF.cre&&ex?chip(g,ex[0],ex[1],PF.eq[g]===ex[0],'#ffd23f'):'';return `<div><small>${lab}</small>${L.length||E?`<div class="prof-chips">${chip(g,'',none,!PF.eq[g])}${E}${L.map(x=>chip(g,x.id,esc(x.n.replace(/^(Piel|Fondo|Burbuja|Celebración:?) (de )?/i,'').replace(/^./,c=>c.toUpperCase())),PF.eq[g]===x.id,sc(x))).join('')}</div>`:'<em>Cómpralos en la <button type="button" class="lnk" data-shop="1">🛒 tiendita</button></em>'}</div>`};
   $('#profeq').innerHTML=`<div><small>Título</small><div class="prof-chips">${tit}</div></div><div><small>Aura</small><div class="prof-chips">${aur}</div></div>`+
-    grp('sk','sk','Piel de tu animalito','Normal')+grp('ac','ac','Accesorio','Ninguno')+grp('fo','fo','Fondo','Normal')+
+    grp('sk','sk','Piel de tu animalito','Normal')+grp('ac','ac','Accesorio','Ninguno')+grp('fo','fo','Fondo','Normal',['fo_creador','👑 Del creador'])+
     `<div><small>Caballo de carrera</small><div class="prof-chips">${hor}</div>${rm<4?'<em>Se desbloquean con logros legendarios o mejores (o en la tiendita)</em>':''}</div><div><small>Letras de tus respuestas</small><div class="prof-chips">${wri}</div>${rm<5?'<em>Se desbloquean con logros míticos o mejores (o en la tiendita)</em>':''}</div>`+
-    grp('bu','bu','Burbuja del chat','Normal')+grp('ce','ce','Celebración al ganar el botón','Ninguna');
+    grp('bu','bu','Burbuja del chat','Normal',['bu_creador','👑 Del creador'])+grp('ce','ce','Celebración al ganar el botón','Ninguna',['ce_creador','👑 Del creador']);
   $('#profn').textContent=`${got.length} de ${LOGROS.length}`;
-  $('#proflg').innerHTML=RAR.map((R0,i)=>{const L=LOGROS.filter(l=>l.r===i);return `<div class="prof-rg" style="--rc:${R0.c}"><h4>${R0.n}</h4>`+L.map(l=>{const ok=!!PF.ach[l.id],sec=l.r===6&&!ok,v=l.k==='streak'?(c.streakMax||0):(c[l.k]||0);
+  $('#proflg').innerHTML=(PF.cre?'<div class="prof-rg prof-cre" style="--rc:#ffd23f"><h4>Creador</h4><div class="prof-lg ok"><span class="prof-li">👑</span><div><b class="tit-cre">El Creador</b><small>Hiciste este juego (con ayuda de Claude). Solo existe uno.</small></div></div></div>':'')+RAR.map((R0,i)=>{const L=LOGROS.filter(l=>l.r===i);return `<div class="prof-rg" style="--rc:${R0.c}"><h4>${R0.n}</h4>`+L.map(l=>{const ok=!!PF.ach[l.id],sec=l.r===6&&!ok,v=l.k==='streak'?(c.streakMax||0):(c[l.k]||0);
     return `<div class="prof-lg${ok?' ok':''}${sec?' sec':''}"><span class="prof-li">${ok?UNIC[l.r]:sec?'❔':'🔒'}</span><div><b>${sec?'???':esc(l.n)}</b><small>${sec?'Es secreto: descúbrelo jugando':esc(l.d)}</small>${!ok&&!sec&&l.goal>1?`<i class="prof-pg"><i style="width:${Math.min(100,Math.round(v/l.goal*100))}%"></i></i><small>${Math.min(v,l.goal)} de ${l.goal}</small>`:''}</div></div>`}).join('')+'</div>'}).join('')}
 $('#profeq').addEventListener('click',e=>{const b=e.target.closest('.prof-chip');if(!b)return;const g=b.dataset.g,v=b.dataset.v;if(g==='a')PF.eq.a=/^-?\d+$/.test(v)?+v:v;else PF.eq[g]=v;PF.eq=eqClean(PF.eq);pfSave();profDraw();tick();try{drawMe()}catch(er){}if(MODE==='play')meSend()});
 $('#profav').addEventListener('click',()=>{ac();loadSounds();myAvSheet()});
@@ -975,7 +975,7 @@ const b64e=u=>{let s='';for(let i=0;i<u.length;i+=4096)s+=String.fromCharCode.ap
 const b64d=t=>{const s=atob(t.replace(/-/g,'+').replace(/_/g,'/'));const u=new Uint8Array(s.length);for(let i=0;i<s.length;i++)u[i]=s.charCodeAt(i);return u};
 const bkSum=t=>{let h=5381;for(let i=0;i<t.length;i++)h=((h<<5)+h+t.charCodeAt(i))>>>0;return(h%1679616).toString(36).padStart(4,'0')};
 async function zip(u,dir){const S=dir?CompressionStream:DecompressionStream;return new Uint8Array(await new Response(new Blob([u]).stream().pipeThrough(new S('deflate'))).arrayBuffer())}
-async function bkMake(){const d={v:1,n:P.name||LS.get('bt-name','')||'',av:P.av,u:P.uid,p:{c:PF.c,ach:PF.ach,eq:PF.eq,best:PF.best,coin:PF.coin||0,own:PF.own,tp:PF.tp,day:PF.day||'',wel:1}};
+async function bkMake(){const d={v:1,n:P.name||LS.get('bt-name','')||'',av:P.av,u:P.uid,p:{c:PF.c,ach:PF.ach,eq:PF.eq,best:PF.best,coin:PF.coin||0,own:PF.own,tp:PF.tp,day:PF.day||'',wel:1,cre:PF.cre||0}};
   let u=new TextEncoder().encode(JSON.stringify(d)),z='0';if(typeof CompressionStream==='function'){try{u=await zip(u,1);z='1'}catch(e){}}
   const body=b64e(bkX(u));return 'F'+z+body+'.'+bkSum(body)}
 async function bkRead(code){code=String(code||'').replace(/\s+/g,'');const m=code.match(/(?:#perfil=)?(F[01])([A-Za-z0-9_-]{20,})\.([0-9a-z]{4})$/);if(!m)throw new Error('formato');if(bkSum(m[2])!==m[3])throw new Error('suma');
@@ -997,12 +997,21 @@ async function bkCheck(code){$('#bkerr').textContent='';try{const d=await bkRead
   catch(e){bkOpen(true);$('#bkerr').textContent=e&&e.message==='viejo'?'Este celular es muy viejito para abrir ese código. Prueba actualizando el navegador.':'Ese código no está completo o tiene un error. Cópialo otra vez completito.'}}
 $('#bkgo').addEventListener('click',()=>bkCheck($('#bkta').value));
 $('#bkyes').addEventListener('click',()=>{const d=BKD;if(!d)return;if(MODE==='play'){toast('Hazlo cuando no estés en una partida.');return}
-  const p=d.p;LS.set('bt-prof',{c:p.c||{},ach:p.ach||{},eq:p.eq||{},best:p.best==null?null:p.best,coin:+p.coin||0,own:p.own||{},tp:p.tp||{},day:p.day||'',wel:1});
+  const p=d.p;LS.set('bt-prof',{c:p.c||{},ach:p.ach||{},eq:p.eq||{},best:p.best==null?null:p.best,coin:+p.coin||0,own:p.own||{},tp:p.tp||{},day:p.day||'',wel:1,cre:p.cre?1:0});
   if(d.n)LS.set('bt-name',String(d.n).slice(0,14));if(typeof d.av==='string'&&AVM[d.av])LS.set('bt-myav',d.av);if(typeof d.u==='string'&&d.u.length<=40)LS.set('bt-uid',d.u);
   toast('¡Listo! Tu perfil ya está en este celular');later(900,()=>{location.hash='';location.reload()})});
 /* abrir con el cuadro escaneado (…#perfil=CÓDIGO) */
 {const h=location.hash;if(/^#perfil=F[01]/.test(h)){const c=decodeURIComponent(h.slice(8));try{history.replaceState(null,'',location.pathname+location.search)}catch(e){}later(600,()=>{$('#bkta').value=c;bkCheck(c)})}}
 coinDraw();
+/* ===================== EL CREADOR: toca tu nombre 5 veces en Mi perfil y pon el código de anfitrión ===================== */
+{let n=0,t=0;$('#proft').addEventListener('click',()=>{if(PF.cre)return;clearTimeout(t);t=later(1500,()=>n=0);if(++n<5)return;n=0;
+  if($('#crebox'))return;const d=document.createElement('div');d.id='crebox';d.className='cre-box';
+  d.innerHTML='<b>🔐 Código del creador</b><input id="crepin" type="password" inputmode="numeric" maxlength="8" autocomplete="off" aria-label="Código"><button type="button" class="ghost sm" id="creok">OK</button>';
+  $('#prof .prof-h').after(d);$('#crepin').focus();
+  const go=async()=>{const v=$('#crepin').value;if(!v)return;const k=await sha256('100familiares-anfitrion:'+v);if(await sha256(k)!==ADM_KH){toast('Ese no es.');d.remove();return}
+    d.remove();PF.cre=1;Object.assign(PF.eq,{t:'tp_creador',a:'cr',w:'creador',h:'creador',fo:'fo_creador',bu:'bu_creador',ce:'ce_creador'});PF.eq=eqClean(PF.eq);pfSave();profDraw();try{drawMe()}catch(e){}if(MODE==='play')meSend();
+    UNQ.push({id:'cre',r:6,ic:'👑',lab:'¡Solo para el creador!',n:'El Creador',d:'Hiciste este juego (con ayuda de Claude)',x:'Título, aura, letras, caballo, fondo, burbuja y celebración del creador'});unlNext();later(400,()=>celebFx('ce_creador',$('#profav')))};
+  $('#creok').addEventListener('click',go);$('#crepin').addEventListener('keydown',e=>{if(e.key==='Enter')go()})})}
 window.__shop={PF,coinAdd,shopDraw,bkMake,bkRead,COIN};
 window.__bt={H,P,WP,UPD,updCheck,AD};
 }

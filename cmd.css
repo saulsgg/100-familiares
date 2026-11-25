@@ -191,3 +191,22 @@ button.ctk:active .ctk-d{transform:scale(.88)}
 .celeb-p b.dot{width:8px;height:8px;border-radius:50%}
 .celeb-p b.ray{width:6px;height:clamp(90px,16vw,220px);border-radius:3px;background:linear-gradient(#fff6b0,rgba(255,210,63,0))}
 .celeb-p.big{font-size:clamp(36px,5vw,64px)}.celeb-p.huge{font-size:clamp(90px,14vw,200px)}.celeb-p.star{font-size:clamp(16px,2vw,26px)}
+/* ===================== EL CREADOR ===================== */
+.aus-creador{position:relative;isolation:isolate;box-shadow:0 0 0 3px #fff6c8,0 0 20px #ffd23f,0 0 38px rgba(255,92,225,.55);animation:creGlow 2.4s ease-in-out infinite}
+.aus-creador::before{content:'';position:absolute;inset:-6px;z-index:-1;border-radius:50%;background:conic-gradient(#ffd23f,#ff5c9a,#8b5cf6,#3fe0cc,#ffd23f);animation:creSpin 3s linear infinite}
+.aus-creador::after{content:'👑';position:absolute;left:50%;top:-12px;transform:translateX(-50%) rotate(-8deg);font-size:15px;line-height:1;filter:drop-shadow(0 2px 2px rgba(0,0,0,.5));pointer-events:none}
+@keyframes creSpin{to{transform:rotate(360deg)}}
+@keyframes creGlow{50%{box-shadow:0 0 0 3px #fff,0 0 28px #ffd23f,0 0 50px rgba(63,224,204,.55)}}
+.tit-cre{display:inline-block;background:linear-gradient(90deg,#ffd23f,#fff6c8,#ff5c9a,#8b5cf6,#3fe0cc,#ffd23f);background-size:300% 100%;-webkit-background-clip:text;background-clip:text;color:transparent!important;animation:titCre 3.5s linear infinite;filter:drop-shadow(0 0 6px rgba(255,210,63,.45))}
+@keyframes titCre{to{background-position:300% 0}}
+.j-say.w-creador #saytx .l2-c,.wrp.w-creador .l2-c{color:#ffe27a;text-shadow:0 0 6px #fff6c8,0 0 16px #ffd23f,0 3px 0 #8a5a00;animation:wrCre 2.2s ease-in-out infinite}
+.j-say.w-creador #saytx .l2-c:nth-child(3n+2),.wrp.w-creador .l2-c:nth-child(3n+2){animation-delay:-.7s}
+.j-say.w-creador #saytx .l2-c:nth-child(3n),.wrp.w-creador .l2-c:nth-child(3n){animation-delay:-1.4s}
+@keyframes wrCre{0%,100%{color:#ffe27a;transform:translateY(0)}33%{color:#ff9bd1;transform:translateY(-3px)}66%{color:#8ff3e4}}
+.chat-m .bub.bu-creador p,.shop-bu.bu-creador p{background:linear-gradient(135deg,#1a1033,#2a1060);color:#fff6c8;box-shadow:inset 0 0 0 2px #ffd23f,0 0 14px rgba(255,210,63,.5)}
+.chat-m .bub.bu-creador p::before,.shop-bu.bu-creador p::before{content:'👑 '}
+.chat-m .bub.bu-creador p b{color:#ffd23f}
+.cre-tx{position:absolute;left:50%;top:38%;transform:translate(-50%,-50%);font:400 clamp(34px,8vw,110px) var(--disp,sans-serif);color:#ffe27a;text-shadow:0 4px 0 #8a5a00,0 0 30px #ffd23f,0 0 60px #ff5ce1;white-space:nowrap;animation:creTx 2.5s cubic-bezier(.2,.8,.3,1) forwards}
+@keyframes creTx{0%{opacity:0;transform:translate(-50%,-50%) scale(.3)}20%{opacity:1;transform:translate(-50%,-50%) scale(1.15)}30%{transform:translate(-50%,-50%) scale(1)}80%{opacity:1}100%{opacity:0;transform:translate(-50%,-70%) scale(1)}}
+.hz-creador{filter:drop-shadow(0 0 5px #ffd23f) drop-shadow(0 0 10px rgba(255,92,225,.5))}
+.lite .aus-creador,.lite .aus-creador::before,.lite .tit-cre,.lite .wrp .l2-c{animation:none}
