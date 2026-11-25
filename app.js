@@ -31,22 +31,23 @@ function setStat(sel,text,cls){const p=$(sel);p.textContent=sel==='#pstat'&&inne
 /* ===================== CONEXIÓN ===================== */
 /* o: {id, bi (servidor), rotate (probar otro si falla), subs, onMsg, onUp, onDown} */
 function Net(o){
-  const N={c:null,up:false,bi:o.bi||0,fails:0,closed:false,
+  const N={c:null,up:false,bi:o.bi||0,fails:0,closed:false,log:[],
+    note(t,e){const d=new Date();N.log.push(`${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}:${String(d.getSeconds()).padStart(2,'0')} ${(BROKERS[N.bi%BROKERS.length]||'').replace(/^wss?:\/\/(broker\.|test\.)?/,'').split(/[.:]/)[0]} ${t}${e&&(e.errorCode||e.errorMessage)?' ('+(e.errorCode||'')+' '+String(e.errorMessage||'').slice(0,60)+')':''}`);if(N.log.length>14)N.log.shift()},
     pub(t,m,q,ret){if(!N.up||!N.c)return false;try{N.c.send(t,JSON.stringify(m),q||0,!!ret);return true}catch(e){return false}},
     close(){N.closed=true;N.up=false;try{N.c&&N.c.isConnected()&&N.c.disconnect()}catch(e){}}};
   function go(){if(N.closed)return;const uri=BROKERS[N.bi%BROKERS.length];let c;
     try{c=new Paho.Client(uri,(o.id+'-'+Math.random().toString(36).slice(2,8)).slice(0,23))}catch(e){fail();return}
-    N.c=c;
+    N.c=c;N.note('conectando…');
     c.onMessageArrived=msg=>{if(N.c!==c)return;let m;try{m=JSON.parse(msg.payloadString)}catch(e){return}if(m&&typeof m==='object')o.onMsg(msg.destinationName,m)};
     /* si se cae seguido justo después de conectarse, ese servidor anda mal: se prueba otro */
-    c.onConnectionLost=()=>{if(N.c!==c||N.closed)return;N.up=false;N.lost=N.upAt&&Date.now()-N.upAt<20000?(N.lost||0)+1:1;o.onDown&&o.onDown('lost');if(N.lost>=3&&o.rotate){N.lost=0;N.bi++}later(1200,go)};
+    c.onConnectionLost=e=>{if(N.c!==c||N.closed)return;N.note('se cayó',e);N.up=false;N.lost=N.upAt&&Date.now()-N.upAt<20000?(N.lost||0)+1:1;o.onDown&&o.onDown('lost');if(N.lost>=3&&o.rotate){N.lost=0;N.bi++}later(1200,go)};
     const opts={timeout:7,keepAliveInterval:20,cleanSession:true,mqttVersion:4,
-      onSuccess:()=>{if(N.c!==c)return;N.fails=0;let n=o.subs.length;const done=()=>{if(N.c!==c||N.up)return;N.up=true;N.upAt=Date.now();clearTimeout(N.wd);o.onUp&&o.onUp(N.bi%BROKERS.length)};if(!n)done();
+      onSuccess:()=>{if(N.c!==c)return;N.fails=0;let n=o.subs.length;const done=()=>{if(N.c!==c||N.up)return;N.up=true;N.upAt=Date.now();clearTimeout(N.wd);N.note('conectado ✔');o.onUp&&o.onUp(N.bi%BROKERS.length)};if(!n)done();
         o.subs.forEach(s=>c.subscribe(s,{qos:1,timeout:6,onSuccess:()=>{if(--n===0)done()},onFailure:()=>{if(--n===0)done()}}))},
-      onFailure:()=>{if(N.c===c)fail()}};
+      onFailure:e=>{if(N.c===c){N.note('no conectó',e);fail()}}};
     if(uri.startsWith('wss'))opts.useSSL=true;
     /* por si se queda atorado sin conectar ni fallar */
-    clearTimeout(N.wd);N.wd=later(16000,()=>{if(N.c===c&&!N.up&&!N.closed){N.c=null;try{c.isConnected()&&c.disconnect()}catch(e){}fail()}});
+    clearTimeout(N.wd);N.wd=later(16000,()=>{if(N.c===c&&!N.up&&!N.closed){N.note('atorado, se reintenta');N.c=null;try{c.isConnected()&&c.disconnect()}catch(e){}fail()}});
     try{c.connect(opts)}catch(e){fail()}}
   function fail(){N.fails++;if(o.rotate)N.bi++;o.onDown&&o.onDown('fail');if(!N.closed)later(Math.min(5000,700+N.fails*500),go)}
   N.switchTo=bi=>{N.bi=bi;const c=N.c;N.c=null;N.up=false;try{c&&c.isConnected()&&c.disconnect()}catch(e){}go()};
@@ -70,7 +71,7 @@ const KIND={casa:'directo por Wi-Fi',internet:'directo por internet',relevo:'por
 /* busca el servidor de mensajes que responde más rápido desde aquí */
 function fastestBroker(){if(BROKERS.length<2)return Promise.resolve(0);return new Promise(ok=>{let done=false;const cs=[];
   const fin=i=>{if(done)return;done=true;ok(i);cs.forEach(c=>{try{c.isConnected()&&c.disconnect()}catch(e){}})};
-  BROKERS.forEach((u,i)=>{try{const c=new Paho.Client(u,'t'+Math.random().toString(36).slice(2,10));cs.push(c);c.connect({timeout:5,keepAliveInterval:30,cleanSession:true,mqttVersion:4,useSSL:u.startsWith('wss'),onSuccess:()=>fin(i),onFailure:()=>{}})}catch(e){}});
+  BROKERS.forEach((u,i)=>{try{const c=new Paho.Client(u,'t'+Math.random().toString(36).slice(2,10));cs.push(c);c.connect({timeout:5,keepAliveInterval:30,cleanSession:true,mqttVersion:4,useSSL:u.startsWith('wss'),onSuccess:()=>{if(i===BROKERS.length-1)later(1500,()=>fin(i));else fin(i)},onFailure:()=>{}})}catch(e){}});
   later(5500,()=>fin(LS.get('bt-bi',0)))})}
 
 /* ===================== SONIDO ===================== */

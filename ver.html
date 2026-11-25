@@ -1191,6 +1191,10 @@ body{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-r
 .j-hs small{color:#b9c1f5;font-size:12px}.j-hs small i{color:var(--mute)}.j-hs .j-hd{color:var(--mute)}.j-hs .j-hm{color:#ffd76a}
 .j-mehint{flex-basis:100%;color:#ffd76a;font:700 13px/1.35 Rubik,sans-serif;text-align:center}
 @media (pointer:coarse){.j-sndg small{display:none}}
+.j-netlog{position:fixed;left:50%;top:12px;z-index:96;width:min(94vw,460px);transform:translateX(-50%);padding:12px;border-radius:16px;background:#0b0f3a;box-shadow:0 10px 30px rgba(0,0,0,.6),inset 0 0 0 2px #ffd76a;color:#fff}
+.j-netlog pre{margin:8px 0;white-space:pre-wrap;font:12px/1.4 ui-monospace,monospace;color:#cfe3ff;max-height:40vh;overflow:auto}
+.j-netlog div{display:flex;gap:8px;flex-wrap:wrap}
+#lobstat{cursor:pointer}
 
 /* ===== foto finish: carrera de caballos (galope, polvo, cerca y meta) ===== */
 .hr{--hw:46px;position:relative;display:grid;gap:3px;margin:4px 0;padding:17px 8px 7px;border-radius:14px;overflow:hidden;text-align:left;color:#fff;
@@ -1646,7 +1650,7 @@ body.ver{overflow-x:hidden}
 
 <script>
 {
-const APPV='botones-v31';
+const APPV='botones-v32';
 const $=(s,r)=>(r||document).querySelector(s),$$=(s,r)=>[...(r||document).querySelectorAll(s)];
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const S={mute:false,music:'baja',gm:'j1',anime:true,order:'orden'};const view=()=>'tablero';let introOn=false;let flowTok=0;

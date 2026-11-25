@@ -1192,6 +1192,10 @@ body{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-r
 .j-hs small{color:#b9c1f5;font-size:12px}.j-hs small i{color:var(--mute)}.j-hs .j-hd{color:var(--mute)}.j-hs .j-hm{color:#ffd76a}
 .j-mehint{flex-basis:100%;color:#ffd76a;font:700 13px/1.35 Rubik,sans-serif;text-align:center}
 @media (pointer:coarse){.j-sndg small{display:none}}
+.j-netlog{position:fixed;left:50%;top:12px;z-index:96;width:min(94vw,460px);transform:translateX(-50%);padding:12px;border-radius:16px;background:#0b0f3a;box-shadow:0 10px 30px rgba(0,0,0,.6),inset 0 0 0 2px #ffd76a;color:#fff}
+.j-netlog pre{margin:8px 0;white-space:pre-wrap;font:12px/1.4 ui-monospace,monospace;color:#cfe3ff;max-height:40vh;overflow:auto}
+.j-netlog div{display:flex;gap:8px;flex-wrap:wrap}
+#lobstat{cursor:pointer}
 
 /* ===== foto finish: carrera de caballos (galope, polvo, cerca y meta) ===== */
 .hr{--hw:46px;position:relative;display:grid;gap:3px;margin:4px 0;padding:17px 8px 7px;border-radius:14px;overflow:hidden;text-align:left;color:#fff;
@@ -1659,7 +1663,7 @@ button.ctk:active .ctk-d{transform:scale(.88)}
 <script src="vendor/qrcode.js"></script>
 <script>
 {
-const APPV='botones-v31';
+const APPV='botones-v32';
 const $=(s,r)=>(r||document).querySelector(s),$$=(s,r)=>[...(r||document).querySelectorAll(s)];
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const S={mute:false,music:'baja',gm:'j1',anime:true,order:'orden'};const view=()=>'tablero';let introOn=false;let flowTok=0;
@@ -2380,22 +2384,23 @@ const NS='fam100dijeron/v1/';
 /* ===================== CONEXIÓN ===================== */
 /* o: {id, bi (servidor), rotate (probar otro si falla), subs, onMsg, onUp, onDown} */
 function Net(o){
-  const N={c:null,up:false,bi:o.bi||0,fails:0,closed:false,
+  const N={c:null,up:false,bi:o.bi||0,fails:0,closed:false,log:[],
+    note(t,e){const d=new Date();N.log.push(`${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}:${String(d.getSeconds()).padStart(2,'0')} ${(BROKERS[N.bi%BROKERS.length]||'').replace(/^wss?:\/\/(broker\.|test\.)?/,'').split(/[.:]/)[0]} ${t}${e&&(e.errorCode||e.errorMessage)?' ('+(e.errorCode||'')+' '+String(e.errorMessage||'').slice(0,60)+')':''}`);if(N.log.length>14)N.log.shift()},
     pub(t,m,q,ret){if(!N.up||!N.c)return false;try{N.c.send(t,JSON.stringify(m),q||0,!!ret);return true}catch(e){return false}},
     close(){N.closed=true;N.up=false;try{N.c&&N.c.isConnected()&&N.c.disconnect()}catch(e){}}};
   function go(){if(N.closed)return;const uri=BROKERS[N.bi%BROKERS.length];let c;
     try{c=new Paho.Client(uri,(o.id+'-'+Math.random().toString(36).slice(2,8)).slice(0,23))}catch(e){fail();return}
-    N.c=c;
+    N.c=c;N.note('conectando…');
     c.onMessageArrived=msg=>{if(N.c!==c)return;let m;try{m=JSON.parse(msg.payloadString)}catch(e){return}if(m&&typeof m==='object')o.onMsg(msg.destinationName,m)};
     /* si se cae seguido justo después de conectarse, ese servidor anda mal: se prueba otro */
-    c.onConnectionLost=()=>{if(N.c!==c||N.closed)return;N.up=false;N.lost=N.upAt&&Date.now()-N.upAt<20000?(N.lost||0)+1:1;o.onDown&&o.onDown('lost');if(N.lost>=3&&o.rotate){N.lost=0;N.bi++}later(1200,go)};
+    c.onConnectionLost=e=>{if(N.c!==c||N.closed)return;N.note('se cayó',e);N.up=false;N.lost=N.upAt&&Date.now()-N.upAt<20000?(N.lost||0)+1:1;o.onDown&&o.onDown('lost');if(N.lost>=3&&o.rotate){N.lost=0;N.bi++}later(1200,go)};
     const opts={timeout:7,keepAliveInterval:20,cleanSession:true,mqttVersion:4,
-      onSuccess:()=>{if(N.c!==c)return;N.fails=0;let n=o.subs.length;const done=()=>{if(N.c!==c||N.up)return;N.up=true;N.upAt=Date.now();clearTimeout(N.wd);o.onUp&&o.onUp(N.bi%BROKERS.length)};if(!n)done();
+      onSuccess:()=>{if(N.c!==c)return;N.fails=0;let n=o.subs.length;const done=()=>{if(N.c!==c||N.up)return;N.up=true;N.upAt=Date.now();clearTimeout(N.wd);N.note('conectado ✔');o.onUp&&o.onUp(N.bi%BROKERS.length)};if(!n)done();
         o.subs.forEach(s=>c.subscribe(s,{qos:1,timeout:6,onSuccess:()=>{if(--n===0)done()},onFailure:()=>{if(--n===0)done()}}))},
-      onFailure:()=>{if(N.c===c)fail()}};
+      onFailure:e=>{if(N.c===c){N.note('no conectó',e);fail()}}};
     if(uri.startsWith('wss'))opts.useSSL=true;
     /* por si se queda atorado sin conectar ni fallar */
-    clearTimeout(N.wd);N.wd=later(16000,()=>{if(N.c===c&&!N.up&&!N.closed){N.c=null;try{c.isConnected()&&c.disconnect()}catch(e){}fail()}});
+    clearTimeout(N.wd);N.wd=later(16000,()=>{if(N.c===c&&!N.up&&!N.closed){N.note('atorado, se reintenta');N.c=null;try{c.isConnected()&&c.disconnect()}catch(e){}fail()}});
     try{c.connect(opts)}catch(e){fail()}}
   function fail(){N.fails++;if(o.rotate)N.bi++;o.onDown&&o.onDown('fail');if(!N.closed)later(Math.min(5000,700+N.fails*500),go)}
   N.switchTo=bi=>{N.bi=bi;const c=N.c;N.c=null;N.up=false;try{c&&c.isConnected()&&c.disconnect()}catch(e){}go()};
@@ -2420,7 +2425,7 @@ const KIND={casa:'directo por Wi-Fi',internet:'directo por internet',relevo:'por
 /* busca el servidor de mensajes que responde más rápido desde aquí */
 function fastestBroker(){if(BROKERS.length<2)return Promise.resolve(0);return new Promise(ok=>{let done=false;const cs=[];
   const fin=i=>{if(done)return;done=true;ok(i);cs.forEach(c=>{try{c.isConnected()&&c.disconnect()}catch(e){}})};
-  BROKERS.forEach((u,i)=>{try{const c=new Paho.Client(u,'t'+Math.random().toString(36).slice(2,10));cs.push(c);c.connect({timeout:5,keepAliveInterval:30,cleanSession:true,mqttVersion:4,useSSL:u.startsWith('wss'),onSuccess:()=>fin(i),onFailure:()=>{}})}catch(e){}});
+  BROKERS.forEach((u,i)=>{try{const c=new Paho.Client(u,'t'+Math.random().toString(36).slice(2,10));cs.push(c);c.connect({timeout:5,keepAliveInterval:30,cleanSession:true,mqttVersion:4,useSSL:u.startsWith('wss'),onSuccess:()=>{if(i===BROKERS.length-1)later(1500,()=>fin(i));else fin(i)},onFailure:()=>{}})}catch(e){}});
   later(5500,()=>fin(LSN.get('bt-bi',0)))})}
 
 
@@ -2956,7 +2961,10 @@ function sdMiss(){if(R.phase==='steal'){if(R.sdA!=null)T(1300,()=>award(R.ctl,'�
   R.sdA=null;T(1500,startSteal)}
 
 /* tocar el estado de la sala cuando dice «Reconectando»: reconecta ya, probando otro servidor */
-$('#lobstat').addEventListener('click',()=>{if(NH.net&&!NH.net.up){NH.net.switchTo(NH.net.bi+1);toast('Reconectando con otro servidor…')}});
+$('#lobstat').addEventListener('click',()=>{let d=$('#netlog');if(d){d.remove();return}if(!NH.net)return;d=document.createElement('div');d.id='netlog';d.className='j-netlog';
+  const draw=()=>{d.innerHTML=`<b>Conexión de esta pantalla</b><pre>${esc(NH.net.log.join('\n')||'—')}</pre><div><button type="button" class="l2-b" data-nl="re">🔄 Reconectar con otro servidor</button><button type="button" class="l2-b" data-nl="x">Cerrar</button></div>`};draw();
+  d.addEventListener('click',e=>{const b=e.target.closest('[data-nl]');if(!b)return;if(b.dataset.nl==='re'){NH.net.switchTo(NH.net.bi+1);toast('Reconectando con otro servidor…');later(400,draw)}else d.remove()});
+  document.body.appendChild(d);const t=setInterval(()=>{if(!d.isConnected)clearInterval(t);else draw()},2000)});
 
 /* ===================== ¿ESTÁ EN EL TABLERO? (compara lo que escribieron con las respuestas) =====================
    Cada respuesta tiene varias formas de decirse (la principal y sus alias). Para que cuente, lo que escribieron
