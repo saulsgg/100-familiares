@@ -209,6 +209,8 @@ liteApply();addEventListener('storage',e=>{if(e.key==='lite'||e.key==='lite-auto
     if(!LITE.on)requestAnimationFrame(f)};requestAnimationFrame(f)})();
 
 /* ===================== JUNTAS: reloj redondo y "quién está platicando" (pantalla, vista del celular y celular) ===================== */
+/* color de cada equipo (en el celular TCOL vive dentro de app.js) */
+const tcol=t=>(typeof TCOL!=='undefined'?TCOL:['#3fe0cc','#ffc42e'])[t];
 const avEsc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function ringHTML(id){return `<span class="ring" ${id?`id="${id}"`:''} hidden><svg viewBox="0 0 36 36" aria-hidden="true"><circle class="rg-bg" cx="18" cy="18" r="15.5"/><circle class="rg-fg" cx="18" cy="18" r="15.5" pathLength="100"/></svg><b></b></span>`}
 /* left/tot en segundos; left=null lo esconde */
@@ -220,7 +222,7 @@ function talkAvs(box,ps,ty,cl){if(!box)return;ty=ty||[];const k=ps.map(p=>p.u+p.
 /* el cuadrito "se ponen de acuerdo para robar" (en la pantalla nunca se ven los mensajes: la ve el otro equipo) */
 function hudPanel(h){const p=document.getElementById('jhud');if(!p)return;if(!h){if(!p.hidden)p.hidden=true;return}
   if(p.hidden){p.hidden=false;if(!(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches))p.animate([{opacity:0,transform:'translateY(30px) scale(.9)'},{opacity:1,transform:'none'}],{duration:420,easing:'cubic-bezier(.3,1.4,.5,1)'})}
-  p.style.setProperty('--tc',TCOL[h.t]||TCOL[0]);p.classList.toggle('wait',h.left!=null);
+  p.style.setProperty('--tc',tcol(h.t)||tcol(0));p.classList.toggle('wait',h.left!=null);
   const tt=document.getElementById('jhudn');if(tt.textContent!==h.title)tt.textContent=h.title;
   const x=document.getElementById('jhudx'),sx=h.n?`💬 ${h.n} ${h.n===1?'mensaje':'mensajes'}`:'💬 Platicando en sus celulares…';if(x.textContent!==sx)x.textContent=sx;
   talkAvs(document.getElementById('jhudav'),h.ps||[],h.ty,h.cl);ringSet(document.getElementById('jhudr'),h.left,h.tot)}
@@ -230,7 +232,7 @@ const REACT=['😂','😱','👏','🔥','😮','🤦','❤️','🎉'];
 let RXN=0;
 function reactFx(e){const em=REACT[e.e|0];if(!em||!document.body)return;if(RXN>=14)return;RXN++;
   const lite=document.documentElement.classList.contains('lite'),d=document.createElement('div');d.className='rx';d.setAttribute('aria-hidden','true');
-  d.style.left=(6+Math.random()*82).toFixed(1)+'%';if(e.tm===0||e.tm===1)d.style.setProperty('--tc',TCOL[e.tm]);
+  d.style.left=(6+Math.random()*82).toFixed(1)+'%';if(e.tm===0||e.tm===1)d.style.setProperty('--tc',tcol(e.tm));
   d.innerHTML=`<b>${em}</b>`+(e.av&&AVM[e.av]&&!lite?`<i>${avSVG(e.av)}</i>`:'');document.body.appendChild(d);
   const rm=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches,H=innerHeight*(.45+Math.random()*.2),sw=(Math.random()*40-20).toFixed(0);
   const a=d.animate(rm?[{opacity:0},{opacity:1,offset:.15},{opacity:1,offset:.8},{opacity:0}]:[{opacity:0,transform:'translate(0,0) scale(.4)'},{opacity:1,transform:`translate(${sw/2}px,-${H*.15}px) scale(1.15)`,offset:.12},{opacity:1,transform:`translate(${-sw}px,-${H*.55}px) scale(1)`,offset:.55},{opacity:0,transform:`translate(${sw}px,-${H}px) scale(.9)`}],{duration:rm?1800:2600+Math.random()*700,easing:'cubic-bezier(.3,.6,.4,1)'});

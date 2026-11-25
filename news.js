@@ -1,5 +1,9 @@
 /* lo nuevo de cada versión (sale una vez en el celular después de actualizarse) */
-const NEWS=[{v:'botones-v26',t:[
+const NEWS=[{v:'botones-v27',t:[
+ 'Arreglos: la tele ya no se actualiza sola a media Ronda Relámpago, se puede saltar la ronda desde la tele, y la tabla de respuestas ya cabe completa.',
+ 'Si se te recarga el celular a media Ronda Relámpago, vuelves a donde ibas.',
+ 'La barra de arriba ya cabe bien en celulares angostos.']},
+ {v:'botones-v26',t:[
  '⚡ Ronda Relámpago al final: dos de cada equipo contestan 5 preguntas en secreto en su celular, ¡y los puntos valen doble! (se puede apagar en Ajustes)',
  '📚 300 preguntas nuevas: de todos los días, con trampa, de Mérida y México, familia y fiestas, nostalgia, y gamer/anime/internet. Ya son 524.',
  'En la pestaña 🏆 Fama ves cuántas preguntas ya salieron y cuántas faltan.']},

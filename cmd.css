@@ -119,3 +119,16 @@ button.ctk:active .ctk-d{transform:scale(.88)}
 .fl-sum{display:grid;grid-template-columns:1fr 1fr;gap:12px}.fl-sum>div{display:grid;justify-items:center;padding:8px;border-radius:16px;background:rgba(0,0,0,.3);box-shadow:inset 0 0 0 2px var(--tc)}
 .fl-sum small{color:var(--tc);font-weight:800}.fl-sum b{font:400 clamp(26px,3.4vw,44px) 'Lilita One',Rubik,sans-serif}.fl-sum em{font:400 clamp(18px,2.2vw,30px) 'Lilita One',Rubik,sans-serif;font-style:normal;color:#ffd23f}
 @media (max-width:600px){.fl-row{grid-template-columns:1fr 1fr}.fl-row .fl-q{grid-column:1/-1}.fl-hd>span{display:none}}
+.fl-x{display:flex;justify-content:center}.fl-x:empty{display:none}.fl-x button{padding:8px 16px;border:0;border-radius:12px;background:rgba(255,255,255,.1);color:#dfe4ff;font:800 14px Rubik,sans-serif}
+/* relámpago: más compacto en pantallas anchas (que se vean los totales en una tele de 720p) */
+@media (min-width:601px){
+  .fl-in{gap:8px}
+  .fl-row{grid-template-columns:minmax(0,.8fr) 1.2fr 1.2fr;gap:8px}
+  .fl-cs{grid-template-columns:1fr 1fr;gap:4px}
+  .fl-c{min-height:0;padding:3px 8px}
+  .fl-c small{font-size:clamp(9px,.9vw,12px)}
+  .fl-c b{font-size:clamp(13px,1.4vw,19px)}.fl-c em{font-size:clamp(14px,1.6vw,22px)}
+  .fl-q{font-size:clamp(11px,1.15vw,15px)}
+  .fl-h>b{font-size:clamp(26px,3.4vw,46px)}
+}
+@supports not (height:1dvh){.fl-in{max-height:96vh}}

@@ -549,3 +549,7 @@ body:has(#chat:not([hidden])) .rxbar,body:has(#ask:not([hidden])) .rxbar,body:ha
 .flp-b{display:grid;grid-template-columns:auto 1fr;gap:8px}
 .flp-w{margin:0;color:var(--mute);font-weight:700;font-size:14px;text-align:center}.flp-w b{color:#fff}
 body:has(#flp:not([hidden])) .rxbar{display:none}
+/* barra de arriba en celulares angostos: nombre y equipo en una sola línea cada uno */
+.pbar .me>span{display:grid;min-width:0}
+.pbar .me>span,.pbar .me small{overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.pbar .me{flex:1 1 auto}.pbar #pstat{flex:0 1 auto;max-width:42%}

@@ -2,9 +2,11 @@
    v = {ph:'pick'|'b1'|'b2'|'rev'|'done', id, left, tot, tn:[nombres], ps:[[{n,av,a},…],…], prog:[[n,n],[n,n]], bat, qs:[…], cells:[{b,k,t,txt,ans,pts,dup}], sum:[a,b], dbl} */
 let FLD={id:null,n:0};
 function flBox(){let b=document.getElementById('rlp');if(b)return b;b=document.createElement('div');b.className='fl';b.id='rlp';b.hidden=true;b.setAttribute('role','dialog');b.setAttribute('aria-labelledby','rlpt');
-  b.innerHTML=`<div class="fl-in"><div class="fl-h"><b id="rlpt">⚡ Ronda Relámpago</b>${ringHTML('rlpr')}</div><p class="fl-s" id="rlps"></p><div class="fl-tm" id="rlptm"></div><div class="fl-bd" id="rlpbd"></div><div class="fl-sum" id="rlpsum"></div></div>`;
+  b.innerHTML=`<div class="fl-in"><div class="fl-h"><b id="rlpt">⚡ Ronda Relámpago</b>${ringHTML('rlpr')}</div><p class="fl-s" id="rlps"></p><div class="fl-tm" id="rlptm"></div><div class="fl-bd" id="rlpbd"></div><div class="fl-sum" id="rlpsum"></div><div class="fl-x" id="rlpx"></div></div>`;
   document.body.appendChild(b);return b}
-function flDraw(v){const b=flBox();if(!v||v.ph==='done'){if(!b.hidden)b.hidden=true;FLD={id:null,n:0};return}
+/* la cinta (¡PUNTOS DOBLES!, etc.) tiene que verse encima de la ronda */
+function flBan(on){const n=document.querySelector('.ban');if(n)n.style.zIndex=on?'75':''}
+function flDraw(v){const b=flBox();if(!v||v.ph==='done'){if(!b.hidden){b.hidden=true;flBan(false)}FLD={id:null,n:0};return}flBan(true);
   const first=b.hidden||FLD.id!==v.id;if(first){b.hidden=false;FLD={id:v.id,n:0,ph:''};if(!(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches))b.firstChild.animate([{opacity:0,transform:'scale(.9)'},{opacity:1,transform:'none'}],{duration:420,easing:'cubic-bezier(.3,1.4,.5,1)'})}
   const tn=v.tn||['',''],sub={pick:'Dos de cada equipo contestan 5 preguntas en secreto en su celular. ¡Toquen “Yo juego”!',b1:'Contestan los primeros. ¡Nadie les sople!',b2:'Ahora los segundos: si repiten la respuesta de su compañero, vale 0.',rev:v.dbl?'¡Puntos dobles!':'¿Qué dijeron las 100 personas?'}[v.ph]||'';
   const s=document.getElementById('rlps');if(s.textContent!==sub)s.textContent=sub;

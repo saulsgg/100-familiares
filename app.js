@@ -24,7 +24,9 @@ const yaWait=()=>{const r=Math.random();return r<.3?600+Math.random()*700:r<.7?1
 const vib=p=>{try{navigator.vibrate&&navigator.vibrate(p)}catch(e){}};
 const rid=()=>Math.random().toString(36).slice(2,10)+Date.now().toString(36).slice(-4);
 let tt;function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(tt);tt=later(3600,()=>t.classList.remove('on'))}
-function setStat(sel,text,cls){const p=$(sel);p.textContent=text;p.className='pill '+(cls||'')}
+/* en celulares angostos, la etiqueta de conexión va cortita (la completa queda en title) */
+const STAT_S={'Conectado directo (Wi-Fi)':'📶 Wi-Fi','Conectado directo':'📶 Directo','Conectado por servidor':'🌐 Internet','Conectado por relevo':'🌐 Relevo'};
+function setStat(sel,text,cls){const p=$(sel);p.textContent=sel==='#pstat'&&innerWidth<430&&STAT_S[text]?STAT_S[text]:text;p.title=text;p.setAttribute('aria-label',text);p.className='pill '+(cls||'')}
 
 /* ===================== CONEXIÓN ===================== */
 /* o: {id, bi (servidor), rotate (probar otro si falla), subs, onMsg, onUp, onDown} */
