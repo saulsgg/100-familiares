@@ -1003,12 +1003,19 @@ $('#bkyes').addEventListener('click',()=>{const d=BKD;if(!d)return;if(MODE==='pl
 /* abrir con el cuadro escaneado (…#perfil=CÓDIGO) */
 {const h=location.hash;if(/^#perfil=F[01]/.test(h)){const c=decodeURIComponent(h.slice(8));try{history.replaceState(null,'',location.pathname+location.search)}catch(e){}later(600,()=>{$('#bkta').value=c;bkCheck(c)})}}
 coinDraw();
-/* ===================== EL CREADOR: toca tu nombre 5 veces en Mi perfil y pon el código de anfitrión ===================== */
+const CRE_KH='f6337311d0794e9fc757b58def0425bad4c203f54dd78d030a09bd644d36a18d';
+/* ===================== EL CREADOR: toca tu nombre 5 veces en Mi perfil y pon el código del creador ===================== */
 {let n=0,t=0;$('#proft').addEventListener('click',()=>{if(PF.cre)return;clearTimeout(t);t=later(1500,()=>n=0);if(++n<5)return;n=0;
   if($('#crebox'))return;const d=document.createElement('div');d.id='crebox';d.className='cre-box';
-  d.innerHTML='<b>🔐 Código del creador</b><input id="crepin" type="password" inputmode="numeric" maxlength="8" autocomplete="off" aria-label="Código"><button type="button" class="ghost sm" id="creok">OK</button>';
+  if(Date.now()<(LS.get('cre-until',0)||0)){toast('Espera un minuto para volver a intentar.');return}
+  d.innerHTML='<b>🔐 Código del creador</b><input id="crepin" type="password" maxlength="40" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Código"><button type="button" class="ghost sm" id="creok">OK</button>';
   $('#prof .prof-h').after(d);$('#crepin').focus();
-  const go=async()=>{const v=$('#crepin').value;if(!v)return;const k=await sha256('100familiares-anfitrion:'+v);if(await sha256(k)!==ADM_KH){toast('Ese no es.');d.remove();return}
+  /* código propio del creador (no es el PIN de anfitrión); da igual mayúsculas o espacios. Se revisa con una huella lenta para que no se pueda adivinar a la fuerza */
+  const go=async()=>{const v=$('#crepin').value.toLowerCase().normalize('NFD').replace(/[^a-z0-9]/g,'');if(!v)return;$('#creok').disabled=true;
+    const km=await crypto.subtle.importKey('raw',new TextEncoder().encode(v),'PBKDF2',false,['deriveBits']),
+      bits=await crypto.subtle.deriveBits({name:'PBKDF2',hash:'SHA-256',salt:new TextEncoder().encode('100familiares-creador'),iterations:150000},km,256),
+      h=[...new Uint8Array(bits)].map(x=>x.toString(16).padStart(2,'0')).join('');
+    if(h!==CRE_KH){const f=(LS.get('cre-fails',0)||0)+1;LS.set('cre-fails',f);if(f>=3){LS.set('cre-fails',0);LS.set('cre-until',Date.now()+60000);toast('Código incorrecto. Espera un minuto.')}else toast('Ese no es.');d.remove();return}LS.set('cre-fails',0);
     d.remove();PF.cre=1;Object.assign(PF.eq,{t:'tp_creador',a:'cr',w:'creador',h:'creador',fo:'fo_creador',bu:'bu_creador',ce:'ce_creador'});PF.eq=eqClean(PF.eq);pfSave();profDraw();try{drawMe()}catch(e){}if(MODE==='play')meSend();
     UNQ.push({id:'cre',r:6,ic:'👑',lab:'¡Solo para el creador!',n:'El Creador',d:'Hiciste este juego (con ayuda de Claude)',x:'Título, aura, letras, caballo, fondo, burbuja y celebración del creador'});unlNext();later(400,()=>celebFx('ce_creador',$('#profav')))};
   $('#creok').addEventListener('click',go);$('#crepin').addEventListener('keydown',e=>{if(e.key==='Enter')go()})})}

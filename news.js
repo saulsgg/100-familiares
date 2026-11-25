@@ -1,5 +1,6 @@
 /* lo nuevo de cada versión (sale una vez en el celular después de actualizarse) */
-const NEWS=[{v:'botones-v35',t:[
+const NEWS=[{v:'botones-v36',t:['🔧 Ajustes menores.']},
+ {v:'botones-v35',t:[
  '👑 Hay un set secreto del creador del juego. Solo hay uno.']},
  {v:'botones-v34',t:[
  '🛠️ Arreglado: si ya habías jugado desde la pantalla del juego, al abrirla de nuevo se trababa en «Reconectando» y no respondían los botones.']},
