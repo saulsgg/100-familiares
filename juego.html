@@ -11,6 +11,23 @@
 <script>/* navegadores viejitos de teles: lo mínimo que les falta para que el juego arranque */
 if(!Element.prototype.getAnimations)Element.prototype.getAnimations=function(){return[]};
 if(!window.ResizeObserver)window.ResizeObserver=function(cb){var els=[];this.observe=function(el){els.push(el);setTimeout(function(){cb([])},300)};this.unobserve=function(){};this.disconnect=function(){els=[]};window.addEventListener('resize',function(){if(els.length)cb([])})};
+/* animaciones: los navegadores viejitos piden el principio y el final completos, y no tienen «finished» */
+(function(){var ap=Element.prototype.animate;if(!ap)return;var needFix=false;try{var t=document.createElement('div').animate([{opacity:.5}],{duration:1});t.cancel()}catch(e){needFix=true}
+  function full(el,k){var kf=Array.isArray(k)?k.map(function(f){var o={};for(var p in f)o[p]=f[p];return o}):null;if(!kf||!kf.length)return k;var n=kf.length;
+    kf.forEach(function(f,i){if(f.offset==null)f.offset=n===1?1:(i===0?0:(i===n-1?1:null))});
+    if(kf[0].offset!==0)kf.unshift({offset:0});if(kf[kf.length-1].offset!==1)kf.push({offset:1});
+    var last=0;for(var i=0;i<kf.length;i++){if(kf[i].offset==null){var j=i;while(kf[j].offset==null)j++;var a=kf[last].offset,b=kf[j].offset,steps=j-last;for(var q=last+1;q<j;q++)kf[q].offset=a+(b-a)*(q-last)/steps;i=j}last=i}
+    var cs=getComputedStyle(el),props={};kf.forEach(function(f){for(var p in f)if(p!=='offset'&&p!=='easing'&&p!=='composite')props[p]=1});
+    var A=kf[0],Z=kf[kf.length-1];for(var p in props){var cur=cs[p];if(p==='transform'&&(!cur||cur==='none'))cur='none';if(!(p in A))A[p]=cur;if(!(p in Z))Z[p]=cur}return kf}
+  function fake(o){var d=typeof o==='number'?o:(o&&o.duration)||0,an={playState:'running',onfinish:null,oncancel:null,currentTime:0,playbackRate:1,cancel:function(){this.playState='idle'},finish:function(){},play:function(){},pause:function(){},reverse:function(){},addEventListener:function(){},removeEventListener:function(){}};
+    an.finished=new Promise(function(res){setTimeout(function(){an.playState='finished';if(an.onfinish)try{an.onfinish({})}catch(e){}res(an)},d)});return an}
+  if(needFix)Element.prototype.animate=function(k,o){try{return ap.call(this,k,o)}catch(e){try{return ap.call(this,full(this,k),o)}catch(e2){return fake(o)}}};
+  if(window.Animation&&!('finished' in Animation.prototype))Object.defineProperty(Animation.prototype,'finished',{configurable:true,get:function(){var a=this;if(!a.__fin)a.__fin=new Promise(function(res){if(a.playState==='finished'){res(a);return}
+      var f0=a.onfinish,c0=a.oncancel;a.onfinish=function(ev){if(f0)try{f0.call(a,ev)}catch(e){}res(a)};a.oncancel=function(ev){if(c0)try{c0.call(a,ev)}catch(e){}res(a)}});return a.__fin}});
+})();
+/* teles: siempre en modo ligero (sus procesadores son lentos para tanto efecto) */
+(function(){var ua=navigator.userAgent,m=ua.match(/Chrome\/(\d+)/),tv=/Web0S|webOS|Tizen|SmartTV|SMART-TV|NetCast|HbbTV|BRAVIA|AFT[A-Z]|CrKey|GoogleTV|Android TV/i.test(ua),old=m&&+m[1]<88;
+  if(tv||old){document.documentElement.className+=' tvlow';try{if((localStorage.getItem('lite')||'auto')==='auto')localStorage.setItem('lite-auto','1')}catch(e){}}})();
 /* si algo truena (sobre todo en navegadores viejitos de teles), se muestra aquí para poder arreglarlo */
 (function(){var shown={},n=0;window.__navVer=function(){return ver()};function ver(){var m=navigator.userAgent.match(/(Chrome|Chromium|Firefox|Version)\/(\d+)/);var w=/Web0S|webOS/i.test(navigator.userAgent)?'LG webOS':/Tizen/i.test(navigator.userAgent)?'Samsung Tizen':'';return(w?w+' · ':'')+(m?m[1]+' '+m[2]:navigator.userAgent.slice(0,60))}
 function show(msg,where){msg=String(msg||'').slice(0,160);if(/ResizeObserver loop|Script error\.?$/.test(msg)||shown[msg]||n>=3)return;shown[msg]=1;n++;
@@ -1524,6 +1541,10 @@ button.ctk:active .ctk-d{transform:scale(.88)}
 .lite #board .tile.l2-sur .back{animation:none!important}
 .lite-note{position:fixed;left:50%;top:12px;top:max(12px,env(safe-area-inset-top));z-index:200;transform:translateX(-50%);display:flex;align-items:center;gap:8px;width:max-content;max-width:94vw;padding:8px 10px 8px 14px;border-radius:14px;background:#0b0f3a;color:#fff;font:700 13px Rubik,sans-serif;box-shadow:0 0 0 2px #ffd76a,0 10px 30px rgba(0,0,0,.6)}
 .lite-note button{flex:none;padding:6px 10px;border:0;border-radius:10px;background:#ffd76a;color:#3a1a00;font:800 12px Rubik,sans-serif}
+
+/* ===== teles y navegadores viejitos: sin animaciones que se repiten (las de una vez sí se ven) ===== */
+.tvlow *,.tvlow *::before,.tvlow *::after{animation-iteration-count:1!important}
+.tvlow *{backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
 </style>
 </head>
 <body>
@@ -1697,7 +1718,7 @@ button.ctk:active .ctk-d{transform:scale(.88)}
 <script src="vendor/qrcode.js"></script>
 <script>
 {
-const APPV='botones-v38';
+const APPV='botones-v39';
 const $=(s,r)=>(r||document).querySelector(s),$$=(s,r)=>[...(r||document).querySelectorAll(s)];
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const S={mute:false,music:'baja',gm:'j1',anime:true,order:'orden'};const view=()=>'tablero';let introOn=false;let flowTok=0;
@@ -3167,7 +3188,7 @@ function viewMsg(){const v={t:'view',on:CEL,rn:G.ri+1,rr:CFG.rounds,sd:R&&R.sd?1
   return v}
 /* se manda en cuanto algo cambia (se revisa 20 veces por segundo) con la hora de esta pantalla, para que cada celular vaya al mismo paso */
 function viewTick(){const v=viewMsg(),k=JSON.stringify(v);if(k===LASTV)return;LASTV=k;v.hts=performance.now();NH.P.forEach(p=>{if(!p.local)nhTo(p,v)})}
-setInterval(viewTick,50);
+setInterval(viewTick,document.documentElement.classList.contains('tvlow')?150:50);
 {const h0=NH.on.hello;NH.on.hello=p=>{h0(p);if(p.off!=null)nhTo(p,{t:'off',off:p.off},1);const v=viewMsg();v.hts=performance.now();nhTo(p,v,1)}}
 /* mensajes para el jugador de esta pantalla */
 NH.on.local=m=>{if(m.t==='ask')myAsk(m);else if((m.t==='close'||m.t==='asked'||m.t==='judged'||m.t==='lock')&&m.a===MYA){myHide();if(m.t==='lock')toast(`${m.by} está escribiendo por el equipo.`)}};

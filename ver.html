@@ -1510,6 +1510,10 @@ button.ctk:active .ctk-d{transform:scale(.88)}
 .lite-note{position:fixed;left:50%;top:12px;top:max(12px,env(safe-area-inset-top));z-index:200;transform:translateX(-50%);display:flex;align-items:center;gap:8px;width:max-content;max-width:94vw;padding:8px 10px 8px 14px;border-radius:14px;background:#0b0f3a;color:#fff;font:700 13px Rubik,sans-serif;box-shadow:0 0 0 2px #ffd76a,0 10px 30px rgba(0,0,0,.6)}
 .lite-note button{flex:none;padding:6px 10px;border:0;border-radius:10px;background:#ffd76a;color:#3a1a00;font:800 12px Rubik,sans-serif}
 
+/* ===== teles y navegadores viejitos: sin animaciones que se repiten (las de una vez sí se ven) ===== */
+.tvlow *,.tvlow *::before,.tvlow *::after{animation-iteration-count:1!important}
+.tvlow *{backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
+
 /* pantalla del jugador: sin botones de quien dirige y pensada para celular */
 body.ver{overflow-x:hidden}
 .ver .j-wrap{padding:6px 8px 20px}
@@ -1670,7 +1674,7 @@ body.ver{overflow-x:hidden}
 
 <script>
 {
-const APPV='botones-v38';
+const APPV='botones-v39';
 const $=(s,r)=>(r||document).querySelector(s),$$=(s,r)=>[...(r||document).querySelectorAll(s)];
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const S={mute:false,music:'baja',gm:'j1',anime:true,order:'orden'};const view=()=>'tablero';let introOn=false;let flowTok=0;
