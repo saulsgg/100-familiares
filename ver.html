@@ -1670,7 +1670,7 @@ body.ver{overflow-x:hidden}
 
 <script>
 {
-const APPV='botones-v36';
+const APPV='botones-v37';
 const $=(s,r)=>(r||document).querySelector(s),$$=(s,r)=>[...(r||document).querySelectorAll(s)];
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const S={mute:false,music:'baja',gm:'j1',anime:true,order:'orden'};const view=()=>'tablero';let introOn=false;let flowTok=0;
@@ -2252,6 +2252,8 @@ function qid(q){const s=String(q||'').toLowerCase().normalize('NFD').replace(/[�
 /* títulos míticos y secretos: se mueven poquito */
 const titCls=id=>{const r=LGM[id]?LGM[id].r:TPTIT[id]?-2:(shopIt('ti',id)||{r:-1}).r;return r===-2?TPTIT[id].c:r>=5?' tit-'+RAR[r].k:''};
 
+/* cuánto da cada cosa en fichas 🪙: una partida normal deja como 55–70 (lo usan el celular y la pantalla del juego) */
+const COIN={game:20,win:25,tie:10,day:15,streak:10,hit:3,one:3,steal:6,bz:2,flMax:20,ach:[10,20,40,70,120,200,300],tp:[300,150,75]};
 /* ===================== TIENDA: catálogo, precios y cómo se dibuja cada cosa =====================
    Todo es de adorno (nada ayuda a ganar). Se compra con fichas 🪙 que se ganan jugando.
    Tipos: sk piel del animalito · ac accesorio · fo fondo · au aura · ti título · wr letras · hz caballo · bu burbuja de chat · ce celebración al ganar el botón */

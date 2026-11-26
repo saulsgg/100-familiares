@@ -911,7 +911,6 @@ const STAT_I={'Conectado directo (Wi-Fi)':'📶 Directo por Wi-Fi: tu celular y 
 $('#pstat').addEventListener('click',()=>{const t=STAT_I[$('#pstat').title];if(t)toast(t)});
 /* ===================== FICHAS 🪙 Y LA TIENDITA (todo se guarda en este celular) ===================== */
 /* cuánto da cada cosa: una partida normal deja como 55–70 fichas */
-const COIN={game:20,win:25,tie:10,day:15,streak:10,hit:3,one:3,steal:6,bz:2,flMax:20,ach:[10,20,40,70,120,200,300],tp:[300,150,75]};
 function myAvF(){return avJoin(P.av,PF.eq.sk,PF.eq.ac,PF.eq.fo)}
 window.avOwn=id=>own('av',id);
 const own=(k,id)=>!!PF.own[k+':'+id];

@@ -1,3 +1,5 @@
+/* cuánto da cada cosa en fichas 🪙: una partida normal deja como 55–70 (lo usan el celular y la pantalla del juego) */
+const COIN={game:20,win:25,tie:10,day:15,streak:10,hit:3,one:3,steal:6,bz:2,flMax:20,ach:[10,20,40,70,120,200,300],tp:[300,150,75]};
 /* ===================== TIENDA: catálogo, precios y cómo se dibuja cada cosa =====================
    Todo es de adorno (nada ayuda a ganar). Se compra con fichas 🪙 que se ganan jugando.
    Tipos: sk piel del animalito · ac accesorio · fo fondo · au aura · ti título · wr letras · hz caballo · bu burbuja de chat · ce celebración al ganar el botón */
