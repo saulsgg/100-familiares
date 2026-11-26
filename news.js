@@ -1,5 +1,7 @@
 /* lo nuevo de cada versión (sale una vez en el celular después de actualizarse) */
-const NEWS=[{v:'botones-v37',t:[
+const NEWS=[{v:'botones-v38',t:[
+ '📺 El juego ya arranca en navegadores de teles más viejitas, y se ve mejor en ellas. Si algo falla, la pantalla muestra un aviso con el detalle.']},
+ {v:'botones-v37',t:[
  '🙋 Si creas la partida en el mismo celular donde tienes tu perfil, al jugar desde esa pantalla eres tú: tu animalito, tu aura, tu título y lo demás. Lo que juegues suma a tus logros, fichas y temporada.']},
  {v:'botones-v36',t:['🔧 Ajustes menores.']},
  {v:'botones-v35',t:[
