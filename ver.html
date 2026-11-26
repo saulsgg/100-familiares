@@ -1511,8 +1511,7 @@ button.ctk:active .ctk-d{transform:scale(.88)}
 .lite-note button{flex:none;padding:6px 10px;border:0;border-radius:10px;background:#ffd76a;color:#3a1a00;font:800 12px Rubik,sans-serif}
 
 /* ===== teles y navegadores viejitos: sin animaciones que se repiten (las de una vez sí se ven) ===== */
-.tvlow *,.tvlow *::before,.tvlow *::after{animation-iteration-count:1!important}
-.tvlow *{backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
+.lite.tvlow *,.lite.tvlow *::before,.lite.tvlow *::after{animation-iteration-count:1!important}
 
 /* pantalla del jugador: sin botones de quien dirige y pensada para celular */
 body.ver{overflow-x:hidden}
@@ -1674,7 +1673,7 @@ body.ver{overflow-x:hidden}
 
 <script>
 {
-const APPV='botones-v39';
+const APPV='botones-v40';
 const $=(s,r)=>(r||document).querySelector(s),$$=(s,r)=>[...(r||document).querySelectorAll(s)];
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const S={mute:false,music:'baja',gm:'j1',anime:true,order:'orden'};const view=()=>'tablero';let introOn=false;let flowTok=0;
