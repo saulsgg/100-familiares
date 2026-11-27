@@ -45,11 +45,12 @@ const shopIt=(k,id)=>{try{return shopGet(k,id)}catch(e){return null}};
 const lgTitle=id=>LGM[id]?LGM[id].n:TPTIT[id]?TPTIT[id].n:(shopIt('ti',id)||{}).n||'';
 /* aura alrededor del animalito: clase según la rareza */
 const lgAu=a=>typeof a==='string'&&a.slice(0,3)==='lg_'&&LGM[a.slice(3)]&&LGM[a.slice(3)].r>=4&&LGAU[a.slice(3)];
+const lgW=w=>typeof w==='string'&&/^lg[a-z]+$/.test(w)&&lgAu('lg_'+w.slice(2)),lgB=b=>typeof b==='string'&&/^bu_lg[a-z]+$/.test(b)&&lgAu('lg_'+b.slice(5));
 const auraCls=a=>typeof a==='string'?(a===CRE.a?' aura aus-creador':lgAu(a)?' aura aul-'+a.slice(3):shopIt('au',a)?' aura aus-'+a.slice(3):''):a>=0&&a<RAR.length?' aura aura-'+RAR[a].k:'';
 /* lo que un jugador trae puesto, ya revisado (para que nadie mande cosas raras) */
 function eqClean(e){e=e&&typeof e==='object'?e:{};const S=(k,v)=>typeof v==='string'&&shopIt(k,v)?v:'';
-  return{t:LGM[e.t]||TPTIT[e.t]||S('ti',e.t)?e.t:'',a:Number.isInteger(e.a)&&e.a>=0&&e.a<RAR.length?e.a:S('au',e.a)||(e.a===CRE.a||lgAu(e.a)?e.a:-1),h:HORSES.some(x=>x.id===e.h)?e.h:S('hz',e.h)||(e.h===CRE.h?CRE.h:''),w:WRITES.some(x=>x.id===e.w)?e.w:S('wr',e.w)||(e.w===CRE.w?CRE.w:''),
-    sk:S('sk',e.sk),ac:S('ac',e.ac),fo:S('fo',e.fo)||(e.fo===CRE.fo?CRE.fo:''),bu:S('bu',e.bu)||(e.bu===CRE.bu?CRE.bu:''),ce:S('ce',e.ce)||(e.ce===CRE.ce?CRE.ce:'')}}
+  return{t:LGM[e.t]||TPTIT[e.t]||S('ti',e.t)?e.t:'',a:Number.isInteger(e.a)&&e.a>=0&&e.a<RAR.length?e.a:S('au',e.a)||(e.a===CRE.a||lgAu(e.a)?e.a:-1),h:HORSES.some(x=>x.id===e.h)?e.h:S('hz',e.h)||(e.h===CRE.h?CRE.h:''),w:WRITES.some(x=>x.id===e.w)?e.w:S('wr',e.w)||(e.w===CRE.w||lgW(e.w)?e.w:''),
+    sk:S('sk',e.sk),ac:S('ac',e.ac),fo:S('fo',e.fo)||(e.fo===CRE.fo?CRE.fo:''),bu:S('bu',e.bu)||(e.bu===CRE.bu||lgB(e.bu)?e.bu:''),ce:S('ce',e.ce)||(e.ce===CRE.ce?CRE.ce:'')}}
 /* identificador corto y estable de cada pregunta (para recordar cuáles ya vio cada celular) */
 function qid(q){const s=String(q||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]/g,'');let h=5381;for(let i=0;i<s.length;i++)h=((h<<5)+h+s.charCodeAt(i))>>>0;return h.toString(36)}
 /* títulos míticos y secretos: se mueven poquito */
@@ -60,16 +61,16 @@ const titCls=id=>{const r=LGM[id]?LGM[id].r:TPTIT[id]?-2:(shopIt('ti',id)||{r:-1
 const LGAU={
   rayo:{c:['#ffe600','#00e5ff'],e:'⚡',t:.5,f:1},
   guante:{c:['#ffffff','#b8c7d9'],e:'🧤',t:2.6},
-  relperf:{c:['#ffd23f','#8b5cf6'],e:'✨',g:'conic-gradient(#ffd23f,#8b5cf6,#ffd23f,#8b5cf6,#ffd23f)',s:4},
-  piedad:{c:['#ff2a2a','#2a0000'],e:'💥',t:1.1},
+  relperf:{c:['#ffd23f','#8b5cf6'],e:'✨',g:'conic-gradient(#ffd23f,#8b5cf6,#ffd23f,#8b5cf6,#ffd23f)',s:4,lw:['#ffd23f','#d9c2ff']},
+  piedad:{c:['#ff2a2a','#2a0000'],e:'💥',t:1.1,lw:['#ff3b3b','#ffb0a0']},
   rompe:{c:['#ff5c9a','#3fe0cc'],e:'🎡',g:'conic-gradient(#ff5c9a 0 12.5%,#ffd23f 0 25%,#3fe0cc 0 37.5%,#5b8cff 0 50%,#ff5c9a 0 62.5%,#ffd23f 0 75%,#3fe0cc 0 87.5%,#5b8cff 0)',s:1.6},
-  invicto:{c:['#3b6dff','#ffd23f'],e:'🛡️',t:1.8},
+  invicto:{c:['#3b6dff','#ffd23f'],e:'🛡️',t:1.8,lw:['#9db8ff','#ffd23f']},
   perfecto:{c:['#ff5ce1','#5fe06a'],e:'💯',g:'conic-gradient(#ff5c9a,#ffd23f,#5fe06a,#3fe0cc,#8b5cf6,#ff5c9a)',s:2.4},
   gente:{c:['#3fe0cc','#ff5c9a'],e:'📣',t:1.4},
   gemelos:{c:['#ff5ce1','#00e5ff'],e:'👯',g:'conic-gradient(#ff5ce1 0 50%,#00e5ff 0)',s:2},
-  tigres:{c:['#ff8a00','#1a1a1a'],e:'🐯',g:'repeating-conic-gradient(#ff8a00 0 10deg,#1a1a1a 10deg 20deg)',s:5},
+  tigres:{c:['#ff8a00','#1a1a1a'],e:'🐯',g:'repeating-conic-gradient(#ff8a00 0 10deg,#1a1a1a 10deg 20deg)',s:5,lw:['#ff8a00','#ffd23f']},
   filo:{c:['#ffffff','#ff1744'],e:'🗡️',t:.35,f:1},
-  destino:{c:['#6a1bff','#ffd23f'],e:'🔮',g:'conic-gradient(from 0deg,#14002e,#6a1bff,#ffd23f 8%,#14002e 16%,#6a1bff)',s:2.8},
+  destino:{c:['#6a1bff','#ffd23f'],e:'🔮',g:'conic-gradient(from 0deg,#14002e,#6a1bff,#ffd23f 8%,#14002e 16%,#6a1bff)',s:2.8,lw:['#c9a8ff','#ffd23f']},
   remontada:{c:['#22c55e','#ffd23f'],e:'🚀',t:1.2}};
 (function(){if(typeof document==='undefined'||!document.head)return;let s='';
   for(const id in LGAU){const a=LGAU[id],c=a.c,k='aul-'+id;
@@ -77,6 +78,11 @@ const LGAU={
       `@keyframes ${k}{50%{box-shadow:0 0 0 3px ${c[1]},0 0 20px ${c[1]},0 0 36px ${c[0]}aa}}`+
       (a.g?`.${k}::before{content:'';position:absolute;top:-6px;right:-6px;bottom:-6px;left:-6px;z-index:-1;border-radius:50%;background:${a.g};animation:aulSpin ${a.s||3}s linear infinite}`:'')+
       `.${k}::after{content:'${a.e}';position:absolute;right:-7px;top:-9px;font-size:15px;line-height:1;pointer-events:none;filter:drop-shadow(0 1px 2px rgba(0,0,0,.6))}`+
-      `.prof-dot.${k}::after{display:none}`}
-  s+='.prof-dot[class*="aul-"]::before{top:-2px!important;right:-2px!important;bottom:-2px!important;left:-2px!important}@keyframes aulSpin{to{transform:rotate(1turn)}}.lite [class*="aul-"],.lite [class*="aul-"]::before{animation:none!important}';
+      `.prof-dot.${k}::after{display:none}`;
+    const tc=(a.lw||c)[0],gc=(a.lw||c)[1],t=a.f?.7:a.t||2,w='w-lg'+id,L=`.j-say.${w} #saytx .l2-c,.wrp.${w} .l2-c`;
+    s+=`${L}{color:${tc};text-shadow:0 0 6px ${tc},0 0 16px ${gc};animation:wl-${id} ${t}s ${a.f?'steps(2,end)':'ease-in-out'} infinite}@keyframes wl-${id}{50%{color:${gc};text-shadow:0 0 8px ${gc},0 0 18px ${tc}}}`+
+      `.j-say.${w} #saytx .l2-c:nth-child(3n+2),.wrp.${w} .l2-c:nth-child(3n+2){animation-delay:-${(t/3).toFixed(2)}s}.j-say.${w} #saytx .l2-c:nth-child(3n),.wrp.${w} .l2-c:nth-child(3n){animation-delay:-${(t*2/3).toFixed(2)}s}`;
+    const B=`.chat-m .bub.bu-lg${id} p,.shop-bu.bu-lg${id} p`;
+    s+=`${B}{background:linear-gradient(135deg,${c[0]}55,${c[1]}77),#17123a;color:#fff;box-shadow:inset 0 0 0 2px ${c[0]},0 0 12px ${c[1]}99}.chat-m .bub.bu-lg${id} p::before,.shop-bu.bu-lg${id} p::before{content:'${a.e} '}.chat-m .bub.bu-lg${id} p b{color:${tc}}`}
+  s+='.prof-dot[class*="aul-"]::before{top:-2px!important;right:-2px!important;bottom:-2px!important;left:-2px!important}@keyframes aulSpin{to{transform:rotate(1turn)}}.lite [class*="aul-"],.lite [class*="aul-"]::before,.lite [class*="w-lg"] .l2-c{animation:none!important}';
   const st=document.createElement('style');st.id='aul-css';st.textContent=s;document.head.appendChild(st)})();

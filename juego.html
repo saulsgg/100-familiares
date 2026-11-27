@@ -1540,6 +1540,29 @@ button.ctk:active .ctk-d{transform:scale(.88)}
 .hz-creador{filter:drop-shadow(0 0 5px #ffd23f) drop-shadow(0 0 10px rgba(255,92,225,.5))}
 .lite .aus-creador,.lite .aus-creador::before,.lite .tit-cre,.lite .wrp .l2-c{animation:none}
 
+/* ===== más letras, burbujas y auras de la tiendita (v45) ===== */
+.j-say.w-chicle #saytx .l2-c,.wrp.w-chicle .l2-c{color:#ff9be0;text-shadow:0 2px 0 #c2189b,0 0 10px #ffb3ec;animation:wrChi 1.4s ease-in-out infinite}@keyframes wrChi{50%{color:#ffd0f2;text-shadow:0 3px 0 #c2189b,0 0 16px #ff8ad8}}.j-say.w-chicle #saytx .l2-c:nth-child(3n+2),.wrp.w-chicle .l2-c:nth-child(3n+2){animation-delay:-0.47s}.j-say.w-chicle #saytx .l2-c:nth-child(3n),.wrp.w-chicle .l2-c:nth-child(3n){animation-delay:-0.93s}
+.j-say.w-tiza #saytx .l2-c,.wrp.w-tiza .l2-c{color:#f4f4ea;opacity:.92;text-shadow:1px 1px 0 rgba(255,255,255,.25),-1px 0 1px rgba(255,255,255,.3)}
+.j-say.w-comic #saytx .l2-c,.wrp.w-comic .l2-c{color:#ffe600;text-shadow:3px 3px 0 #111,-1px -1px 0 #111,1px -1px 0 #111,-1px 1px 0 #111,1px 1px 0 #111}
+.j-say.w-retro #saytx .l2-c,.wrp.w-retro .l2-c{color:#39ff14;text-shadow:0 0 6px #39ff14,2px 2px 0 #0a3d00;animation:wrRet 2.5s steps(1) infinite}@keyframes wrRet{0%,88%,94%{opacity:1}91%{opacity:.5}}
+.j-say.w-mar #saytx .l2-c,.wrp.w-mar .l2-c{color:#3fd0ff;text-shadow:0 0 8px #1e6bff;animation:wrMar 2s ease-in-out infinite}@keyframes wrMar{50%{color:#d6f4ff;text-shadow:0 0 12px #3fd0ff}}.j-say.w-mar #saytx .l2-c:nth-child(3n+2),.wrp.w-mar .l2-c:nth-child(3n+2){animation-delay:-0.67s}.j-say.w-mar #saytx .l2-c:nth-child(3n),.wrp.w-mar .l2-c:nth-child(3n){animation-delay:-1.33s}
+.j-say.w-sombra #saytx .l2-c,.wrp.w-sombra .l2-c{color:#fff;text-shadow:1px 1px 0 #b49bff,2px 2px 0 #8b5cf6,3px 3px 0 #6a3cff,4px 4px 0 #3b1fa8,6px 6px 8px rgba(0,0,0,.5)}
+.j-say.w-glitch #saytx .l2-c,.wrp.w-glitch .l2-c{color:#fff;text-shadow:2px 0 #ff2bd6,-2px 0 #00e5ff;animation:wrGli .9s steps(1) infinite}@keyframes wrGli{30%{text-shadow:-3px 0 #ff2bd6,3px 0 #00e5ff}60%{text-shadow:1px 2px #ff2bd6,-1px -2px #00e5ff}}.j-say.w-glitch #saytx .l2-c:nth-child(3n+2),.wrp.w-glitch .l2-c:nth-child(3n+2){animation-delay:-0.30s}.j-say.w-glitch #saytx .l2-c:nth-child(3n),.wrp.w-glitch .l2-c:nth-child(3n){animation-delay:-0.60s}
+.j-say.w-holo #saytx .l2-c,.wrp.w-holo .l2-c{color:#c9f7ff;text-shadow:0 0 10px rgba(255,255,255,.6);animation:wrHolo 3s linear infinite}@keyframes wrHolo{0%,100%{color:#c9f7ff}25%{color:#ffd6fb}50%{color:#fff6b0}75%{color:#d4ffe8}}.j-say.w-holo #saytx .l2-c:nth-child(3n+2),.wrp.w-holo .l2-c:nth-child(3n+2){animation-delay:-1.00s}.j-say.w-holo #saytx .l2-c:nth-child(3n),.wrp.w-holo .l2-c:nth-child(3n){animation-delay:-2.00s}
+.chat-m .bub.bu-menta p,.shop-bu.bu-menta p{background:linear-gradient(135deg,#c8fbeb,#3fe0cc);color:#053d33;box-shadow:none}.chat-m .bub.bu-menta p b,.shop-bu.bu-menta p b{color:#0b6b58}
+.chat-m .bub.bu-nube p,.shop-bu.bu-nube p{background:#fff;color:#2b3a67;box-shadow:0 3px 0 #c9d6ff;border-radius:22px}.chat-m .bub.bu-nube p::after,.shop-bu.bu-nube p::after{content:' ☁️'}.chat-m .bub.bu-nube p b,.shop-bu.bu-nube p b{color:#3b6dff}
+.chat-m .bub.bu-pizarra p,.shop-bu.bu-pizarra p{background:#1f4d3a;color:#f4f4ea;box-shadow:inset 0 0 0 3px #8a5a2b}.chat-m .bub.bu-pizarra p b,.shop-bu.bu-pizarra p b{color:#ffe680}
+.chat-m .bub.bu-comic p,.shop-bu.bu-comic p{background:#fff;color:#111;box-shadow:3px 3px 0 #111,inset 0 0 0 2px #111}.chat-m .bub.bu-comic p::before,.shop-bu.bu-comic p::before{content:'💥 '}.chat-m .bub.bu-comic p b,.shop-bu.bu-comic p b{color:#e8333f}
+.chat-m .bub.bu-hielo p,.shop-bu.bu-hielo p{background:linear-gradient(135deg,#eafaff,#9fd8ff);color:#0b3d6b;box-shadow:0 0 12px rgba(127,212,255,.6)}.chat-m .bub.bu-hielo p::after,.shop-bu.bu-hielo p::after{content:' ❄️'}.chat-m .bub.bu-hielo p b,.shop-bu.bu-hielo p b{color:#1e6bff}
+.chat-m .bub.bu-fuego p,.shop-bu.bu-fuego p{background:linear-gradient(0deg,#ff3d00,#ffb020);color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.4);box-shadow:0 0 12px rgba(255,90,0,.5)}.chat-m .bub.bu-fuego p::after,.shop-bu.bu-fuego p::after{content:' 🔥'}.chat-m .bub.bu-fuego p b,.shop-bu.bu-fuego p b{color:#fff3a8}
+.chat-m .bub.bu-retro p,.shop-bu.bu-retro p{background:#0a0a0a;color:#39ff14;box-shadow:inset 0 0 0 2px #39ff14;font-family:monospace}.chat-m .bub.bu-retro p::before,.shop-bu.bu-retro p::before{content:'> '}.chat-m .bub.bu-retro p b,.shop-bu.bu-retro p b{color:#c6ff00}
+.chat-m .bub.bu-arcoiris p,.shop-bu.bu-arcoiris p{background:linear-gradient(90deg,#ff5c9a,#ffd23f,#3fe0cc,#5b8cff,#8b5cf6,#ff5c9a);background-size:300% 100%;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.55);animation:buArc 5s linear infinite}.chat-m .bub.bu-arcoiris p b,.shop-bu.bu-arcoiris p b{color:#fff}@keyframes buArc{to{background-position:300% 0}}
+.aus-sol{box-shadow:0 0 0 3px #ffb020,0 0 12px #ff8a00}
+.aus-selva{box-shadow:0 0 0 3px #22c55e,0 0 12px #5fe06a}.aus-selva::after{content:'🌿';position:absolute;right:-6px;top:-8px;font-size:15px;line-height:1;pointer-events:none}
+.aus-fuego{box-shadow:0 0 0 3px #ff5a00,0 0 14px #ff3d00,0 0 26px rgba(255,176,32,.6);animation:ausFue .5s ease-in-out infinite alternate}@keyframes ausFue{to{box-shadow:0 0 0 3px #ffb020,0 0 20px #ff5a00,0 0 34px rgba(255,61,0,.6)}}
+.aus-tormenta{box-shadow:0 0 0 3px #6a3cff,0 0 14px #3b1fa8;animation:ausTor 2.4s steps(1) infinite}.aus-tormenta::after{content:'🌩️';position:absolute;right:-6px;top:-9px;font-size:15px;line-height:1;pointer-events:none}@keyframes ausTor{0%,70%,80%{box-shadow:0 0 0 3px #6a3cff,0 0 14px #3b1fa8}74%,84%{box-shadow:0 0 0 3px #fff,0 0 24px #e0d4ff,0 0 40px #8b5cf6}}
+.lite .chat-m .bub.bu-arcoiris p,.lite .shop-bu.bu-arcoiris p{animation:none}
+
 /* ===== modo ligero: sin luces ni adornos pesados (lo importante se sigue viendo) ===== */
 .lite .marq canvas.l,.lite .rim canvas.l{animation:none!important;opacity:0!important}
 .lite #board .tile:not(.on) .front::after,.lite .l3-half::before{display:none!important}
@@ -1726,7 +1749,7 @@ button.ctk:active .ctk-d{transform:scale(.88)}
 <script src="vendor/qrcode.js"></script>
 <script>
 {
-const APPV='botones-v44';
+const APPV='botones-v45';
 const $=(s,r)=>(r||document).querySelector(s),$$=(s,r)=>[...(r||document).querySelectorAll(s)];
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const S={mute:false,music:'baja',gm:'j1',anime:true,order:'orden'};const view=()=>'tablero';let introOn=false;let flowTok=0;
@@ -2130,7 +2153,7 @@ const HLEG={/* cuadros del galope: [mano lejana, pata lejana, mano cercana, pata
   fs:['46 28L46 38L46 47','24 28L23 38L23 47','49 28L49 38L49 47','27 28L26 38L26 47']};
 const hLeg=(p,c)=>{const e=p.split(/L|\s/).slice(-2);return `<path d="M${p}" fill="none" stroke="#2b1840" stroke-width="5.6"/><path d="M${p}" fill="none" stroke="${c}" stroke-width="3.2"/><circle cx="${e[0]}" cy="${e[1]}" r="2.1" fill="#2b1840"/>`};
 const HSKIN={fuego:['#c2410c','#ffb020'],uni:['#fbf8ff','url(#hrRain)'],fant:['rgba(210,230,255,.55)','rgba(170,200,255,.75)'],
-  /* de la tiendita */rosa:['#ffb3d1','#ff4f9a'],cebra:['url(#hrZeb)','#1d1d1d'],noche:['#1b1f4a','#7ab8ff'],dorado:['#f2c230','#fff3a8'],
+  /* de la tiendita */rosa:['#ffb3d1','#ff4f9a'],cebra:['url(#hrZeb)','#1d1d1d'],noche:['#1b1f4a','#7ab8ff'],dorado:['#f2c230','#fff3a8'],choco:['#7a4a26','#2b1a12'],hielo:['#d6f0ff','#5bb6ff'],neon:['#7cff5a','#ff2bd6'],galaxia:['#6a3cff','#c9f7ff'],
   /* del creador */creador:['#f7cf3c','url(#hrRain)']};
 function horseSVG(i,hz){const[c,m]=HSKIN[hz]||COATS[i%COATS.length];const fr=(k,a,b)=>Object.keys(HLEG).map(f=>`<g class="hr-f ${f}">${hLeg(HLEG[f][a],k)}${hLeg(HLEG[f][b],k)}</g>`).join('');
   return `<svg class="hr-h${hz?' hz-'+hz:''}" viewBox="0 0 80 50" aria-hidden="true">${hz==='uni'||hz==='creador'?'<defs><linearGradient id="hrRain" x1="0" x2="1"><stop offset="0" stop-color="#ff5ce1"/><stop offset=".33" stop-color="#ffd23f"/><stop offset=".66" stop-color="#3fe0cc"/><stop offset="1" stop-color="#8b5cf6"/></linearGradient></defs>':''}${hz==='cebra'?'<defs><pattern id="hrZeb" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(18)"><rect width="7" height="7" fill="#f4f4f4"/><rect width="3" height="7" fill="#1d1d1d"/></pattern></defs>':''}<g stroke-linecap="round" stroke-linejoin="round">
@@ -2299,11 +2322,12 @@ const shopIt=(k,id)=>{try{return shopGet(k,id)}catch(e){return null}};
 const lgTitle=id=>LGM[id]?LGM[id].n:TPTIT[id]?TPTIT[id].n:(shopIt('ti',id)||{}).n||'';
 /* aura alrededor del animalito: clase según la rareza */
 const lgAu=a=>typeof a==='string'&&a.slice(0,3)==='lg_'&&LGM[a.slice(3)]&&LGM[a.slice(3)].r>=4&&LGAU[a.slice(3)];
+const lgW=w=>typeof w==='string'&&/^lg[a-z]+$/.test(w)&&lgAu('lg_'+w.slice(2)),lgB=b=>typeof b==='string'&&/^bu_lg[a-z]+$/.test(b)&&lgAu('lg_'+b.slice(5));
 const auraCls=a=>typeof a==='string'?(a===CRE.a?' aura aus-creador':lgAu(a)?' aura aul-'+a.slice(3):shopIt('au',a)?' aura aus-'+a.slice(3):''):a>=0&&a<RAR.length?' aura aura-'+RAR[a].k:'';
 /* lo que un jugador trae puesto, ya revisado (para que nadie mande cosas raras) */
 function eqClean(e){e=e&&typeof e==='object'?e:{};const S=(k,v)=>typeof v==='string'&&shopIt(k,v)?v:'';
-  return{t:LGM[e.t]||TPTIT[e.t]||S('ti',e.t)?e.t:'',a:Number.isInteger(e.a)&&e.a>=0&&e.a<RAR.length?e.a:S('au',e.a)||(e.a===CRE.a||lgAu(e.a)?e.a:-1),h:HORSES.some(x=>x.id===e.h)?e.h:S('hz',e.h)||(e.h===CRE.h?CRE.h:''),w:WRITES.some(x=>x.id===e.w)?e.w:S('wr',e.w)||(e.w===CRE.w?CRE.w:''),
-    sk:S('sk',e.sk),ac:S('ac',e.ac),fo:S('fo',e.fo)||(e.fo===CRE.fo?CRE.fo:''),bu:S('bu',e.bu)||(e.bu===CRE.bu?CRE.bu:''),ce:S('ce',e.ce)||(e.ce===CRE.ce?CRE.ce:'')}}
+  return{t:LGM[e.t]||TPTIT[e.t]||S('ti',e.t)?e.t:'',a:Number.isInteger(e.a)&&e.a>=0&&e.a<RAR.length?e.a:S('au',e.a)||(e.a===CRE.a||lgAu(e.a)?e.a:-1),h:HORSES.some(x=>x.id===e.h)?e.h:S('hz',e.h)||(e.h===CRE.h?CRE.h:''),w:WRITES.some(x=>x.id===e.w)?e.w:S('wr',e.w)||(e.w===CRE.w||lgW(e.w)?e.w:''),
+    sk:S('sk',e.sk),ac:S('ac',e.ac),fo:S('fo',e.fo)||(e.fo===CRE.fo?CRE.fo:''),bu:S('bu',e.bu)||(e.bu===CRE.bu||lgB(e.bu)?e.bu:''),ce:S('ce',e.ce)||(e.ce===CRE.ce?CRE.ce:'')}}
 /* identificador corto y estable de cada pregunta (para recordar cuáles ya vio cada celular) */
 function qid(q){const s=String(q||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]/g,'');let h=5381;for(let i=0;i<s.length;i++)h=((h<<5)+h+s.charCodeAt(i))>>>0;return h.toString(36)}
 /* títulos míticos y secretos: se mueven poquito */
@@ -2314,16 +2338,16 @@ const titCls=id=>{const r=LGM[id]?LGM[id].r:TPTIT[id]?-2:(shopIt('ti',id)||{r:-1
 const LGAU={
   rayo:{c:['#ffe600','#00e5ff'],e:'⚡',t:.5,f:1},
   guante:{c:['#ffffff','#b8c7d9'],e:'🧤',t:2.6},
-  relperf:{c:['#ffd23f','#8b5cf6'],e:'✨',g:'conic-gradient(#ffd23f,#8b5cf6,#ffd23f,#8b5cf6,#ffd23f)',s:4},
-  piedad:{c:['#ff2a2a','#2a0000'],e:'💥',t:1.1},
+  relperf:{c:['#ffd23f','#8b5cf6'],e:'✨',g:'conic-gradient(#ffd23f,#8b5cf6,#ffd23f,#8b5cf6,#ffd23f)',s:4,lw:['#ffd23f','#d9c2ff']},
+  piedad:{c:['#ff2a2a','#2a0000'],e:'💥',t:1.1,lw:['#ff3b3b','#ffb0a0']},
   rompe:{c:['#ff5c9a','#3fe0cc'],e:'🎡',g:'conic-gradient(#ff5c9a 0 12.5%,#ffd23f 0 25%,#3fe0cc 0 37.5%,#5b8cff 0 50%,#ff5c9a 0 62.5%,#ffd23f 0 75%,#3fe0cc 0 87.5%,#5b8cff 0)',s:1.6},
-  invicto:{c:['#3b6dff','#ffd23f'],e:'🛡️',t:1.8},
+  invicto:{c:['#3b6dff','#ffd23f'],e:'🛡️',t:1.8,lw:['#9db8ff','#ffd23f']},
   perfecto:{c:['#ff5ce1','#5fe06a'],e:'💯',g:'conic-gradient(#ff5c9a,#ffd23f,#5fe06a,#3fe0cc,#8b5cf6,#ff5c9a)',s:2.4},
   gente:{c:['#3fe0cc','#ff5c9a'],e:'📣',t:1.4},
   gemelos:{c:['#ff5ce1','#00e5ff'],e:'👯',g:'conic-gradient(#ff5ce1 0 50%,#00e5ff 0)',s:2},
-  tigres:{c:['#ff8a00','#1a1a1a'],e:'🐯',g:'repeating-conic-gradient(#ff8a00 0 10deg,#1a1a1a 10deg 20deg)',s:5},
+  tigres:{c:['#ff8a00','#1a1a1a'],e:'🐯',g:'repeating-conic-gradient(#ff8a00 0 10deg,#1a1a1a 10deg 20deg)',s:5,lw:['#ff8a00','#ffd23f']},
   filo:{c:['#ffffff','#ff1744'],e:'🗡️',t:.35,f:1},
-  destino:{c:['#6a1bff','#ffd23f'],e:'🔮',g:'conic-gradient(from 0deg,#14002e,#6a1bff,#ffd23f 8%,#14002e 16%,#6a1bff)',s:2.8},
+  destino:{c:['#6a1bff','#ffd23f'],e:'🔮',g:'conic-gradient(from 0deg,#14002e,#6a1bff,#ffd23f 8%,#14002e 16%,#6a1bff)',s:2.8,lw:['#c9a8ff','#ffd23f']},
   remontada:{c:['#22c55e','#ffd23f'],e:'🚀',t:1.2}};
 (function(){if(typeof document==='undefined'||!document.head)return;let s='';
   for(const id in LGAU){const a=LGAU[id],c=a.c,k='aul-'+id;
@@ -2331,8 +2355,13 @@ const LGAU={
       `@keyframes ${k}{50%{box-shadow:0 0 0 3px ${c[1]},0 0 20px ${c[1]},0 0 36px ${c[0]}aa}}`+
       (a.g?`.${k}::before{content:'';position:absolute;top:-6px;right:-6px;bottom:-6px;left:-6px;z-index:-1;border-radius:50%;background:${a.g};animation:aulSpin ${a.s||3}s linear infinite}`:'')+
       `.${k}::after{content:'${a.e}';position:absolute;right:-7px;top:-9px;font-size:15px;line-height:1;pointer-events:none;filter:drop-shadow(0 1px 2px rgba(0,0,0,.6))}`+
-      `.prof-dot.${k}::after{display:none}`}
-  s+='.prof-dot[class*="aul-"]::before{top:-2px!important;right:-2px!important;bottom:-2px!important;left:-2px!important}@keyframes aulSpin{to{transform:rotate(1turn)}}.lite [class*="aul-"],.lite [class*="aul-"]::before{animation:none!important}';
+      `.prof-dot.${k}::after{display:none}`;
+    const tc=(a.lw||c)[0],gc=(a.lw||c)[1],t=a.f?.7:a.t||2,w='w-lg'+id,L=`.j-say.${w} #saytx .l2-c,.wrp.${w} .l2-c`;
+    s+=`${L}{color:${tc};text-shadow:0 0 6px ${tc},0 0 16px ${gc};animation:wl-${id} ${t}s ${a.f?'steps(2,end)':'ease-in-out'} infinite}@keyframes wl-${id}{50%{color:${gc};text-shadow:0 0 8px ${gc},0 0 18px ${tc}}}`+
+      `.j-say.${w} #saytx .l2-c:nth-child(3n+2),.wrp.${w} .l2-c:nth-child(3n+2){animation-delay:-${(t/3).toFixed(2)}s}.j-say.${w} #saytx .l2-c:nth-child(3n),.wrp.${w} .l2-c:nth-child(3n){animation-delay:-${(t*2/3).toFixed(2)}s}`;
+    const B=`.chat-m .bub.bu-lg${id} p,.shop-bu.bu-lg${id} p`;
+    s+=`${B}{background:linear-gradient(135deg,${c[0]}55,${c[1]}77),#17123a;color:#fff;box-shadow:inset 0 0 0 2px ${c[0]},0 0 12px ${c[1]}99}.chat-m .bub.bu-lg${id} p::before,.shop-bu.bu-lg${id} p::before{content:'${a.e} '}.chat-m .bub.bu-lg${id} p b{color:${tc}}`}
+  s+='.prof-dot[class*="aul-"]::before{top:-2px!important;right:-2px!important;bottom:-2px!important;left:-2px!important}@keyframes aulSpin{to{transform:rotate(1turn)}}.lite [class*="aul-"],.lite [class*="aul-"]::before,.lite [class*="w-lg"] .l2-c{animation:none!important}';
   const st=document.createElement('style');st.id='aul-css';st.textContent=s;document.head.appendChild(st)})();
 
 /* cuánto da cada cosa en fichas 🪙: una partida normal deja como 55–70 (lo usan el celular y la pantalla del juego) */
@@ -2348,31 +2377,43 @@ const SHOP=[
   {id:'sk_choco',k:'sk',r:0,n:'Piel chocolate'},{id:'sk_menta',k:'sk',r:0,n:'Piel menta'},{id:'sk_sombra',k:'sk',r:1,n:'Piel sombra'},
   {id:'sk_nieve',k:'sk',r:2,n:'Piel de nieve'},{id:'sk_neon',k:'sk',r:2,n:'Piel neón'},{id:'sk_oro',k:'sk',r:3,n:'Piel de oro'},
   {id:'sk_fantasma',k:'sk',r:3,n:'Piel fantasma'},{id:'sk_lava',k:'sk',r:4,n:'Piel de lava'},{id:'sk_galaxia',k:'sk',r:4,n:'Piel galaxia'},{id:'sk_arcoiris',k:'sk',r:5,n:'Piel arcoíris'},
+  {id:'sk_coral',k:'sk',r:0,n:'Piel coral'},{id:'sk_cielo',k:'sk',r:1,n:'Piel cielo'},{id:'sk_veneno',k:'sk',r:2,n:'Piel veneno'},{id:'sk_cristal',k:'sk',r:3,n:'Piel de cristal'},
   /* accesorios */
   {id:'ac_gorrito',k:'ac',r:0,n:'Gorrito de fiesta'},{id:'ac_estrellas',k:'ac',r:0,n:'Estrellitas'},{id:'ac_mono',k:'ac',r:0,n:'Moño'},
   {id:'ac_medalla',k:'ac',r:1,n:'Medalla'},{id:'ac_audifonos',k:'ac',r:1,n:'Audífonos gamer'},{id:'ac_flor',k:'ac',r:1,n:'Flor en la oreja'},
   {id:'ac_charro',k:'ac',r:2,n:'Sombrero de charro'},{id:'ac_cuernos',k:'ac',r:2,n:'Cuernitos'},{id:'ac_corona',k:'ac',r:3,n:'Corona'},{id:'ac_halo',k:'ac',r:4,n:'Aureola'},
+  {id:'ac_gorra',k:'ac',r:0,n:'Gorra'},{id:'ac_globo',k:'ac',r:1,n:'Globito'},{id:'ac_mago',k:'ac',r:2,n:'Sombrero de mago'},{id:'ac_vikingo',k:'ac',r:3,n:'Casco vikingo'},
   /* fondos */
   {id:'fo_atardecer',k:'fo',r:0,n:'Fondo atardecer'},{id:'fo_mar',k:'fo',r:1,n:'Fondo mar'},{id:'fo_oro',k:'fo',r:2,n:'Fondo dorado'},
   {id:'fo_lava',k:'fo',r:3,n:'Fondo volcán'},{id:'fo_galaxia',k:'fo',r:3,n:'Fondo galaxia'},{id:'fo_arcoiris',k:'fo',r:4,n:'Fondo arcoíris'},
+  {id:'fo_selva',k:'fo',r:0,n:'Fondo selva'},{id:'fo_dulce',k:'fo',r:1,n:'Fondo dulce'},{id:'fo_noche',k:'fo',r:2,n:'Fondo noche estrellada'},{id:'fo_aurora',k:'fo',r:4,n:'Fondo aurora'},
   /* auras de la tienda */
   {id:'au_menta',k:'au',r:0,n:'Aura menta'},{id:'au_neon',k:'au',r:1,n:'Aura neón'},{id:'au_hielo',k:'au',r:2,n:'Aura de hielo'},{id:'au_corazon',k:'au',r:2,n:'Aura de corazones'},
   {id:'au_galaxia',k:'au',r:3,n:'Aura galaxia'},{id:'au_oro',k:'au',r:4,n:'Aura de oro'},{id:'au_fantasma',k:'au',r:4,n:'Aura fantasma'},{id:'au_prisma',k:'au',r:5,n:'Aura prisma'},
+  {id:'au_sol',k:'au',r:0,n:'Aura de sol'},{id:'au_selva',k:'au',r:1,n:'Aura de selva'},{id:'au_fuego',k:'au',r:3,n:'Aura de fuego'},{id:'au_tormenta',k:'au',r:4,n:'Aura de tormenta'},
   /* títulos */
   {id:'ti_mantequilla',k:'ti',r:0,n:'Dedos de Mantequilla'},{id:'ti_panucho',k:'ti',r:0,n:'Panucho Feliz'},{id:'ti_tianguis',k:'ti',r:0,n:'Rey del Tianguis'},
   {id:'ti_pulpo',k:'ti',r:1,n:'Cerebro de Pulpo'},{id:'ti_bomba',k:'ti',r:1,n:'Bomba Yucateca'},{id:'ti_casi',k:'ti',r:1,n:'Casi la Atino'},
   {id:'ti_habanero',k:'ti',r:2,n:'Puro Habanero'},{id:'ti_progreso',k:'ti',r:2,n:'Leyenda de Progreso'},{id:'ti_encuesta',k:'ti',r:2,n:'Encuestador Profesional'},
   {id:'ti_senor',k:'ti',r:3,n:'Señor de las Respuestas'},{id:'ti_mente',k:'ti',r:3,n:'Mente Maestra'},
   {id:'ti_calor',k:'ti',r:4,n:'Más Rápido que el Calor'},{id:'ti_oraculo',k:'ti',r:4,n:'El Oráculo'},{id:'ti_dueno',k:'ti',r:5,n:'Dueño del Tablero'},
+  {id:'ti_sobremesa',k:'ti',r:0,n:'Sabelotodo de Sobremesa'},{id:'ti_cochinita',k:'ti',r:0,n:'Cochinita Power'},{id:'ti_chisme',k:'ti',r:1,n:'Experto en Chismes'},{id:'ti_halcon',k:'ti',r:1,n:'Ojo de Halcón'},
+  {id:'ti_huracan',k:'ti',r:2,n:'Huracán Peninsular'},{id:'ti_marquesita',k:'ti',r:2,n:'Rey de la Marquesita'},{id:'ti_sureste',k:'ti',r:3,n:'El Botón Más Rápido del Sureste'},{id:'ti_cenote',k:'ti',r:4,n:'Más Profundo que un Cenote'},{id:'ti_leyenda',k:'ti',r:5,n:'Leyenda Familiar'},
   /* letras de tus respuestas en la pantalla */
   {id:'neon',k:'wr',r:2,n:'Letras neón'},{id:'hielo',k:'wr',r:3,n:'Letras de hielo'},{id:'fuego',k:'wr',r:4,n:'Letras de fuego'},{id:'arcoiris',k:'wr',r:5,n:'Letras arcoíris'},
+  {id:'chicle',k:'wr',r:0,n:'Letras de chicle'},{id:'tiza',k:'wr',r:0,n:'Letras de gis'},{id:'comic',k:'wr',r:1,n:'Letras de cómic'},{id:'retro',k:'wr',r:1,n:'Letras de maquinita'},
+  {id:'mar',k:'wr',r:2,n:'Letras de mar'},{id:'sombra',k:'wr',r:2,n:'Letras 3D'},{id:'glitch',k:'wr',r:3,n:'Letras glitch'},{id:'holo',k:'wr',r:4,n:'Letras holograma'},
   /* caballos */
   {id:'rosa',k:'hz',r:0,n:'Pony rosa'},{id:'cebra',k:'hz',r:1,n:'Cebra'},{id:'noche',k:'hz',r:2,n:'Caballo de medianoche'},{id:'dorado',k:'hz',r:3,n:'Caballo dorado'},
+  {id:'choco',k:'hz',r:0,n:'Caballo chocolate'},{id:'hielo',k:'hz',r:1,n:'Caballo de hielo'},{id:'neon',k:'hz',r:2,n:'Caballo neón'},{id:'galaxia',k:'hz',r:4,n:'Caballo galaxia'},
   /* burbujas del chat */
   {id:'bu_corazon',k:'bu',r:0,n:'Burbuja de corazón'},{id:'bu_neon',k:'bu',r:1,n:'Burbuja neón'},{id:'bu_oro',k:'bu',r:2,n:'Burbuja de oro'},{id:'bu_galaxia',k:'bu',r:3,n:'Burbuja galaxia'},
+  {id:'bu_menta',k:'bu',r:0,n:'Burbuja menta'},{id:'bu_nube',k:'bu',r:0,n:'Burbuja nube'},{id:'bu_pizarra',k:'bu',r:1,n:'Burbuja pizarrón'},{id:'bu_comic',k:'bu',r:1,n:'Burbuja de cómic'},
+  {id:'bu_hielo',k:'bu',r:2,n:'Burbuja de hielo'},{id:'bu_fuego',k:'bu',r:3,n:'Burbuja de fuego'},{id:'bu_retro',k:'bu',r:3,n:'Burbuja de maquinita'},{id:'bu_arcoiris',k:'bu',r:4,n:'Burbuja arcoíris'},
   /* celebración cuando ganas el botón (sale en la pantalla y en tu celular) */
   {id:'ce_confeti',k:'ce',r:0,n:'Celebración: confeti'},{id:'ce_globos',k:'ce',r:1,n:'Celebración: globos'},{id:'ce_fuegos',k:'ce',r:2,n:'Celebración: fuegos artificiales'},
-  {id:'ce_rayo',k:'ce',r:3,n:'Celebración: rayo'},{id:'ce_corona',k:'ce',r:4,n:'Celebración: corona'},{id:'ce_arcoiris',k:'ce',r:5,n:'Celebración: arcoíris'}];
+  {id:'ce_rayo',k:'ce',r:3,n:'Celebración: rayo'},{id:'ce_corona',k:'ce',r:4,n:'Celebración: corona'},{id:'ce_arcoiris',k:'ce',r:5,n:'Celebración: arcoíris'},
+  {id:'ce_corazones',k:'ce',r:1,n:'Celebración: corazones'},{id:'ce_monedas',k:'ce',r:2,n:'Celebración: lluvia de monedas'},{id:'ce_pinata',k:'ce',r:4,n:'Celebración: piñata'}];
 const SHOPM={};SHOP.forEach(x=>{x.p=PRICE[x.r];SHOPM[x.k+':'+x.id]=x;if(!SHOPM[x.id])SHOPM[x.id]=x});
 const shopGet=(k,id)=>SHOPM[k+':'+id]||null;
 const SHOPK={av:'Animalito',sk:'Piel',ac:'Accesorio',fo:'Fondo',au:'Aura',ti:'Título',wr:'Letras',hz:'Caballo',bu:'Burbuja',ce:'Celebración'};
@@ -2391,7 +2432,8 @@ function shopToday(day){const rnd=shopRng('100f-tienda:'+(day||shopDay())),used=
 /* ===== el animalito con piel, accesorio y fondo: "base~piel~accesorio~fondo" ===== */
 const SKPAL={sk_choco:[['#3b2412','#7a4a26','#c89a6a'],'#5a3a20'],sk_menta:[['#1f8a6a','#5fe0b6','#d4fff2'],'#0f6b5a'],sk_sombra:[['#14141c','#34344a','#62627c'],'#06060c'],
   sk_nieve:[['#7fa8c9','#cfe8ff','#ffffff'],'#2c6fa8'],sk_neon:[['#ff2bd6','#00e5ff','#c6ff00'],'#140a30'],sk_oro:[['#7a5200','#d4a017','#ffe680'],'#4a3300'],
-  sk_fantasma:[['#8fa6e8','#cfdcff','#f6f8ff'],'#3b3f8f'],sk_lava:[['#5a0a00','#ff4d00','#ffc04d'],'#220300'],sk_galaxia:[['#2a1060','#6a3cff','#c9a8ff'],'#0b0624'],sk_arcoiris:[null,'#2a1c5a']};
+  sk_fantasma:[['#8fa6e8','#cfdcff','#f6f8ff'],'#3b3f8f'],sk_lava:[['#5a0a00','#ff4d00','#ffc04d'],'#220300'],sk_galaxia:[['#2a1060','#6a3cff','#c9a8ff'],'#0b0624'],sk_arcoiris:[null,'#2a1c5a'],
+  sk_coral:[['#a8323a','#ff6f61','#ffc2b3'],'#7a1f2a'],sk_cielo:[['#1e5fa8','#5bb6ff','#d6efff'],'#123f75'],sk_veneno:[['#3b0a5a','#8bff3a','#e0ffc0'],'#1f0533'],sk_cristal:[['#6b5bd6','#c4b8ff','#f4f0ff'],'#2e2470']};
 const RAINBOW=['#ff5c9a','#ffd23f','#3fe0cc','#8b5cf6','#ff8a1a','#5fe06a'];
 const hexL=h=>{h=h.replace('#','');if(h.length===3)h=h.split('').map(c=>c+c).join('');const n=parseInt(h,16),r=(n>>16&255)/255,g=(n>>8&255)/255,b=(n&255)/255;return .2126*r+.7152*g+.0722*b};
 function skinArt(art,sk){const P=SKPAL[sk];if(!P)return art;let k=0;const map={};
@@ -2407,8 +2449,16 @@ const ACC={
   ac_charro:`<g transform="translate(0 8)"><ellipse cx="60" cy="24" rx="54" ry="11" fill="#2b1a12" stroke="#2b1840" stroke-width="2.6"/><path d="M40 24c0-20 8-26 20-26s20 6 20 26z" fill="#3b2412" stroke="#2b1840" stroke-width="2.6"/><path d="M41 18h38" stroke="#ffd23f" stroke-width="3"/><ellipse cx="60" cy="24" rx="54" ry="11" fill="none" stroke="#ffd23f" stroke-width="1.6" stroke-dasharray="4 5"/></g>`,
   ac_cuernos:`<path d="M30 30c-6-10-4-22 2-28c0 10 6 16 12 20z" fill="#e8333f" stroke="#2b1840" stroke-width="2.4" stroke-linejoin="round"/><path d="M90 30c6-10 4-22-2-28c0 10-6 16-12 20z" fill="#e8333f" stroke="#2b1840" stroke-width="2.4" stroke-linejoin="round"/>`,
   ac_corona:`<g transform="translate(0 6)"><path d="M36 26L32 2L48 14L60 -2L72 14L88 2L84 26Z" fill="#ffd23f" stroke="#2b1840" stroke-width="2.6" stroke-linejoin="round"/><circle cx="60" cy="16" r="4" fill="#ff2e88"/><circle cx="44" cy="20" r="3" fill="#3fe0cc"/><circle cx="76" cy="20" r="3" fill="#3fe0cc"/></g>`,
-  ac_halo:`<g transform="translate(0 6)"><ellipse cx="60" cy="4" rx="26" ry="7" fill="none" stroke="#fff6b0" stroke-width="8" opacity=".55"/><ellipse cx="60" cy="4" rx="26" ry="7" fill="none" stroke="#ffd23f" stroke-width="4"/></g>`};
+  ac_halo:`<g transform="translate(0 6)"><ellipse cx="60" cy="4" rx="26" ry="7" fill="none" stroke="#fff6b0" stroke-width="8" opacity=".55"/><ellipse cx="60" cy="4" rx="26" ry="7" fill="none" stroke="#ffd23f" stroke-width="4"/></g>`,
+  ac_gorra:`<g transform="translate(0 6)"><path d="M34 26c0-18 12-26 26-26s26 8 26 26z" fill="#e8333f" stroke="#2b1840" stroke-width="2.6" stroke-linejoin="round"/><path d="M60 2v22" stroke="#b81f2b" stroke-width="2"/><path d="M76 24c10 0 22 1 28 5c-6 3-18 3-28 1z" fill="#b81f2b" stroke="#2b1840" stroke-width="2.4" stroke-linejoin="round"/><circle cx="60" cy="1" r="3" fill="#ffd23f" stroke="#2b1840" stroke-width="1.6"/></g>`,
+  ac_globo:`<path d="M101 58q-6 16 2 34" fill="none" stroke="#fff" stroke-width="1.8"/><ellipse cx="101" cy="42" rx="11" ry="14" fill="#3fe0cc" stroke="#2b1840" stroke-width="2.4"/><path d="M98 56l3 4l3-4z" fill="#3fe0cc" stroke="#2b1840" stroke-width="1.6" stroke-linejoin="round"/><ellipse cx="97" cy="37" rx="3" ry="5" fill="#fff" opacity=".55"/>`,
+  ac_mago:`<g transform="translate(0 6)"><path d="M38 26L66 -6L82 26Z" fill="#3b2a8f" stroke="#2b1840" stroke-width="2.6" stroke-linejoin="round"/><ellipse cx="60" cy="26" rx="30" ry="6" fill="#2a1f6b" stroke="#2b1840" stroke-width="2.4"/><path d="M60 8l1.6 3.4l3.6.4l-2.7 2.5l.8 3.6l-3.3-1.9l-3.3 1.9l.8-3.6l-2.7-2.5l3.6-.4z" fill="#ffd23f"/><circle cx="71" cy="17" r="1.8" fill="#ffd23f"/></g>`,
+  ac_vikingo:`<g transform="translate(0 8)"><path d="M37 22c-10-4-14-14-12-24c4 8 10 12 18 13z" fill="#f4ecd8" stroke="#2b1840" stroke-width="2.4" stroke-linejoin="round"/><path d="M83 22c10-4 14-14 12-24c-4 8-10 12-18 13z" fill="#f4ecd8" stroke="#2b1840" stroke-width="2.4" stroke-linejoin="round"/><path d="M36 26c0-16 10-24 24-24s24 8 24 24z" fill="#9aa3b8" stroke="#2b1840" stroke-width="2.6" stroke-linejoin="round"/><path d="M36 23h48" stroke="#c28a2b" stroke-width="5"/><path d="M60 3v18" stroke="#6b7390" stroke-width="3"/></g>`};
 const FOND={
+  fo_selva:['<linearGradient id="fg-selva" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7be07f"/><stop offset="1" stop-color="#0f6b3a"/></linearGradient>','url(#fg-selva)','<g fill="#0b4d2a" opacity=".5"><path d="M4 70c10-14 22-16 30-14c-10 4-18 12-22 24z"/><path d="M116 70c-10-14-22-16-30-14c10 4 18 12 22 24z"/><path d="M30 104c4-12 14-16 22-14c-8 2-14 8-16 18z"/></g>'],
+  fo_dulce:['<linearGradient id="fg-dulce" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffe0f4"/><stop offset="1" stop-color="#ff7ccf"/></linearGradient>','url(#fg-dulce)','<g fill="#fff" opacity=".7"><circle cx="20" cy="30" r="3"/><circle cx="98" cy="24" r="2.5"/><circle cx="102" cy="92" r="3"/><circle cx="16" cy="88" r="2.5"/></g>'],
+  fo_noche:['<radialGradient id="fg-noche" cx=".7" cy=".2"><stop offset="0" stop-color="#2c3f8f"/><stop offset="1" stop-color="#070b26"/></radialGradient>','url(#fg-noche)','<circle cx="96" cy="26" r="8" fill="#fff6c8" opacity=".9"/><g fill="#fff"><circle cx="20" cy="36" r="1.4"/><circle cx="30" cy="98" r="1.2"/><circle cx="104" cy="80" r="1.5"/><circle cx="72" cy="12" r="1"/><circle cx="14" cy="66" r="1"/></g>'],
+  fo_aurora:['<linearGradient id="fg-aurora" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#0b1a3d"/><stop offset=".38" stop-color="#1fbf8f"/><stop offset=".62" stop-color="#6a3cff"/><stop offset="1" stop-color="#0b0624"/></linearGradient>','url(#fg-aurora)','<path d="M0 50q30-20 60-4t60-8" fill="none" stroke="#7dffcf" stroke-width="5" opacity=".35"/>'],
   fo_atardecer:['<linearGradient id="fg-atardecer" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffb03a"/><stop offset="1" stop-color="#ff3d7f"/></linearGradient>','url(#fg-atardecer)',''],
   fo_mar:['<linearGradient id="fg-mar" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3fd0ff"/><stop offset="1" stop-color="#1050b8"/></linearGradient>','url(#fg-mar)','<path d="M2 92q14-8 28 0t28 0t28 0t32 0V120H2z" fill="#0b3d8f" opacity=".45"/>'],
   fo_oro:['<radialGradient id="fg-oro"><stop offset="0" stop-color="#fff3a8"/><stop offset=".6" stop-color="#e0a816"/><stop offset="1" stop-color="#8a5a00"/></radialGradient>','url(#fg-oro)',''],
@@ -2441,8 +2491,12 @@ function celebFx(kind,el){if(!el||!document.body)return;const rm=window.matchMed
     for(let i=0;i<16*N;i++){const a=Math.PI*2*i/16;P('<b class="ray"></b>',cx,cy,[{transform:`translate(-50%,-50%) rotate(${a}rad) scaleY(.2)`,opacity:.9},{transform:`translate(-50%,-50%) rotate(${a}rad) scaleY(1.6)`,opacity:0}],1300)}}
   else if(kind==='ce_arcoiris'){P('🌈',cx,cy,[{transform:'translate(-50%,-50%) scale(.3)',opacity:0},{transform:'translate(-50%,-60%) scale(2.2)',opacity:1,offset:.4},{transform:'translate(-50%,-80%) scale(2.4)',opacity:0}],1900,'huge');
     for(let i=0;i<30*N;i++){const a=Math.random()*Math.PI*2,v=60+Math.random()*160;P('✦',cx,cy,[{transform:'translate(-50%,-50%) scale(.4)',color:cols[i%6]},{transform:`translate(calc(-50% + ${Math.cos(a)*v}px),calc(-50% + ${Math.sin(a)*v}px)) scale(1.2)`,opacity:0,color:cols[(i+2)%6]}],1300+Math.random()*500,'star')}}
+  else if(kind==='ce_corazones')for(let i=0;i<18*N;i++){const a=Math.random()*Math.PI*2,v=70+Math.random()*150;P(['💖','💗','💕'][i%3],cx,cy,[{transform:'translate(-50%,-50%) scale(.3)'},{transform:`translate(calc(-50% + ${Math.cos(a)*v}px),calc(-50% + ${Math.sin(a)*v-40}px)) scale(1.2)`,opacity:0}],1400+Math.random()*500,'big')}
+  else if(kind==='ce_monedas')for(let i=0;i<22*N;i++){const x=cx+(Math.random()-.5)*r.width*1.4;setTimeout(()=>P('🪙',x,r.top-60,[{transform:'translate(-50%,0) rotateY(0deg)'},{transform:`translate(-50%,${r.height+160}px) rotateY(720deg)`,opacity:.1}],1300+Math.random()*500,'big'),Math.random()*600)}
+  else if(kind==='ce_pinata'){P('🪅',cx,r.top,[{transform:'translate(-50%,-180px) rotate(-12deg)',opacity:0},{transform:'translate(-50%,-20px) rotate(10deg)',opacity:1,offset:.35},{transform:'translate(-50%,-20px) rotate(-10deg)',opacity:1,offset:.6},{transform:'translate(-50%,-20px) scale(1.5)',opacity:0}],1100,'huge');
+    setTimeout(()=>{for(let i=0;i<26*N;i++){const a=Math.random()*Math.PI*2,v=60+Math.random()*170;P(['🍬','🍭','🍫','⭐'][i%4],cx,r.top+10,[{transform:'translate(-50%,-50%) scale(.4)'},{transform:`translate(calc(-50% + ${Math.cos(a)*v}px),calc(-50% + ${Math.sin(a)*v+140}px)) rotate(${Math.random()*540}deg)`,opacity:0}],1500+Math.random()*500,'big')}},700)}
   setTimeout(()=>lay.remove(),3400)}
-const CEIC={ce_creador:'👑',ce_confeti:'🎊',ce_globos:'🎈',ce_fuegos:'🎆',ce_rayo:'⚡',ce_corona:'👑',ce_arcoiris:'🌈'};
+const CEIC={ce_creador:'👑',ce_confeti:'🎊',ce_globos:'🎈',ce_fuegos:'🎆',ce_rayo:'⚡',ce_corona:'👑',ce_arcoiris:'🌈',ce_corazones:'💖',ce_monedas:'🪙',ce_pinata:'🪅'};
 
 /* ===================== RONDA RELÁMPAGO: lo que se ve en la pantalla grande (y en la vista del celular) =====================
    v = {ph:'pick'|'b1'|'b2'|'rev'|'done', id, left, tot, tn:[nombres], ps:[[{n,av,a},…],…], prog:[[n,n],[n,n]], bat, qs:[…], cells:[{b,k,t,txt,ans,pts,dup}], sum:[a,b], dbl} */

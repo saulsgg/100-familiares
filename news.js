@@ -1,5 +1,6 @@
 /* lo nuevo de cada versión (sale una vez en el celular después de actualizarse) */
-const NEWS=[{v:'botones-v44',t:['💠 Cada logro legendario, mítico y secreto ahora trae su propia aura, con su color, movimiento y emoji. Póntelas en Mi perfil → Aura.']},
+const NEWS=[{v:'botones-v45',t:['✍️ Cada logro legendario, mítico y secreto ahora también trae sus propias letras de respuesta y su burbuja del chat.','🛒 La tiendita creció: 8 letras nuevas, 8 burbujas, 9 títulos, 4 pieles, 4 fondos, 4 auras, 4 caballos, 4 accesorios y 3 celebraciones (corazones, lluvia de monedas y piñata).']},
+ {v:'botones-v44',t:['💠 Cada logro legendario, mítico y secreto ahora trae su propia aura, con su color, movimiento y emoji. Póntelas en Mi perfil → Aura.']},
  {v:'botones-v43',t:['📵 Si a quien le toca contestar se le va el internet, el turno pasa solo a otro de su equipo (sin contar ✕) y la pantalla avisa.']},
  {v:'botones-v42',t:['🛠️ Arreglado: en la pantalla del juego en celular, los botones de comodines (como Junta) a veces no respondían, y el cuadro de la junta para robar tapaba ✕ Error.']},
  {v:'botones-v41',t:['🙋 En «Cada quien en su celular», quien juega desde la pantalla del juego ya puede escribir en la junta para robar y jugar la Ronda Relámpago.']},
