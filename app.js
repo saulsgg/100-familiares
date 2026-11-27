@@ -224,7 +224,7 @@ $('#avtitle').addEventListener('click',()=>avSecretTap($('#avtitle'),()=>{openSh
 /* tu animalito (jugador) */
 function myAvSheet(){SHEET='me';const s=$('#avsheet');s.style.setProperty('--tc',TCOL[P.team>=0?P.team:0]);$('#avtitle').textContent='Tu animalito';
   $('#avg').innerHTML=avList([P.av]).map(a=>`<button type="button" data-av="${a.id}" aria-pressed="${P.av===a.id}" class="${a.secret?'av-sec':''}"><i>${avSVG(a.id)}</i>${a.n}</button>`).join('');s.hidden=false}
-function myAvSet(id){if(!AVM[id])return;P.av=id;LS.set('bt-myav',id);drawMe();preAnimals([id]);if(MODE==='play')meSend();animal(id,.7);if(!$('#prof').hidden)profDraw()}
+function myAvSet(id){if(!AVM[id])return;P.av=id;LS.set('bt-myav',id);try{psSaved(PF,id)}catch(e){}drawMe();preAnimals([id]);if(MODE==='play')meSend();animal(id,.7);if(!$('#prof').hidden)profDraw()}
 $('#myavb').addEventListener('click',()=>{ac();loadSounds();myAvSheet()});
 $('#me').addEventListener('click',()=>{if(MODE!=='play'||['arm','go','wait'].includes(P.phase)||!$('#ask').hidden)return;ac();loadSounds();profOpen()});
 $('#avg').addEventListener('click',e=>{const b=e.target.closest('button');if(!b||b.disabled)return;if(SHEET==='me'){myAvSet(b.dataset.av);myAvSheet();return}H.av[SHEET]=b.dataset.av;LS.set('bt-av',H.av);openSheet(SHEET);drawTeams();bcastState()});
@@ -798,7 +798,7 @@ function nmDraw(){const f=!!PF.nm;$('#nmfix').hidden=!f;$('#pname').hidden=f;$('
 nmDraw();
 let SEEN=(a=>Array.isArray(a)?a.filter(x=>typeof x==='string').slice(-500):[])(LS.get('bt-seen',[]));
 const PEN=new Set(),UNQ=[];let UNON=false;
-function pfSave(){LS.set('bt-prof',PF)}
+function pfSave(){LS.set('bt-prof',PF);try{psSaved(PF,P.av)}catch(e){}}
 function pfAdd(k,v){PF.c[k]=(PF.c[k]||0)+(v==null?1:v);pfCheck()}
 function pfCheck(){const nu=[];LOGROS.forEach(l=>{if(PF.ach[l.id])return;const v=l.k==='streak'?(PF.c.streakMax||0):(PF.c[l.k]||0);if(v>=l.goal){PF.ach[l.id]=Date.now();nu.push(l)}});pfSave();if(nu.length)coinAdd(nu.reduce((a,l)=>a+COIN.ach[l.r],0));
   if(nu.length){nu.sort((a,b)=>a.r-b.r).forEach(l=>UNQ.push(l));unlNext();if(!$('#prof').hidden)profDraw()}}
@@ -1047,5 +1047,15 @@ $('#nmform').addEventListener('submit',e=>{e.preventDefault();const v=nmCheck($(
   const b=$('#nmok');if(pay&&b.dataset.sure!=='1'){b.dataset.sure='1';b.textContent=`¿Pagar ${pay} 🪙? Toca otra vez`;later(3500,()=>{b.dataset.sure='';b.textContent='Cambiar'});return}b.dataset.sure='';b.textContent='Cambiar';
   if(pay){PF.coin-=pay;coinDraw()}nmSet(v[1]);$('#nmform').hidden=true;$('#nmchg').hidden=false;sf('rec',.7);toast(`¡Listo! Ahora te llamas «${v[1]}»`)});
 
+/* ===================== el mismo perfil en varios aparatos (nube.js) ===================== */
+const PSHOOK={get:()=>PF,av:()=>P.av,put:(p,av)=>{LS.set('bt-prof',PF);if(av&&AVM[av]&&av!==P.av){P.av=av;LS.set('bt-myav',av)}},
+  changed:()=>{P.name=PF.nm;coinDraw();nmDraw();try{drawMe()}catch(e){}if(!$('#prof').hidden)profDraw();if(MODE==='play')meSend()}};
+psStart(PSHOOK);
+function psBox(html){const b=$('#psbox');b.hidden=false;b.innerHTML=html}
+$('#psmk').addEventListener('click',()=>{if(!PSY){psNew(nubeCode(),PF,P.av,true);psStart(PSHOOK)}const n=Object.keys(PSY.oth||{}).length;
+  psBox(`<p class="ps-code">${esc(PSY.m)}</p><small>Escríbelo en el otro aparato: en su perfil → «Tengo el código del otro». ${n?`Ya está junto con ${n} aparato${n===1?'':'s'} más.`:'Todavía no está junto con ningún otro aparato.'}</small>`)});
+$('#psin').addEventListener('click',()=>{psBox(`<form id="psf" autocomplete="off"><input id="psi" placeholder="palabra-palabra-palabra-palabra-12" spellcheck="false"><button class="ghost sm" type="submit">Juntar</button></form><small>Lo que tienes en este aparato se suma con lo del otro.</small><p class="err" id="pserr"></p>`);
+  $('#psf').addEventListener('submit',e=>{e.preventDefault();const c=nubeNorm($('#psi').value);if(!nubeValid(c)){$('#pserr').textContent='Son 4 palabras y un número, como aparecen en el otro aparato.';return}
+    if(PSY&&PSY.m===c){$('#pserr').textContent='Ya están juntos.';return}psLink(c);sf('rec',.7);psBox('<p>✔ ¡Listo! En unos segundos se junta con lo del otro aparato.</p>')})});
 window.__bt={H,P,WP,UPD,updCheck,AD};
 }
