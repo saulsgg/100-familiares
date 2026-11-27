@@ -1228,6 +1228,13 @@ body{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-r
 .j-netlog div{display:flex;gap:8px;flex-wrap:wrap}
 #lobstat{cursor:pointer}
 #toast{z-index:97}
+.j-mepanel{position:fixed;left:50%;bottom:12px;z-index:98;width:520px;width:min(94vw,520px);transform:translateX(-50%);padding:14px;border-radius:18px;background:#0b0f3a;color:#fff;box-shadow:0 10px 30px rgba(0,0,0,.6),inset 0 0 0 2px #ffd76a;font:600 15px/1.35 Rubik,sans-serif;text-align:center}
+.j-mepanel b{display:block;font:400 20px var(--disp);color:#ffd76a}.j-mepanel b span{float:right;color:#fff;font-size:18px}
+.j-mepanel p{margin:8px 0}.j-mepanel small{display:block;color:#b9c1f5;margin-top:6px}.j-mepanel .big{margin-top:8px}
+.j-mepanel form{display:flex;gap:8px;margin-top:8px}.j-mepanel input{flex:1;min-width:0;padding:10px 12px;border:0;border-radius:12px;font:700 16px Rubik,sans-serif}
+.j-mepanel form .big{margin:0;padding:8px 16px}
+.j-meq{font-size:18px;font-weight:800}
+.j-mem{max-height:30vh;overflow:auto;text-align:left;margin-top:8px}.j-mem p{margin:4px 0;padding:6px 10px;border-radius:12px;background:rgba(255,255,255,.08)}.j-mem p.me{background:rgba(255,215,106,.18)}.j-mem p.sys{background:none;color:#b9c1f5;font-size:13px}
 
 /* ===== foto finish: carrera de caballos (galope, polvo, cerca y meta) ===== */
 .hr{--hw:46px;position:relative;display:grid;gap:3px;margin:4px 0;padding:17px 8px 7px;border-radius:14px;overflow:hidden;text-align:left;color:#fff;
@@ -1717,7 +1724,7 @@ button.ctk:active .ctk-d{transform:scale(.88)}
 <script src="vendor/qrcode.js"></script>
 <script>
 {
-const APPV='botones-v40';
+const APPV='botones-v41';
 const $=(s,r)=>(r||document).querySelector(s),$$=(s,r)=>[...(r||document).querySelectorAll(s)];
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const S={mute:false,music:'baja',gm:'j1',anime:true,order:'orden'};const view=()=>'tablero';let introOn=false;let flowTok=0;
@@ -3787,13 +3794,13 @@ window.__j.adm={admState,noContaba,undoX,coverTile,addPts,qSkip,qRedo,blkList,ad
 if(CFG.flash==null)CFG.flash=1;
 const FL_PICK=15,FL_SEC=[25,30];
 let FL=null;
-const flPhones=t=>teamPhones(t).filter(p=>!p.local);
+const flPhones=t=>teamPhones(t).filter(p=>!p.local||CEL);
 function flOk(){return CFG.flash!==0&&!G.flashDone&&[0,1].every(t=>flPhones(t).length>0)}
 function flMatch(q,text){let best=0,bi=-1;q.a.forEach((a,i)=>{const s=mBest(text,a);if(s>best+1e-9){best=s;bi=i}});return bi}
 function flPickQs(){const bl=new Set(LSx.get('j-black',[])),sn=new Set();NH.P.forEach(p=>{if(p.seen)p.seen.forEach(x=>sn.add(x))});
   let pool=DB.r.map((q,i)=>i).filter(i=>DB.r[i].a.length>=5&&!G.used.includes(i)&&!bl.has(DB.r[i].q));const fr=pool.filter(i=>!sn.has(qid(DB.r[i].q)));if(fr.length>=5)pool=fr;
   const out=[];while(out.length<5&&pool.length){const k=Math.floor(Math.random()*pool.length);out.push(pool.splice(k,1)[0])}out.forEach(i=>G.used.push(i));saveG();return out.map(i=>DB.r[i])}
-function flSend(p,m){if(p&&!p.local)nhTo(p,Object.assign({t:'fl',id:FL.id},m),1)}
+function flSend(p,m){if(p)nhTo(p,Object.assign({t:'fl',id:FL.id},m),1)}
 function flNames(t){return FL.pl[t].map(u=>{const p=NH.P.get(u);return p?p.name:''})}
 function flStart(){FL={id:Date.now(),ph:'pick',qs:flPickQs(),pl:[[],[]],ans:[[[],[]],[[],[]]],done:[[0,0],[0,0]],mi:[[[],[]],[[],[]]],cells:[],sum:[0,0],end:performance.now()+FL_PICK*1000,tot:FL_PICK};
   if(FL.qs.length<5){FL=null;G.flashDone=1;saveG();showEnd();return}
@@ -3939,7 +3946,37 @@ function meRes(m){if(MERS.has(m.r)||!meProf())return;const p=meLoad();
       later(1500,()=>toast(`${['🥇','🥈','🥉'][i]} Quedaste ${i+1}° en la temporada de ${mesN(s.m)}${i===0?': título «Campeón de temporada»':''} · +${COIN.tp[i]} 🪙`))}});if(got)meDone(p)}}catch(e){}}
 meSync();
 window.__j.meLoad=meLoad;
-window.__j.finStart=()=>finStart();
+
+
+/* ===================== RELÁMPAGO Y JUNTA DE ROBO PARA QUIEN JUEGA DESDE ESTA PANTALLA (en «cada quien en su celular» esta pantalla es privada) ===================== */
+function mePanel(id){let d=$('#'+id);if(!d){d=document.createElement('div');d.id=id;d.className='j-mepanel';d.hidden=true;document.body.appendChild(d)}return d}
+let MEFL={id:0,i:0,qs:null,end:0,b:0};
+function meFl(m){const d=mePanel('mefl'),me=NH.P.get('me');if(!me)return;
+  if(m.st==='off'||m.st==='rev'){d.hidden=true;return}
+  if(m.st==='pick'){d.hidden=false;d.innerHTML=`<b>⚡ Ronda Relámpago</b><p>${m.me?'¡Vas a jugar por tu equipo! Espera tu turno…':'Dos de cada equipo contestan 5 preguntas en secreto. ¿Juegas tú?'}</p>${m.who&&m.who.length?`<small>Juegan: ${esc(m.who.filter(Boolean).join(', '))}</small>`:''}${m.me?'':'<button type="button" class="big gold" id="meflme">⚡ Yo juego</button>'}`;
+    const b=$('#meflme');if(b)b.addEventListener('click',()=>{ac();flMe(me)});return}
+  if(m.st==='wait'){d.hidden=false;d.innerHTML=`<b>⚡ Ronda Relámpago</b><p>${esc(m.txt||'')}</p>${m.sub?`<small>${esc(m.sub)}</small>`:''}`;return}
+  if(m.st==='ask'){MEFL={id:m.id,i:0,qs:m.qs||[],end:m.end,b:m.b};meFlQ();return}}
+function meFlQ(){const d=mePanel('mefl'),me=NH.P.get('me');if(!me||!MEFL.qs)return;
+  if(MEFL.i>=MEFL.qs.length){flAns(me,{t:'fld'});d.innerHTML='<b>⚡ ¡Listo!</b><p>Ya contestaste las 5. Espera a ver qué dijeron…</p>';return}
+  const left=()=>Math.max(0,Math.ceil((MEFL.end-performance.now())/1000));d.hidden=false;
+  d.innerHTML=`<b>⚡ Pregunta ${MEFL.i+1} de ${MEFL.qs.length} <span id="meflt">${left()} s</span></b><p class="j-meq">${esc(MEFL.qs[MEFL.i])}</p><form id="meflf" autocomplete="off"><input id="mefli" maxlength="60" placeholder="Escribe rápido…" autocapitalize="off" spellcheck="false"><button class="big gold">→</button></form><small>Enter para pasar a la siguiente (también puedes dejarla en blanco)</small>`;
+  const i=$('#mefli');i.focus();clearInterval(MEFL.t);MEFL.t=setInterval(()=>{const t=$('#meflt');if(!t||!t.isConnected||!FL){clearInterval(MEFL.t);return}t.textContent=left()+' s';if(left()<=0){clearInterval(MEFL.t)}},250);
+  $('#meflf').addEventListener('submit',e=>{e.preventDefault();flAns(me,{t:'fla',i:MEFL.i,txt:i.value});MEFL.i++;meFlQ()})}
+{const l1=NH.on.local;NH.on.local=m=>{if(m&&m.t==='fl'){try{meFl(m)}catch(e){}return}l1(m)}}
+/* junta para robar: los mensajes y para escribir */
+let MEHUDN=-1;
+function meHud(){const d=mePanel('mehud'),me=NH.P.get('me'),H=R&&R.hud;if(!H||!me||me.team!==H.t||!CEL){if(!d.hidden){d.hidden=true;MEHUDN=-1}return}
+  if(d.hidden){d.hidden=false;MEHUDN=-1;d.innerHTML=`<b>🕵️ Junta para robar (solo la ven ustedes)</b><div class="j-mem" id="mehudm"></div><form id="mehudf" autocomplete="off"><input id="mehudi" maxlength="80" placeholder="Escribe a tu equipo…"><button class="big gold">Enviar</button></form><button type="button" class="ghost sm" id="mehudc">✋ Yo la digo</button>`;
+    $('#mehudf').addEventListener('submit',e=>{e.preventDefault();const i=$('#mehudi');if(R&&R.hud&&i.value.trim()){hudMsg(me,i.value);i.value=''}});
+    $('#mehudc').addEventListener('click',()=>{if(R&&R.hud)hudClaim(me)})}
+  $('#mehudc').hidden=CFG.ans==='equipo'||H.claim===me.uid;
+  if(H.msgs.length!==MEHUDN){MEHUDN=H.msgs.length;const b=$('#mehudm');b.innerHTML=H.msgs.slice(-30).map(m=>m.sys?`<p class="sys">${esc(m.text)}</p>`:`<p class="${m.uid==='me'?'me':''}"><b>${esc(m.from)}:</b> ${esc(m.text)}</p>`).join('');b.scrollTop=b.scrollHeight}}
+{const h0=hudTick;hudTick=function(){h0.apply(this,arguments);try{meHud()}catch(e){}}}
+{const e0=hudEnd;hudEnd=function(){const r=e0.apply(this,arguments);try{meHud()}catch(e){}return r}}
+window.__j.finStart=()=>finStart();window.__j.meFlOn=()=>!$('#mefl').hidden;
+window.__j.flStart=()=>flStart();window.__j.hudStart=()=>hudStart();
+setInterval(()=>{try{if(!(R&&R.hud))meHud()}catch(e){}},500);
 
 }
 </script>

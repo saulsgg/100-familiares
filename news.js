@@ -1,5 +1,6 @@
 /* lo nuevo de cada versión (sale una vez en el celular después de actualizarse) */
-const NEWS=[{v:'botones-v40',t:['🐢 En la tele, Ajustes → Modo ligero → «No» regresa todos los efectos si tu tele aguanta.']},
+const NEWS=[{v:'botones-v41',t:['🙋 En «Cada quien en su celular», quien juega desde la pantalla del juego ya puede escribir en la junta para robar y jugar la Ronda Relámpago.']},
+ {v:'botones-v40',t:['🐢 En la tele, Ajustes → Modo ligero → «No» regresa todos los efectos si tu tele aguanta.']},
  {v:'botones-v39',t:[
  '📺 En teles el juego va más ligero: quité los adornos que se mueven sin parar y arreglé las animaciones que fallaban en navegadores viejitos.']},
  {v:'botones-v38',t:[

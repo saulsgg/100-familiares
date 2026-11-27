@@ -1196,6 +1196,13 @@ body{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-r
 .j-netlog div{display:flex;gap:8px;flex-wrap:wrap}
 #lobstat{cursor:pointer}
 #toast{z-index:97}
+.j-mepanel{position:fixed;left:50%;bottom:12px;z-index:98;width:520px;width:min(94vw,520px);transform:translateX(-50%);padding:14px;border-radius:18px;background:#0b0f3a;color:#fff;box-shadow:0 10px 30px rgba(0,0,0,.6),inset 0 0 0 2px #ffd76a;font:600 15px/1.35 Rubik,sans-serif;text-align:center}
+.j-mepanel b{display:block;font:400 20px var(--disp);color:#ffd76a}.j-mepanel b span{float:right;color:#fff;font-size:18px}
+.j-mepanel p{margin:8px 0}.j-mepanel small{display:block;color:#b9c1f5;margin-top:6px}.j-mepanel .big{margin-top:8px}
+.j-mepanel form{display:flex;gap:8px;margin-top:8px}.j-mepanel input{flex:1;min-width:0;padding:10px 12px;border:0;border-radius:12px;font:700 16px Rubik,sans-serif}
+.j-mepanel form .big{margin:0;padding:8px 16px}
+.j-meq{font-size:18px;font-weight:800}
+.j-mem{max-height:30vh;overflow:auto;text-align:left;margin-top:8px}.j-mem p{margin:4px 0;padding:6px 10px;border-radius:12px;background:rgba(255,255,255,.08)}.j-mem p.me{background:rgba(255,215,106,.18)}.j-mem p.sys{background:none;color:#b9c1f5;font-size:13px}
 
 /* ===== foto finish: carrera de caballos (galope, polvo, cerca y meta) ===== */
 .hr{--hw:46px;position:relative;display:grid;gap:3px;margin:4px 0;padding:17px 8px 7px;border-radius:14px;overflow:hidden;text-align:left;color:#fff;
@@ -1673,7 +1680,7 @@ body.ver{overflow-x:hidden}
 
 <script>
 {
-const APPV='botones-v40';
+const APPV='botones-v41';
 const $=(s,r)=>(r||document).querySelector(s),$$=(s,r)=>[...(r||document).querySelectorAll(s)];
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const S={mute:false,music:'baja',gm:'j1',anime:true,order:'orden'};const view=()=>'tablero';let introOn=false;let flowTok=0;
