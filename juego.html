@@ -1234,7 +1234,9 @@ body{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-r
 .j-mepanel form{display:flex;gap:8px;margin-top:8px}.j-mepanel input{flex:1;min-width:0;padding:10px 12px;border:0;border-radius:12px;font:700 16px Rubik,sans-serif}
 .j-mepanel form .big{margin:0;padding:8px 16px}
 .j-meq{font-size:18px;font-weight:800}
-.j-mem{max-height:30vh;overflow:auto;text-align:left;margin-top:8px}.j-mem p{margin:4px 0;padding:6px 10px;border-radius:12px;background:rgba(255,255,255,.08)}.j-mem p.me{background:rgba(255,215,106,.18)}.j-mem p.sys{background:none;color:#b9c1f5;font-size:13px}
+.j-mepanel{max-height:58vh;overflow:auto}
+.j-mem{max-height:22vh;overflow:auto;text-align:left;margin-top:8px}.j-mem p{margin:4px 0;padding:6px 10px;border-radius:12px;background:rgba(255,255,255,.08)}.j-mem p.me{background:rgba(255,215,106,.18)}.j-mem p.sys{background:none;color:#b9c1f5;font-size:13px}
+.l3-crown{pointer-events:none}
 
 /* ===== foto finish: carrera de caballos (galope, polvo, cerca y meta) ===== */
 .hr{--hw:46px;position:relative;display:grid;gap:3px;margin:4px 0;padding:17px 8px 7px;border-radius:14px;overflow:hidden;text-align:left;color:#fff;
@@ -1724,7 +1726,7 @@ button.ctk:active .ctk-d{transform:scale(.88)}
 <script src="vendor/qrcode.js"></script>
 <script>
 {
-const APPV='botones-v41';
+const APPV='botones-v42';
 const $=(s,r)=>(r||document).querySelector(s),$$=(s,r)=>[...(r||document).querySelectorAll(s)];
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const S={mute:false,music:'baja',gm:'j1',anime:true,order:'orden'};const view=()=>'tablero';let introOn=false;let flowTok=0;
@@ -3949,7 +3951,9 @@ window.__j.meLoad=meLoad;
 
 
 /* ===================== RELÁMPAGO Y JUNTA DE ROBO PARA QUIEN JUEGA DESDE ESTA PANTALLA (en «cada quien en su celular» esta pantalla es privada) ===================== */
-function mePanel(id){let d=$('#'+id);if(!d){d=document.createElement('div');d.id=id;d.className='j-mepanel';d.hidden=true;document.body.appendChild(d)}return d}
+function mePanel(id){let d=$('#'+id);if(!d){d=document.createElement('div');d.id=id;d.className='j-mepanel';d.hidden=true;document.body.appendChild(d)}
+  /* que no tape los botones de abajo (✕ Error, etc.) */
+  try{const c=$('#ctl'),r=c&&c.offsetParent?c.getBoundingClientRect():null;d.style.bottom=(r&&r.top>innerHeight*.5?Math.round(innerHeight-r.top+10):12)+'px'}catch(e){}return d}
 let MEFL={id:0,i:0,qs:null,end:0,b:0};
 function meFl(m){const d=mePanel('mefl'),me=NH.P.get('me');if(!me)return;
   if(m.st==='off'||m.st==='rev'){d.hidden=true;return}
