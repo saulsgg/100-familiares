@@ -53,8 +53,9 @@
   <form id="joinf" class="joinf" hidden autocomplete="off">
     <label for="code">Código de la partida</label>
     <input id="code" maxlength="4" autocapitalize="characters" spellcheck="false" placeholder="ABCD" enterkeyhint="go">
-    <label for="pname">Tu nombre</label>
+    <label for="pname" id="pnamel">Tu nombre <small>(se queda para siempre; cambiarlo cuesta 300 🪙)</small></label>
     <input id="pname" maxlength="14" placeholder="Tu nombre" enterkeyhint="go">
+    <p class="nmfix" id="nmfix" hidden>Entras como <b id="nmfixn"></b></p>
     <button class="big gold" type="submit">Entrar</button>
     <p class="err" id="joinerr" role="alert"></p>
     <div class="samehost" id="samehost" hidden role="alert"><b>📺 Este celular es la pantalla de esa partida</b><p>La pantalla del juego tiene que seguir abierta y al frente: si te cambias a la app de jugador (o la cierras), se congela y todos se quedan «Reconectando». Para jugar desde aquí, regresa a la pantalla del juego y en la sala escribe tu nombre en <b>«¿Juegas desde esta pantalla?»</b>.</p><a class="big gold" href="juego.html">Volver a la pantalla del juego</a><button type="button" class="ghost sm" id="sameyes">Entrar de todos modos</button></div>
@@ -218,6 +219,7 @@
   <section class="unl" id="unl" hidden aria-live="assertive"><div class="unl-bg" aria-hidden="true"></div><div class="unl-card" id="unlcard"><small id="unlr"></small><div class="unl-ic" id="unlic" aria-hidden="true"></div><b id="unln"></b><p id="unld"></p><span class="unl-t" id="unlt"></span></div></section>
   <section class="prof" id="prof" hidden role="dialog" aria-modal="true" aria-labelledby="proft"><div class="prof-in">
     <header class="prof-h"><button type="button" class="prof-av" id="profav" aria-label="Cambiar tu animalito"></button><div><b id="proft"></b><small id="proftt"></small></div><button type="button" class="coinb" data-shop="1" aria-label="Tus fichas: abrir la tiendita">🪙 <b data-coins>0</b></button><button type="button" class="prof-x" id="profx" aria-label="Cerrar">✕</button></header>
+    <div class="prof-nm"><button type="button" class="ghost sm" id="nmchg">✏️ Cambiar mi nombre</button><form id="nmform" hidden autocomplete="off"><input id="nmin" maxlength="14" placeholder="Tu nombre nuevo" enterkeyhint="done"><button class="ghost sm" type="submit" id="nmok">Cambiar</button><button type="button" class="ghost sm" id="nmcan">Cancelar</button><p class="err" id="nmerr" role="alert"></p></form></div>
     <div class="prof-st" id="profst"></div>
     <h3>Lo que traes puesto</h3><div class="prof-eq" id="profeq"></div>
     <h3>Logros <small id="profn"></small></h3><div id="proflg"></div>
@@ -225,8 +227,9 @@
   </div></section>
   <section class="prof shop" id="shop" hidden role="dialog" aria-modal="true" aria-labelledby="shopt"><div class="prof-in">
     <header class="prof-h"><span class="shop-ic" aria-hidden="true">🛒</span><div><b id="shopt">La tiendita</b><small id="shopcd"></small></div><span class="coinb">🪙 <b data-coins>0</b></span><button type="button" class="prof-x" id="shopx" aria-label="Cerrar">✕</button></header>
-    <p class="shop-s">Cosas de adorno para presumir (no ayudan a ganar). Cambia todos los días a medianoche y es igual para todos; lo más raro casi no sale.</p>
+    <p class="shop-s">Cosas de adorno para presumir (no ayudan a ganar). Cambia todos los días a medianoche y es solo tuya: a cada quien le sale distinta. Lo más raro casi no sale.</p>
     <div class="shop-g" id="shopg"></div>
+    <h3 class="shop-ct">🧩 Colecciones <small>junta todas las piezas y te ganas fichas</small></h3><ul class="shop-col" id="shopcol"></ul>
     <details class="shop-d"><summary>🪙 ¿Cómo gano fichas?</summary><ul id="shopern"></ul></details>
     <details class="shop-d"><summary>🎲 ¿Qué tan seguido sale cada cosa?</summary><div id="shopodds"></div></details>
     <button type="button" class="ghost sm shop-me" data-prof="1">🎒 Ponerme lo que ya tengo</button>

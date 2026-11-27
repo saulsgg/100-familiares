@@ -1530,6 +1530,8 @@ button.ctk:active .ctk-d{transform:scale(.88)}
 .aus-fuego{box-shadow:0 0 0 3px #ff5a00,0 0 14px #ff3d00,0 0 26px rgba(255,176,32,.6);animation:ausFue .5s ease-in-out infinite alternate}@keyframes ausFue{to{box-shadow:0 0 0 3px #ffb020,0 0 20px #ff5a00,0 0 34px rgba(255,61,0,.6)}}
 .aus-tormenta{box-shadow:0 0 0 3px #6a3cff,0 0 14px #3b1fa8;animation:ausTor 2.4s steps(1) infinite}.aus-tormenta::after{content:'🌩️';position:absolute;right:-6px;top:-9px;font-size:15px;line-height:1;pointer-events:none}@keyframes ausTor{0%,70%,80%{box-shadow:0 0 0 3px #6a3cff,0 0 14px #3b1fa8}74%,84%{box-shadow:0 0 0 3px #fff,0 0 24px #e0d4ff,0 0 40px #8b5cf6}}
 .lite .chat-m .bub.bu-arcoiris p,.lite .shop-bu.bu-arcoiris p{animation:none}
+.aus-oceano{box-shadow:0 0 0 3px #1e9bff,0 0 12px #3fd0ff;animation:ausOce 2.6s ease-in-out infinite}.aus-oceano::after{content:'🌊';position:absolute;right:-6px;top:-8px;font-size:15px;line-height:1;pointer-events:none}@keyframes ausOce{50%{box-shadow:0 0 0 3px #3fe0cc,0 0 18px #1e9bff}}
+.aus-sombra{box-shadow:0 0 0 3px #2a1f3d,0 0 14px #5b3c88,0 0 26px rgba(20,10,40,.8);animation:ausSom 3s ease-in-out infinite}@keyframes ausSom{50%{box-shadow:0 0 0 3px #4a3570,0 0 20px #2a1f3d,0 0 34px rgba(91,60,136,.7)}}
 
 /* ===== modo ligero: sin luces ni adornos pesados (lo importante se sigue viendo) ===== */
 .lite .marq canvas.l,.lite .rim canvas.l{animation:none!important;opacity:0!important}
@@ -1705,7 +1707,7 @@ body.ver{overflow-x:hidden}
 
 <script>
 {
-const APPV='botones-v45';
+const APPV='botones-v46';
 const $=(s,r)=>(r||document).querySelector(s),$$=(s,r)=>[...(r||document).querySelectorAll(s)];
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const S={mute:false,music:'baja',gm:'j1',anime:true,order:'orden'};const view=()=>'tablero';let introOn=false;let flowTok=0;
@@ -2319,6 +2321,14 @@ const LGAU={
     s+=`${B}{background:linear-gradient(135deg,${c[0]}55,${c[1]}77),#17123a;color:#fff;box-shadow:inset 0 0 0 2px ${c[0]},0 0 12px ${c[1]}99}.chat-m .bub.bu-lg${id} p::before,.shop-bu.bu-lg${id} p::before{content:'${a.e} '}.chat-m .bub.bu-lg${id} p b{color:${tc}}`}
   s+='.prof-dot[class*="aul-"]::before{top:-2px!important;right:-2px!important;bottom:-2px!important;left:-2px!important}@keyframes aulSpin{to{transform:rotate(1turn)}}.lite [class*="aul-"],.lite [class*="aul-"]::before,.lite [class*="w-lg"] .l2-c{animation:none!important}';
   const st=document.createElement('style');st.id='aul-css';st.textContent=s;document.head.appendChild(st)})();
+/* ===================== NOMBRES: uno por persona, sin groserías ===================== */
+const NMB=['pendej','verga','chinga','mierda','cabron','marica','zorra','culero','mamon','ojete','estupid','imbecil','idiota','pinche','puto','puta','perra','culo','joto','pito','caca','teta','coño','polla','follar','porno','nazi','hitler','fuck','shit','bitch','pussy','dick','nigg','sexo','mames','huev','naco','gorda','gordo','feo','fea','tonto','tonta'];
+const nmNorm=s=>String(s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[4@]/g,'a').replace(/3/g,'e').replace(/[1!|]/g,'i').replace(/0/g,'o').replace(/[5$]/g,'s').replace(/7/g,'t');
+/* regresa [error] o [null, nombre limpio] */
+function nmCheck(s){s=String(s||'').replace(/\s+/g,' ').trim();if(s.length<2)return['Escribe por lo menos 2 letras.'];if(s.length>14)return['Máximo 14 letras.'];
+  let ok=true;try{ok=new RegExp('^[\\p{L}\\p{N} ._\'-]+$','u').test(s)}catch(e){ok=/^[A-Za-zÀ-ÿ0-9 ._'-]+$/.test(s)}if(!ok)return['Solo letras, números y espacios.'];
+  const w=nmNorm(s),wj=w.replace(/[^a-zñ]/g,''),ws=w.split(/[^a-zñ]+/);
+  if(NMB.some(b=>b.length>=5?wj.includes(b):ws.includes(b)||wj===b))return['Ese nombre no se vale, ponte otro.'];return[null,s]}
 
 /* cuánto da cada cosa en fichas 🪙: una partida normal deja como 55–70 (lo usan el celular y la pantalla del juego) */
 const COIN={game:20,win:25,tie:10,day:15,streak:10,hit:3,one:3,steal:6,bz:2,flMax:20,ach:[10,20,40,70,120,200,300],tp:[300,150,75]};
@@ -2339,6 +2349,7 @@ const SHOP=[
   {id:'ac_medalla',k:'ac',r:1,n:'Medalla'},{id:'ac_audifonos',k:'ac',r:1,n:'Audífonos gamer'},{id:'ac_flor',k:'ac',r:1,n:'Flor en la oreja'},
   {id:'ac_charro',k:'ac',r:2,n:'Sombrero de charro'},{id:'ac_cuernos',k:'ac',r:2,n:'Cuernitos'},{id:'ac_corona',k:'ac',r:3,n:'Corona'},{id:'ac_halo',k:'ac',r:4,n:'Aureola'},
   {id:'ac_gorra',k:'ac',r:0,n:'Gorra'},{id:'ac_globo',k:'ac',r:1,n:'Globito'},{id:'ac_mago',k:'ac',r:2,n:'Sombrero de mago'},{id:'ac_vikingo',k:'ac',r:3,n:'Casco vikingo'},
+  {id:'ac_ninja',k:'ac',r:1,n:'Banda ninja'},{id:'ac_antena',k:'ac',r:1,n:'Antenitas'},{id:'ac_pirata',k:'ac',r:2,n:'Pañuelo pirata'},{id:'ac_dino',k:'ac',r:2,n:'Picos de dinosaurio'},{id:'ac_astro',k:'ac',r:3,n:'Casco de astronauta'},
   /* fondos */
   {id:'fo_atardecer',k:'fo',r:0,n:'Fondo atardecer'},{id:'fo_mar',k:'fo',r:1,n:'Fondo mar'},{id:'fo_oro',k:'fo',r:2,n:'Fondo dorado'},
   {id:'fo_lava',k:'fo',r:3,n:'Fondo volcán'},{id:'fo_galaxia',k:'fo',r:3,n:'Fondo galaxia'},{id:'fo_arcoiris',k:'fo',r:4,n:'Fondo arcoíris'},
@@ -2347,14 +2358,20 @@ const SHOP=[
   {id:'au_menta',k:'au',r:0,n:'Aura menta'},{id:'au_neon',k:'au',r:1,n:'Aura neón'},{id:'au_hielo',k:'au',r:2,n:'Aura de hielo'},{id:'au_corazon',k:'au',r:2,n:'Aura de corazones'},
   {id:'au_galaxia',k:'au',r:3,n:'Aura galaxia'},{id:'au_oro',k:'au',r:4,n:'Aura de oro'},{id:'au_fantasma',k:'au',r:4,n:'Aura fantasma'},{id:'au_prisma',k:'au',r:5,n:'Aura prisma'},
   {id:'au_sol',k:'au',r:0,n:'Aura de sol'},{id:'au_selva',k:'au',r:1,n:'Aura de selva'},{id:'au_fuego',k:'au',r:3,n:'Aura de fuego'},{id:'au_tormenta',k:'au',r:4,n:'Aura de tormenta'},
+  {id:'au_oceano',k:'au',r:1,n:'Aura de océano'},{id:'au_sombra',k:'au',r:2,n:'Aura de sombra'},
   /* títulos */
-  {id:'ti_mantequilla',k:'ti',r:0,n:'Dedos de Mantequilla'},{id:'ti_panucho',k:'ti',r:0,n:'Panucho Feliz'},{id:'ti_tianguis',k:'ti',r:0,n:'Rey del Tianguis'},
-  {id:'ti_pulpo',k:'ti',r:1,n:'Cerebro de Pulpo'},{id:'ti_bomba',k:'ti',r:1,n:'Bomba Yucateca'},{id:'ti_casi',k:'ti',r:1,n:'Casi la Atino'},
-  {id:'ti_habanero',k:'ti',r:2,n:'Puro Habanero'},{id:'ti_progreso',k:'ti',r:2,n:'Leyenda de Progreso'},{id:'ti_encuesta',k:'ti',r:2,n:'Encuestador Profesional'},
+  {id:'ti_mantequilla',k:'ti',r:0,n:'Dedos de Mantequilla'},{id:'ti_panucho',k:'ti',r:0,n:'Mente de Pez Dorado'},{id:'ti_tianguis',k:'ti',r:0,n:'Rey del Tianguis'},
+  {id:'ti_pulpo',k:'ti',r:1,n:'Cerebro de Pulpo'},{id:'ti_bomba',k:'ti',r:1,n:'Bomba de Risa'},{id:'ti_casi',k:'ti',r:1,n:'Casi la Atino'},
+  {id:'ti_habanero',k:'ti',r:2,n:'Puro Picante'},{id:'ti_progreso',k:'ti',r:2,n:'Leyenda del Botón'},{id:'ti_encuesta',k:'ti',r:2,n:'Encuestador Profesional'},
   {id:'ti_senor',k:'ti',r:3,n:'Señor de las Respuestas'},{id:'ti_mente',k:'ti',r:3,n:'Mente Maestra'},
-  {id:'ti_calor',k:'ti',r:4,n:'Más Rápido que el Calor'},{id:'ti_oraculo',k:'ti',r:4,n:'El Oráculo'},{id:'ti_dueno',k:'ti',r:5,n:'Dueño del Tablero'},
-  {id:'ti_sobremesa',k:'ti',r:0,n:'Sabelotodo de Sobremesa'},{id:'ti_cochinita',k:'ti',r:0,n:'Cochinita Power'},{id:'ti_chisme',k:'ti',r:1,n:'Experto en Chismes'},{id:'ti_halcon',k:'ti',r:1,n:'Ojo de Halcón'},
-  {id:'ti_huracan',k:'ti',r:2,n:'Huracán Peninsular'},{id:'ti_marquesita',k:'ti',r:2,n:'Rey de la Marquesita'},{id:'ti_sureste',k:'ti',r:3,n:'El Botón Más Rápido del Sureste'},{id:'ti_cenote',k:'ti',r:4,n:'Más Profundo que un Cenote'},{id:'ti_leyenda',k:'ti',r:5,n:'Leyenda Familiar'},
+  {id:'ti_calor',k:'ti',r:4,n:'Más Rápido que el Wifi'},{id:'ti_oraculo',k:'ti',r:4,n:'El Oráculo'},{id:'ti_dueno',k:'ti',r:5,n:'Dueño del Tablero'},
+  {id:'ti_sobremesa',k:'ti',r:0,n:'Sabelotodo de Sobremesa'},{id:'ti_cochinita',k:'ti',r:0,n:'Sabelotodo de Bolsillo'},{id:'ti_chisme',k:'ti',r:1,n:'Experto en Chismes'},{id:'ti_halcon',k:'ti',r:1,n:'Ojo de Halcón'},
+  {id:'ti_huracan',k:'ti',r:2,n:'Huracán de Respuestas'},{id:'ti_marquesita',k:'ti',r:2,n:'Rey del Drama'},{id:'ti_sureste',k:'ti',r:3,n:'El Botón Más Rápido del Oeste'},{id:'ti_cenote',k:'ti',r:4,n:'Más Profundo que el Océano'},{id:'ti_leyenda',k:'ti',r:5,n:'Leyenda Familiar'},
+  /* de las colecciones */
+  {id:'ti_ninja',k:'ti',r:0,n:'Ninja del Botón'},{id:'ti_capitan',k:'ti',r:2,n:'Capitán del Tablero'},{id:'ti_astro',k:'ti',r:2,n:'Astronauta de las Encuestas'},{id:'ti_mago',k:'ti',r:2,n:'Mago de las Respuestas'},
+  {id:'ti_dino',k:'ti',r:3,n:'Rey de los Dinosaurios'},{id:'ti_jefe',k:'ti',r:3,n:'Jefe Final'},
+  /* no se vende: se da como compensación */
+  {id:'ti_veterano',k:'ti',r:4,n:'Veterano',ns:1},
   /* letras de tus respuestas en la pantalla */
   {id:'neon',k:'wr',r:2,n:'Letras neón'},{id:'hielo',k:'wr',r:3,n:'Letras de hielo'},{id:'fuego',k:'wr',r:4,n:'Letras de fuego'},{id:'arcoiris',k:'wr',r:5,n:'Letras arcoíris'},
   {id:'chicle',k:'wr',r:0,n:'Letras de chicle'},{id:'tiza',k:'wr',r:0,n:'Letras de gis'},{id:'comic',k:'wr',r:1,n:'Letras de cómic'},{id:'retro',k:'wr',r:1,n:'Letras de maquinita'},
@@ -2370,6 +2387,14 @@ const SHOP=[
   {id:'ce_confeti',k:'ce',r:0,n:'Celebración: confeti'},{id:'ce_globos',k:'ce',r:1,n:'Celebración: globos'},{id:'ce_fuegos',k:'ce',r:2,n:'Celebración: fuegos artificiales'},
   {id:'ce_rayo',k:'ce',r:3,n:'Celebración: rayo'},{id:'ce_corona',k:'ce',r:4,n:'Celebración: corona'},{id:'ce_arcoiris',k:'ce',r:5,n:'Celebración: arcoíris'},
   {id:'ce_corazones',k:'ce',r:1,n:'Celebración: corazones'},{id:'ce_monedas',k:'ce',r:2,n:'Celebración: lluvia de monedas'},{id:'ce_pinata',k:'ce',r:4,n:'Celebración: piñata'}];
+/* colecciones: si juntas todas las piezas te dan un premio (una sola vez) */
+const COLS=[
+  {id:'pirata',ic:'🏴‍☠️',n:'Pirata',c:200,it:['ac:ac_pirata','fo:fo_mar','ti:ti_capitan','au:au_oceano']},
+  {id:'espacio',ic:'🚀',n:'Espacio',c:300,it:['ac:ac_astro','fo:fo_galaxia','ti:ti_astro','sk:sk_galaxia']},
+  {id:'ninja',ic:'🥷',n:'Ninja',c:150,it:['ac:ac_ninja','sk:sk_sombra','ti:ti_ninja','au:au_sombra']},
+  {id:'dino',ic:'🦖',n:'Dinosaurio',c:200,it:['ac:ac_dino','fo:fo_selva','ti:ti_dino','sk:sk_veneno']},
+  {id:'magia',ic:'🪄',n:'Magia',c:300,it:['ac:ac_mago','wr:holo','ti:ti_mago','fo:fo_aurora']},
+  {id:'retro',ic:'👾',n:'Videojuegos retro',c:200,it:['wr:retro','bu:bu_retro','ti:ti_jefe','ac:ac_audifonos']}];
 const SHOPM={};SHOP.forEach(x=>{x.p=PRICE[x.r];SHOPM[x.k+':'+x.id]=x;if(!SHOPM[x.id])SHOPM[x.id]=x});
 const shopGet=(k,id)=>SHOPM[k+':'+id]||null;
 const SHOPK={av:'Animalito',sk:'Piel',ac:'Accesorio',fo:'Fondo',au:'Aura',ti:'Título',wr:'Letras',hz:'Caballo',bu:'Burbuja',ce:'Celebración'};
@@ -2379,9 +2404,9 @@ function shopDay(d){d=d||new Date();return d.getFullYear()+'-'+String(d.getMonth
 function shopRng(s){let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)>>>0}return()=>{h+=0x6D2B79F5;let t=h;t=Math.imul(t^t>>>15,t|1);t^=t+Math.imul(t^t>>>7,t|61);return((t^t>>>14)>>>0)/4294967296}}
 /* qué tan seguido sale cada rareza: común 34 % … mítico 1.5 %; el destacado (rebajado) solo de raro para arriba */
 const SHOPW=[34,28,20,11,5.5,1.5],SHOPWF=[0,0,45,32,18,5];
-function shopToday(day){const rnd=shopRng('100f-tienda:'+(day||shopDay())),used=new Set(),out=[];
+function shopToday(day,uid){const rnd=shopRng('100f-tienda:'+(day||shopDay())+(uid?':'+uid:'')),used=new Set(),out=[];
   const roll=w=>{let x=rnd()*w.reduce((a,b)=>a+b,0);for(let r=0;r<w.length;r++){x-=w[r];if(x<0)return r}return 0};
-  const pickOf=r=>{for(let rr=r;rr>=0;rr--){const L=SHOP.filter(x=>x.r===rr&&!used.has(x.k+':'+x.id));if(L.length){const it=L[Math.floor(rnd()*L.length)];used.add(it.k+':'+it.id);return it}}return null};
+  const pickOf=r=>{for(let rr=r;rr>=0;rr--){const L=SHOP.filter(x=>x.r===rr&&!x.ns&&!used.has(x.k+':'+x.id));if(L.length){const it=L[Math.floor(rnd()*L.length)];used.add(it.k+':'+it.id);return it}}return null};
   const f=pickOf(roll(SHOPWF));if(f)out.push({it:f,p:Math.round(f.p*.85/10)*10,star:1});
   while(out.length<7){const it=pickOf(roll(SHOPW));if(!it)break;out.push({it,p:it.p})}return out}
 
@@ -2406,6 +2431,11 @@ const ACC={
   ac_cuernos:`<path d="M30 30c-6-10-4-22 2-28c0 10 6 16 12 20z" fill="#e8333f" stroke="#2b1840" stroke-width="2.4" stroke-linejoin="round"/><path d="M90 30c6-10 4-22-2-28c0 10-6 16-12 20z" fill="#e8333f" stroke="#2b1840" stroke-width="2.4" stroke-linejoin="round"/>`,
   ac_corona:`<g transform="translate(0 6)"><path d="M36 26L32 2L48 14L60 -2L72 14L88 2L84 26Z" fill="#ffd23f" stroke="#2b1840" stroke-width="2.6" stroke-linejoin="round"/><circle cx="60" cy="16" r="4" fill="#ff2e88"/><circle cx="44" cy="20" r="3" fill="#3fe0cc"/><circle cx="76" cy="20" r="3" fill="#3fe0cc"/></g>`,
   ac_halo:`<g transform="translate(0 6)"><ellipse cx="60" cy="4" rx="26" ry="7" fill="none" stroke="#fff6b0" stroke-width="8" opacity=".55"/><ellipse cx="60" cy="4" rx="26" ry="7" fill="none" stroke="#ffd23f" stroke-width="4"/></g>`,
+  ac_ninja:`<path d="M30 30c18-8 42-8 60 0v9c-18-7-42-7-60 0z" fill="#22223a" stroke="#2b1840" stroke-width="2.4" stroke-linejoin="round"/><rect x="54" y="26" width="12" height="9" rx="2" fill="#c0c8d8" stroke="#2b1840" stroke-width="1.6"/><path d="M90 32l16-4l-6 8l12 4" fill="none" stroke="#22223a" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>`,
+  ac_antena:`<g transform="translate(0 6)"><path d="M46 22L38 4M74 22L82 4" fill="none" stroke="#2b1840" stroke-width="2.6" stroke-linecap="round"/><circle cx="38" cy="4" r="5" fill="#ffd23f" stroke="#2b1840" stroke-width="2"/><circle cx="82" cy="4" r="5" fill="#3fe0cc" stroke="#2b1840" stroke-width="2"/></g>`,
+  ac_pirata:`<g transform="translate(0 8)"><path d="M34 26c0-16 12-24 26-24s26 8 26 24c-8-4-17-6-26-6s-18 2-26 6z" fill="#e8333f" stroke="#2b1840" stroke-width="2.6" stroke-linejoin="round"/><g fill="#fff"><circle cx="50" cy="10" r="2.2"/><circle cx="64" cy="8" r="2.2"/><circle cx="74" cy="15" r="2.2"/><circle cx="44" cy="18" r="2"/><circle cx="58" cy="17" r="2"/></g><path d="M35 21l-15 3l6 6l-9 7" fill="none" stroke="#e8333f" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></g>`,
+  ac_dino:`<g fill="#5fe06a" stroke="#2b1840" stroke-width="2.2" stroke-linejoin="round"><path d="M38 26l4-16l8 13z"/><path d="M50 20l8-17l7 17z"/><path d="M66 21l9-15l4 17z"/><path d="M80 27l9-12l1 16z"/></g>`,
+  ac_astro:`<circle cx="60" cy="60" r="50" fill="#bfe9ff" fill-opacity=".13" stroke="#e8f4ff" stroke-width="5"/><circle cx="60" cy="60" r="52.5" fill="none" stroke="#2b1840" stroke-width="1.4" opacity=".45"/><path d="M28 36a40 40 0 0 1 22-20" stroke="#fff" stroke-width="5" stroke-linecap="round" opacity=".7" fill="none"/><path d="M60 10V2" stroke="#9aa3b8" stroke-width="3"/><circle cx="60" cy="3" r="4" fill="#ff5c9a" stroke="#2b1840" stroke-width="1.6"/>`,
   ac_gorra:`<g transform="translate(0 6)"><path d="M34 26c0-18 12-26 26-26s26 8 26 26z" fill="#e8333f" stroke="#2b1840" stroke-width="2.6" stroke-linejoin="round"/><path d="M60 2v22" stroke="#b81f2b" stroke-width="2"/><path d="M76 24c10 0 22 1 28 5c-6 3-18 3-28 1z" fill="#b81f2b" stroke="#2b1840" stroke-width="2.4" stroke-linejoin="round"/><circle cx="60" cy="1" r="3" fill="#ffd23f" stroke="#2b1840" stroke-width="1.6"/></g>`,
   ac_globo:`<path d="M101 58q-6 16 2 34" fill="none" stroke="#fff" stroke-width="1.8"/><ellipse cx="101" cy="42" rx="11" ry="14" fill="#3fe0cc" stroke="#2b1840" stroke-width="2.4"/><path d="M98 56l3 4l3-4z" fill="#3fe0cc" stroke="#2b1840" stroke-width="1.6" stroke-linejoin="round"/><ellipse cx="97" cy="37" rx="3" ry="5" fill="#fff" opacity=".55"/>`,
   ac_mago:`<g transform="translate(0 6)"><path d="M38 26L66 -6L82 26Z" fill="#3b2a8f" stroke="#2b1840" stroke-width="2.6" stroke-linejoin="round"/><ellipse cx="60" cy="26" rx="30" ry="6" fill="#2a1f6b" stroke="#2b1840" stroke-width="2.4"/><path d="M60 8l1.6 3.4l3.6.4l-2.7 2.5l.8 3.6l-3.3-1.9l-3.3 1.9l.8-3.6l-2.7-2.5l3.6-.4z" fill="#ffd23f"/><circle cx="71" cy="17" r="1.8" fill="#ffd23f"/></g>`,

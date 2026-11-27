@@ -21,7 +21,7 @@ const BROKERS=LOCAL?['ws://127.0.0.1:8883/mqtt']:['wss://broker.hivemq.com:8884/
 const NS='fam100dijeron/v1/';
 const sec=ms=>(Math.max(0,ms)/1000).toFixed(2)+' s';
 const yaWait=()=>{const r=Math.random();return r<.3?600+Math.random()*700:r<.7?1600+Math.random()*1400:3300+Math.random()*2200};
-const vib=p=>{try{navigator.vibrate&&navigator.vibrate(p)}catch(e){}};
+const vib=p=>{try{const u=navigator.userActivation;if(u&&!u.hasBeenActive)return;navigator.vibrate&&navigator.vibrate(p)}catch(e){}};
 const rid=()=>Math.random().toString(36).slice(2,10)+Date.now().toString(36).slice(-4);
 let tt;function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(tt);tt=later(Math.max(3600,String(m).length*60),()=>t.classList.remove('on'))}
 /* en celulares angostos, la etiqueta de conexión va cortita (la completa queda en title) */
@@ -306,6 +306,7 @@ function playMsg(topic,m){
   if(m.t==='chtyp'){if(m.id===CH.id&&m.uid!==P.uid)CH.ty[m.uid]={name:String(m.name||''),at:performance.now()};return}
   if(m.t==='chclaim'){if(m.id===CH.id){CH.claim={u:m.uid,name:String(m.name||'')};chatClaimDraw();if(m.uid===P.uid)vib([30,30,60])}return}
   if(m.t==='chatclk'){if(m.id===CH.id){chatClk(m.end||null,+m.sec||0);$('#chatok').hidden=CH.kind==='robo'&&!CH.end;if(!$('#chat').classList.contains('min'))chatOpenSub();if(CH.end){vib([60,40,60]);sf('cmd',.8);chatMin(false)}}return}
+  if(m.t==='ren'){const v=nmCheck(m.n);if(!v[0]){nmSet(v[1],1);toast(`El anfitrión te cambió el nombre a «${v[1]}»`)}return}
   if(m.t==='kick'){playStop();toast('La pantalla del juego te sacó de la sala.');return}
   if(m.t==='ask'){showAsk(m);return}if(m.t==='asked'||m.t==='judged'||m.t==='close'||m.t==='lock'){askMsg(m);return}
   if(m.t==='arm'){hideAsk();arm(m)}else if(m.t==='res')onRes(m);else if(m.t==='cancel'){clearPT();P.phase='idle';hideRes();showPad();padState('idle','Esperen la siguiente ronda','')}}
@@ -608,11 +609,12 @@ function drawSaved(){const s=savedGame();$('#contcard').hidden=!s;$('#modesnote'
 drawSaved();addEventListener('pageshow',drawSaved);
 $$('[data-go]').forEach(b=>b.addEventListener('click',()=>{ac();loadSounds();const g=b.dataset.go;if(g==='host'){hostStart();return}
   if(g==='create'){$('#joinf').hidden=true;const m=$('#modes');m.hidden=!m.hidden;if(!m.hidden){m.scrollIntoView({behavior:'smooth',block:'nearest'});if(!RM())m.animate([{opacity:0,transform:'translateY(10px)'},{opacity:1,transform:'none'}],{duration:260})}return}
-  $('#modes').hidden=true;$('#joinf').hidden=false;($('#code').value?$('#pname'):$('#code')).focus()}));
+  $('#modes').hidden=true;$('#joinf').hidden=false;($('#code').value&&!PF.nm?$('#pname'):$('#code')).focus()}));
 $('#code').addEventListener('input',e=>{e.target.value=e.target.value.toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,4)});
 let LINKBI=-1;
-$('#joinf').addEventListener('submit',e=>{e.preventDefault();const code=$('#code').value.toUpperCase().replace(/[^A-Z0-9]/g,''),name=$('#pname').value.trim().slice(0,14)||'Jugador';
-  if(code.length!==4){$('#joinerr').textContent='El código tiene 4 letras o números.';return}$('#joinerr').textContent='';
+$('#joinf').addEventListener('submit',e=>{e.preventDefault();const code=$('#code').value.toUpperCase().replace(/[^A-Z0-9]/g,'');
+  if(code.length!==4){$('#joinerr').textContent='El código tiene 4 letras o números.';return}
+  if(!PF.nm){const v=nmCheck($('#pname').value);if(v[0]){$('#joinerr').textContent=v[0];$('#pname').focus();return}nmSet(v[1],1)}const name=PF.nm;$('#joinerr').textContent='';
   /* ¿este mismo aparato es la pantalla de esa partida? (cambiarse de app la congela) */
   const al=LS.get('j-alive',null);if(!SAMEOK&&al&&al.code===code&&Date.now()-al.ts<432e5){$('#samehost').hidden=false;$('#samehost').scrollIntoView({block:'nearest'});return}
   ac();loadSounds();playStart(code,name,LINKBI)});
@@ -633,7 +635,7 @@ function newsShow(){if(typeof NEWS==='undefined'||!NEWS.length||typeof APPV==='u
 $('#newok').addEventListener('click',()=>{$('#newsh').hidden=true;if(typeof NEWS!=='undefined'&&NEWS[0])LS.set('news-seen',NEWS[0].v)});
 later(1800,newsShow);
 if('serviceWorker' in navigator&&!LOCAL)navigator.serviceWorker.register('sw.js').catch(()=>{});
-$('#pname').value=P.name;
+$('#pname').value='';
 {const m=location.hash.match(/^#j=([A-Za-z0-9]{4})(?:-(\d))?(?:-([a-z0-9]{12,24}))?$/);if(m){$('#joinf').hidden=false;$('#code').value=m[1].toUpperCase();if(m[2]!=null)LINKBI=Math.min(+m[2],BROKERS.length-1);if(m[3])LS.set('bt-key',{code:m[1].toUpperCase(),k:m[3]});later(50,()=>$('#pname').focus())}}
 /* ===================== SE ACTUALIZA SOLO =====================
    Cada rato revisa si hay versión nueva; si la hay, recarga en un momento tranquilo y vuelve a entrar a la misma sala. */
@@ -703,7 +705,7 @@ function admDraw(){const s=AD.st,b=$('#admbody');if(!s){b.innerHTML='<p class="a
       <p class="adm-lbl">Ajustes</p>${admCfg(s.cfg)}
       <p class="adm-lbl">Premio</p><form class="adm-pz" id="admpz"><input id="admpzi" maxlength="40" value="${esc(s.cfg.prize)}" placeholder="Ej. escogen la película"><button class="adm-b gd">Guardar</button></form>
       <p class="adm-lbl">Equipos</p>${[0,1].map(t=>`<div class="adm-tm" style="--tc:${TCOL[t]}"><form class="adm-tn" data-t="${t}"><input value="${esc(s.names[t])}" maxlength="14" aria-label="Nombre del equipo"><button class="adm-b">✓</button></form>
-        ${s.ps.filter(p=>p.t===t).map(p=>`<div class="adm-p"><span>${esc(p.n)}</span><button type="button" class="adm-b" data-c="move" data-u="${esc(p.u)}" aria-label="Cambiar de equipo">⇄</button><button type="button" class="adm-b x" data-c="kick" data-u="${esc(p.u)}" aria-label="Sacar">✕</button></div>`).join('')||'<p class="adm-note">Nadie todavía.</p>'}</div>`).join('')}
+        ${s.ps.filter(p=>p.t===t).map(p=>`<div class="adm-p"><span>${esc(p.n)}</span><button type="button" class="adm-b" data-c="move" data-u="${esc(p.u)}" aria-label="Cambiar de equipo">⇄</button><button type="button" class="adm-b" data-c="ren" data-u="${esc(p.u)}" data-n="${esc(p.n)}" aria-label="Cambiarle el nombre">✏️</button><button type="button" class="adm-b x" data-c="kick" data-u="${esc(p.u)}" aria-label="Sacar">✕</button></div>`).join('')||'<p class="adm-note">Nadie todavía.</p>'}</div>`).join('')}
       <p class="adm-lbl">Preguntas quitadas (${s.black.length})</p>${s.black.length?s.black.map(q=>`<div class="adm-p"><span>${esc(q)}</span><button type="button" class="adm-b" data-c="blkdel" data-q="${esc(q)}">Restaurar</button></div>`).join(''):'<p class="adm-note">Ninguna.</p>'}
       <p class="adm-lbl">Respuestas que no contaron (${(s.ncl||[]).length})</p>${(s.ncl||[]).length?(s.ncl||[]).map(x=>`<div class="adm-p"><span>${esc(x.t||'')}<small> · ${esc(x.q||'')}</small></span></div>`).join('')+AB('ncclr','Borrar la lista',''):'<p class="adm-note">Ninguna.</p>'}`}
   b.innerHTML=h}
@@ -720,6 +722,7 @@ $('#admbody').addEventListener('click',e=>{const b=e.target.closest('[data-c]');
   if(c==='cfg'){admSend('cfg',{k:b.dataset.k,v:b.dataset.v});return}
   if(c==='lite'){admSend('lite',{v:b.dataset.v});return}
   if(c==='move'||c==='kick'){admSend(c,{u:b.dataset.u});return}
+  if(c==='ren'){const v=prompt(`Nombre nuevo para ${b.dataset.n||'este jugador'}:`,b.dataset.n||'');if(v==null)return;const r=nmCheck(v);if(r[0]){toast(r[0]);return}admSend('ren',{u:b.dataset.u,v:r[1]});return}
   if(c==='blkdel'){admSend('blkdel',{q:b.dataset.q});return}
   admSend(c)});
 $('#admbody').addEventListener('change',e=>{if(e.target.id==='admhide')admSend('hide',{v:e.target.checked})});
@@ -787,7 +790,12 @@ $('#finphsave').addEventListener('click',async()=>{const u=$('#finphimg').src;if
   try{if(navigator.canShare){const b=await (await fetch(u)).blob(),file=new File([b],'100-familiares-ganadores.jpg',{type:'image/jpeg'});if(navigator.canShare({files:[file]})){await navigator.share({files:[file],title:'100 Familiares Dijeron'});return}}}catch(e){if(e&&e.name==='AbortError')return}
   const a=document.createElement('a');a.href=u;a.download='100-familiares-ganadores.jpg';document.body.appendChild(a);a.click();a.remove()});
 /* ===================== MI PERFIL: contadores, logros y premios (todo se guarda en este celular; no hay cuentas) ===================== */
-const PF=(p=>{p=p&&typeof p==='object'?p:{};p.c=p.c&&typeof p.c==='object'?p.c:{};p.ach=p.ach&&typeof p.ach==='object'?p.ach:{};p.eq=eqClean(p.eq);p.coin=Number.isFinite(p.coin)&&p.coin>0?Math.floor(p.coin):0;p.own=p.own&&typeof p.own==='object'?p.own:{};p.tp=p.tp&&typeof p.tp==='object'?p.tp:{};p.cre=p.cre?1:0;return p})(LS.get('bt-prof',null));
+const PF=(p=>{p=p&&typeof p==='object'?p:{};p.c=p.c&&typeof p.c==='object'?p.c:{};p.ach=p.ach&&typeof p.ach==='object'?p.ach:{};p.eq=eqClean(p.eq);p.coin=Number.isFinite(p.coin)&&p.coin>0?Math.floor(p.coin):0;p.own=p.own&&typeof p.own==='object'?p.own:{};p.tp=p.tp&&typeof p.tp==='object'?p.tp:{};p.cre=p.cre?1:0;p.col=p.col&&typeof p.col==='object'?p.col:{};p.comp=p.comp&&typeof p.comp==='object'?p.comp:{};p.nm=typeof p.nm==='string'&&!nmCheck(p.nm)[0]?p.nm:'';return p})(LS.get('bt-prof',null));
+/* tu nombre es uno solo y se queda (cambiarlo cuesta fichas) */
+const NMPRICE=300;P.name=PF.nm;
+function nmSet(n,free){PF.nm=n;P.name=n;LS.set('bt-name',n);pfSave();if(MODE==='play')meSend();nmDraw();if(!$('#prof').hidden)profDraw()}
+function nmDraw(){const f=!!PF.nm;$('#nmfix').hidden=!f;$('#pname').hidden=f;$('#pnamel').hidden=f;if(f)$('#nmfixn').textContent=PF.nm}
+nmDraw();
 let SEEN=(a=>Array.isArray(a)?a.filter(x=>typeof x==='string').slice(-500):[])(LS.get('bt-seen',[]));
 const PEN=new Set(),UNQ=[];let UNON=false;
 function pfSave(){LS.set('bt-prof',PF)}
@@ -797,7 +805,7 @@ function pfCheck(){const nu=[];LOGROS.forEach(l=>{if(PF.ach[l.id])return;const v
 /* lo que tengo desbloqueado para ponerme */
 const pfRmax=()=>Math.max(-1,...Object.keys(PF.ach).filter(k=>LGM[k]).map(k=>LGM[k].r));
 const pfHasR=r=>Object.keys(PF.ach).some(k=>LGM[k]&&LGM[k].r===r);
-function meSend(){psend({t:'me',av:myAvF(),eq:PF.eq},1)}
+function meSend(){psend({t:'me',av:myAvF(),eq:PF.eq,n:PF.nm||undefined},1)}
 /* avisos de la pantalla grande sobre lo que hiciste */
 function onPe(m){const key=P.code+':'+m.n;if(m.n!=null){if(PEN.has(key))return;PEN.add(key);if(PEN.size>400)PEN.delete(PEN.values().next().value)}const v=m.v||{};
   switch(m.e){
@@ -809,6 +817,7 @@ function onPe(m){const key=P.code+':'+m.n;if(m.n!=null){if(PEN.has(key))return;P
       {const d=shopDay(),k=v.rd==null||v.rd>=3?1:.5;coinAdd(k*(COIN.game+(v.won?COIN.win:v.tie?COIN.tie:0))+(PF.day!==d?COIN.day:0)+(v.won&&PF.c.streak>=3?COIN.streak:0));PF.day=d}pfCheck();return;
     case 'fm':if(v.solo>0)coinAdd(Math.min(COIN.flMax,Math.round(v.solo/10)));if(v.solo>=150)PF.c.fm150=(PF.c.fm150||0)+1;if(v.team>=200)PF.c.fm200=(PF.c.fm200||0)+1;pfCheck();return;
     case 'temp':tpPrize(v);return;
+    case 'comp':compGet(v);return;
     default:if(['steal3','clean','sup','brk','brk4','cmd3'].includes(m.e))pfAdd(m.e)}}
 /* botones: lo cuenta el propio celular con el resultado que le llega */
 const RSD=new Set();
@@ -841,7 +850,7 @@ $('#unl').addEventListener('click',unlHide);
 /* ===== hoja "Mi perfil" ===== */
 function profOpen(){profDraw();$('#prof').hidden=false;if(!RM())$('.prof-in').animate([{transform:'translateY(40px)',opacity:0},{transform:'none',opacity:1}],{duration:300,easing:'cubic-bezier(.2,.9,.3,1)'})}
 function profDraw(){const c=PF.c,got=Object.keys(PF.ach).filter(k=>LGM[k]),rm=pfRmax();
-  $('#profav').innerHTML=avSVG(myAvF());$('#profav').className='prof-av'+auraCls(PF.eq.a);$('#proft').textContent=P.name||LS.get('bt-name','')||'Tú';$('#proftt').textContent=PF.eq.t?'«'+lgTitle(PF.eq.t)+'»':'Sin título';$('#proftt').className=PF.eq.t?titCls(PF.eq.t).trim():'';
+  $('#profav').innerHTML=avSVG(myAvF());$('#profav').className='prof-av'+auraCls(PF.eq.a);$('#proft').textContent=PF.nm||'Tú';$('#nmchg').textContent=PF.nm?`✏️ Cambiar mi nombre · ${NMPRICE} 🪙`:'✏️ Ponerme nombre (gratis)';$('#proftt').textContent=PF.eq.t?'«'+lgTitle(PF.eq.t)+'»':'Sin título';$('#proftt').className=PF.eq.t?titCls(PF.eq.t).trim():'';
   const st=[['🎮','Partidas',c.games||0],['🏆','Ganadas',c.wins||0],['🔔','Botones ganados',c.bz||0],['🎯','Atinadas',c.hits||0],['⭐','La #1',c.ones||0],['🕵️','Robos',c.steals||0],['⚡','Mejor tiempo',PF.best!=null?(PF.best/1000).toFixed(2)+' s':'—'],['🔥','Racha',(c.streak||0)+' (máx. '+(c.streakMax||0)+')']];
   $('#profst').innerHTML=st.map(([i,n,v])=>`<div><span>${i}</span><b>${esc(String(v))}</b><small>${n}</small></div>`).join('');
   const chip=(g,v,lab,on,col)=>`<button type="button" class="prof-chip${on?' on':''}" data-g="${g}" data-v="${esc(String(v))}" aria-pressed="${on}"${col?` style="--rc:${col}"`:''}>${lab}</button>`;
@@ -929,6 +938,15 @@ function coinFin(){const e=$('#finphco');if(!e)return;const g=PF.ge&&PF.ge.code=
 function tpPrize(v){if(!v||typeof v.m!=='string'||!/^\d{4}-\d{2}$/.test(v.m)||!(v.pl>=1&&v.pl<=3)||PF.tp[v.m])return;PF.tp[v.m]=v.pl;coinAdd(COIN.tp[v.pl-1]);pfSave();const mn=String(v.mn||v.m).slice(0,20);
   if(v.pl===1){UNQ.push({id:'tp',r:5,ic:'👑',n:'Campeón de temporada',d:`Quedaste en 1er lugar de la temporada de ${mn} (${+v.pts||0} puntos)`,x:`Título nuevo: «Campeón de temporada» · +${COIN.tp[0]} 🪙`});unlNext()}
   else toast(`${v.pl===2?'🥈':'🥉'} Quedaste ${v.pl}° en la temporada de ${mn}: +${COIN.tp[v.pl-1]} fichas`);if(!$('#prof').hidden)profDraw()}
+/* compensación por reiniciar las tablas (cada una se cobra una sola vez) */
+function compGet(v){if(!v||typeof v.id!=='string'||!(v.c>0)||PF.comp[v.id])return;PF.comp[v.id]=1;const c=Math.min(2000,Math.floor(v.c));coinAdd(c);PF.own['ti:ti_veterano']=1;pfSave();
+  UNQ.push({id:'comp',r:4,ic:'🎖️',lab:'Compensación',n:'Reiniciamos las tablas',d:String(v.d||'Por lo que ya llevabas jugado antes del reinicio'),x:`+${c} 🪙 · Título «Veterano»`});unlNext();if(!$('#prof').hidden)profDraw()}
+/* lo que ya habías jugado en este celular antes de los nombres únicos también se compensa */
+later(2500,()=>{const g=+PF.c.games||0;if(g>0&&!PF.comp.r1)compGet({id:'r1',c:Math.min(600,100+g*10),d:`Ya llevabas ${g} partida${g===1?'':'s'}: gracias por jugar desde el principio`})});
+/* colecciones */
+function colCheck(){COLS.forEach(c=>{if(PF.col[c.id]||!c.it.every(k=>PF.own[k]))return;PF.col[c.id]=1;coinAdd(c.c);pfSave();UNQ.push({id:'col',r:4,ic:c.ic,lab:'¡Colección completa!',n:c.n,d:'Juntaste todas las piezas',x:`+${c.c} 🪙`});unlNext()})}
+function colDraw(){const nm=k=>{const[g,id]=k.split(':'),x=shopGet(g,id);return x?x.n:id};
+  $('#shopcol').innerHTML=COLS.map(c=>{const n=c.it.filter(k=>PF.own[k]).length,done=!!PF.col[c.id];return `<li class="${done?'done':''}"><b>${c.ic} ${esc(c.n)} <small>${done?'✔ completa':`${n}/${c.it.length}`} · 🪙 ${c.c}</small></b><span>${c.it.map(k=>`<i class="${PF.own[k]?'own':''}">${PF.own[k]?'✓':'·'} ${esc(nm(k))}</i>`).join('')}</span></li>`}).join('')}
 /* bono de bienvenida: lo que ya habías jugado antes de que existiera la tiendita también cuenta */
 if(!PF.wel){PF.wel=1;const b=Object.keys(PF.ach).filter(k=>LGM[k]).reduce((a,k)=>a+COIN.ach[LGM[k].r],0)+Math.min(40,PF.c.games||0)*10;if(b>0){PF.coin=(PF.coin||0)+b;later(1800,()=>toast(`🎁 ¡Ya hay tiendita! Te regalamos ${b} fichas por lo que ya habías jugado`))}pfSave()}
 /* ===== la tiendita ===== */
@@ -944,7 +962,7 @@ function shopPrev(it){const id=it.id,base=P.av;switch(it.k){
 function shopLeft(){const d=new Date(),m=new Date(d.getFullYear(),d.getMonth(),d.getDate()+1)-d,h=Math.floor(m/36e5),mi=Math.floor(m%36e5/6e4);return h?`${h} h ${mi} min`:`${Math.max(1,mi)} min`}
 function shopOpen(){shopDraw();const s=$('#shop');s.hidden=false;if(!RM())$('.prof-in',s).animate([{transform:'translateY(40px)',opacity:0},{transform:'none',opacity:1}],{duration:300,easing:'cubic-bezier(.2,.9,.3,1)'});
   clearInterval(SHOPT);SHOPT=setInterval(()=>{if(s.hidden){clearInterval(SHOPT);return}if(shopDay()!==SHOPD)shopDraw();else $('#shopcd').textContent='Cambia en '+shopLeft()},20000)}
-function shopDraw(){SHOPD=shopDay();SHOPS=shopToday(SHOPD);coinDraw();$('#shopcd').textContent='Cambia en '+shopLeft();
+function shopDraw(){SHOPD=shopDay();SHOPS=shopToday(SHOPD,P.uid);coinDraw();colDraw();$('#shopcd').textContent='Cambia en '+shopLeft();
   $('#shopg').innerHTML=SHOPS.map((o,i)=>{const it=o.it,R0=RAR[it.r],mine=own(it.k,it.id),on=mine&&shopOn(it);
     return `<div class="shop-c r${it.r}${o.star?' star':''}${mine?' own':''}" style="--rc:${R0.c}">${o.star?`<em class="shop-st">⭐ Destacado · −15 %</em>`:''}`+
       `<button type="button" class="shop-pv" data-pv="${i}" aria-label="Ver ${esc(it.n)}">${shopPrev(it)}</button><small class="shop-r">${R0.n} · ${SHOPK[it.k]}</small><b class="shop-n">${esc(it.n)}</b>`+
@@ -964,7 +982,7 @@ $('#shopg').addEventListener('click',e=>{const pv=e.target.closest('[data-pv]'),
   if((PF.coin||0)<o.p){toast(`Te faltan ${o.p-(PF.coin||0)} fichas. ¡Sigue jugando!`);if(!RM())b.animate([{transform:'translateX(0)'},{transform:'translateX(-6px)'},{transform:'translateX(6px)'},{transform:'translateX(0)'}],{duration:260});vib(30);return}
   if(b.dataset.sure!=='1'){b.dataset.sure='1';b.classList.add('sure');b.textContent=`¿Comprar por ${o.p}? Toca otra vez`;clearTimeout(b._t);b._t=later(3500,()=>{if(b.isConnected){b.dataset.sure='';b.classList.remove('sure');shopDraw()}});return}
   if(shopDay()!==SHOPD){toast('La tiendita acaba de cambiar.');shopDraw();return}
-  PF.coin-=o.p;PF.own[it.k+':'+it.id]=1;pfSave();coinDraw();sf(it.r>=3?'medf':'rec',.8);vib([30,30,60]);shopDraw();
+  PF.coin-=o.p;PF.own[it.k+':'+it.id]=1;pfSave();coinDraw();sf(it.r>=3?'medf':'rec',.8);vib([30,30,60]);shopDraw();colCheck();
   const card=$$('.shop-c',$('#shopg'))[SHOPS.indexOf(o)];if(card&&!RM()){card.animate([{transform:'scale(.9)'},{transform:'scale(1.06)'},{transform:'scale(1)'}],{duration:420,easing:'cubic-bezier(.3,1.5,.5,1)'});spk(card,[14,18,24,34,48,60][it.r],[RAR[it.r].c,'#fff','#ffd76a'])}
   toast(`¡${it.n} ya es tuyo! Toca «Ponértelo» para usarlo`)});
 $('#shopx').addEventListener('click',()=>{$('#shop').hidden=true});
@@ -975,7 +993,7 @@ const b64e=u=>{let s='';for(let i=0;i<u.length;i+=4096)s+=String.fromCharCode.ap
 const b64d=t=>{const s=atob(t.replace(/-/g,'+').replace(/_/g,'/'));const u=new Uint8Array(s.length);for(let i=0;i<s.length;i++)u[i]=s.charCodeAt(i);return u};
 const bkSum=t=>{let h=5381;for(let i=0;i<t.length;i++)h=((h<<5)+h+t.charCodeAt(i))>>>0;return(h%1679616).toString(36).padStart(4,'0')};
 async function zip(u,dir){const S=dir?CompressionStream:DecompressionStream;return new Uint8Array(await new Response(new Blob([u]).stream().pipeThrough(new S('deflate'))).arrayBuffer())}
-async function bkMake(){const d={v:1,n:P.name||LS.get('bt-name','')||'',av:P.av,u:P.uid,p:{c:PF.c,ach:PF.ach,eq:PF.eq,best:PF.best,coin:PF.coin||0,own:PF.own,tp:PF.tp,day:PF.day||'',wel:1,cre:PF.cre||0}};
+async function bkMake(){const d={v:1,n:P.name||LS.get('bt-name','')||'',av:P.av,u:P.uid,p:{nm:PF.nm,col:PF.col,comp:PF.comp,c:PF.c,ach:PF.ach,eq:PF.eq,best:PF.best,coin:PF.coin||0,own:PF.own,tp:PF.tp,day:PF.day||'',wel:1,cre:PF.cre||0}};
   let u=new TextEncoder().encode(JSON.stringify(d)),z='0';if(typeof CompressionStream==='function'){try{u=await zip(u,1);z='1'}catch(e){}}
   const body=b64e(bkX(u));return 'F'+z+body+'.'+bkSum(body)}
 async function bkRead(code){code=String(code||'').replace(/\s+/g,'');const m=code.match(/(?:#perfil=)?(F[01])([A-Za-z0-9_-]{20,})\.([0-9a-z]{4})$/);if(!m)throw new Error('formato');if(bkSum(m[2])!==m[3])throw new Error('suma');
@@ -997,7 +1015,7 @@ async function bkCheck(code){$('#bkerr').textContent='';try{const d=await bkRead
   catch(e){bkOpen(true);$('#bkerr').textContent=e&&e.message==='viejo'?'Este celular es muy viejito para abrir ese código. Prueba actualizando el navegador.':'Ese código no está completo o tiene un error. Cópialo otra vez completito.'}}
 $('#bkgo').addEventListener('click',()=>bkCheck($('#bkta').value));
 $('#bkyes').addEventListener('click',()=>{const d=BKD;if(!d)return;if(MODE==='play'){toast('Hazlo cuando no estés en una partida.');return}
-  const p=d.p;LS.set('bt-prof',{c:p.c||{},ach:p.ach||{},eq:p.eq||{},best:p.best==null?null:p.best,coin:+p.coin||0,own:p.own||{},tp:p.tp||{},day:p.day||'',wel:1,cre:p.cre?1:0});
+  const p=d.p;LS.set('bt-prof',{nm:typeof p.nm==='string'?p.nm:'',col:p.col||{},comp:p.comp||{},c:p.c||{},ach:p.ach||{},eq:p.eq||{},best:p.best==null?null:p.best,coin:+p.coin||0,own:p.own||{},tp:p.tp||{},day:p.day||'',wel:1,cre:p.cre?1:0});
   if(d.n)LS.set('bt-name',String(d.n).slice(0,14));if(typeof d.av==='string'&&AVM[d.av])LS.set('bt-myav',d.av);if(typeof d.u==='string'&&d.u.length<=40)LS.set('bt-uid',d.u);
   toast('¡Listo! Tu perfil ya está en este celular');later(900,()=>{location.hash='';location.reload()})});
 /* abrir con el cuadro escaneado (…#perfil=CÓDIGO) */
@@ -1020,5 +1038,14 @@ const CRE_KH='f6337311d0794e9fc757b58def0425bad4c203f54dd78d030a09bd644d36a18d';
     UNQ.push({id:'cre',r:6,ic:'👑',lab:'¡Solo para el creador!',n:'El Creador',d:'Hiciste este juego (con ayuda de Claude)',x:'Título, aura, letras, caballo, fondo, burbuja y celebración del creador'});unlNext();later(400,()=>celebFx('ce_creador',$('#profav')))};
   $('#creok').addEventListener('click',go);$('#crepin').addEventListener('keydown',e=>{if(e.key==='Enter')go()})})}
 window.__shop={PF,coinAdd,shopDraw,bkMake,bkRead,COIN};
+/* ===================== cambiar tu nombre desde el perfil ===================== */
+$('#nmchg').addEventListener('click',()=>{$('#nmform').hidden=false;$('#nmchg').hidden=true;$('#nmin').value='';$('#nmerr').textContent=PF.nm?`Cuesta ${NMPRICE} 🪙 · tienes ${PF.coin||0}`:'La primera vez es gratis';$('#nmin').focus()});
+$('#nmcan').addEventListener('click',()=>{$('#nmform').hidden=true;$('#nmchg').hidden=false});
+$('#nmform').addEventListener('submit',e=>{e.preventDefault();const v=nmCheck($('#nmin').value);if(v[0]){$('#nmerr').textContent=v[0];return}
+  if(v[1]===PF.nm){$('#nmerr').textContent='Ya te llamas así.';return}const pay=PF.nm?NMPRICE:0;
+  if((PF.coin||0)<pay){$('#nmerr').textContent=`Te faltan ${pay-(PF.coin||0)} fichas.`;return}
+  const b=$('#nmok');if(pay&&b.dataset.sure!=='1'){b.dataset.sure='1';b.textContent=`¿Pagar ${pay} 🪙? Toca otra vez`;later(3500,()=>{b.dataset.sure='';b.textContent='Cambiar'});return}b.dataset.sure='';b.textContent='Cambiar';
+  if(pay){PF.coin-=pay;coinDraw()}nmSet(v[1]);$('#nmform').hidden=true;$('#nmchg').hidden=false;sf('rec',.7);toast(`¡Listo! Ahora te llamas «${v[1]}»`)});
+
 window.__bt={H,P,WP,UPD,updCheck,AD};
 }

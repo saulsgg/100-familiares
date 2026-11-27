@@ -86,3 +86,11 @@ const LGAU={
     s+=`${B}{background:linear-gradient(135deg,${c[0]}55,${c[1]}77),#17123a;color:#fff;box-shadow:inset 0 0 0 2px ${c[0]},0 0 12px ${c[1]}99}.chat-m .bub.bu-lg${id} p::before,.shop-bu.bu-lg${id} p::before{content:'${a.e} '}.chat-m .bub.bu-lg${id} p b{color:${tc}}`}
   s+='.prof-dot[class*="aul-"]::before{top:-2px!important;right:-2px!important;bottom:-2px!important;left:-2px!important}@keyframes aulSpin{to{transform:rotate(1turn)}}.lite [class*="aul-"],.lite [class*="aul-"]::before,.lite [class*="w-lg"] .l2-c{animation:none!important}';
   const st=document.createElement('style');st.id='aul-css';st.textContent=s;document.head.appendChild(st)})();
+/* ===================== NOMBRES: uno por persona, sin groserías ===================== */
+const NMB=['pendej','verga','chinga','mierda','cabron','marica','zorra','culero','mamon','ojete','estupid','imbecil','idiota','pinche','puto','puta','perra','culo','joto','pito','caca','teta','coño','polla','follar','porno','nazi','hitler','fuck','shit','bitch','pussy','dick','nigg','sexo','mames','huev','naco','gorda','gordo','feo','fea','tonto','tonta'];
+const nmNorm=s=>String(s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[4@]/g,'a').replace(/3/g,'e').replace(/[1!|]/g,'i').replace(/0/g,'o').replace(/[5$]/g,'s').replace(/7/g,'t');
+/* regresa [error] o [null, nombre limpio] */
+function nmCheck(s){s=String(s||'').replace(/\s+/g,' ').trim();if(s.length<2)return['Escribe por lo menos 2 letras.'];if(s.length>14)return['Máximo 14 letras.'];
+  let ok=true;try{ok=new RegExp('^[\\p{L}\\p{N} ._\'-]+$','u').test(s)}catch(e){ok=/^[A-Za-zÀ-ÿ0-9 ._'-]+$/.test(s)}if(!ok)return['Solo letras, números y espacios.'];
+  const w=nmNorm(s),wj=w.replace(/[^a-zñ]/g,''),ws=w.split(/[^a-zñ]+/);
+  if(NMB.some(b=>b.length>=5?wj.includes(b):ws.includes(b)||wj===b))return['Ese nombre no se vale, ponte otro.'];return[null,s]}
