@@ -1,5 +1,6 @@
 /* lo nuevo de cada versión (sale una vez en el celular después de actualizarse) */
-const NEWS=[{v:'botones-v42',t:['🛠️ Arreglado: en la pantalla del juego en celular, los botones de comodines (como Junta) a veces no respondían, y el cuadro de la junta para robar tapaba ✕ Error.']},
+const NEWS=[{v:'botones-v43',t:['📵 Si a quien le toca contestar se le va el internet, el turno pasa solo a otro de su equipo (sin contar ✕) y la pantalla avisa.']},
+ {v:'botones-v42',t:['🛠️ Arreglado: en la pantalla del juego en celular, los botones de comodines (como Junta) a veces no respondían, y el cuadro de la junta para robar tapaba ✕ Error.']},
  {v:'botones-v41',t:['🙋 En «Cada quien en su celular», quien juega desde la pantalla del juego ya puede escribir en la junta para robar y jugar la Ronda Relámpago.']},
  {v:'botones-v40',t:['🐢 En la tele, Ajustes → Modo ligero → «No» regresa todos los efectos si tu tele aguanta.']},
  {v:'botones-v39',t:[

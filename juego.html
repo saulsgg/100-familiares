@@ -1726,7 +1726,7 @@ button.ctk:active .ctk-d{transform:scale(.88)}
 <script src="vendor/qrcode.js"></script>
 <script>
 {
-const APPV='botones-v42';
+const APPV='botones-v43';
 const $=(s,r)=>(r||document).querySelector(s),$$=(s,r)=>[...(r||document).querySelectorAll(s)];
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const S={mute:false,music:'baja',gm:'j1',anime:true,order:'orden'};const view=()=>'tablero';let introOn=false;let flowTok=0;
@@ -3981,6 +3981,16 @@ function meHud(){const d=mePanel('mehud'),me=NH.P.get('me'),H=R&&R.hud;if(!H||!m
 window.__j.finStart=()=>finStart();window.__j.meFlOn=()=>!$('#mefl').hidden;
 window.__j.flStart=()=>flStart();window.__j.hudStart=()=>hudStart();
 setInterval(()=>{try{if(!(R&&R.hud))meHud()}catch(e){}},500);
+/* si a quien le toca contestar se le cae el internet, le pasa el turno a otro de su equipo (sin ✕) y avisa */
+{const p0=NH.on.players;NH.on.players=function(){const r=p0.apply(this,arguments);try{const A=ASK;
+  if(R&&A&&A.open&&(R.phase==='play'||R.phase==='steal')&&A.uids.length&&A.uids.every(u=>!NH.P.get(u))){const t=R.phase==='steal'?1-R.ctl:R.ctl,nm=A.name||'Un jugador';
+    if(teamPhones(t).length){if(R.phase==='steal')R.thief=null;closeAsk('Se desconectó');clearGrace();hideSay();ckReset();toast(`📵 ${nm} se desconectó: le toca a otro de su equipo`);T(700,turnStart)}
+    else toast(`📵 ${nm} se desconectó. Pueden contestar en voz alta y tocar la ficha o ✕ Error.`)}}catch(e){}return r}}
+/* no esperar a que lo saquen: si su celular lleva 6 s sin dar señales, también se le pasa el turno */
+setInterval(()=>{try{const A=ASK;if(!R||!A||!A.open||A.uids.length!==1||!(R.phase==='play'||R.phase==='steal')||R.silenced)return;const p=NH.P.get(A.uids[0]);
+  if(p&&(p.local||!(performance.now()-(p.last||performance.now())>6000)))return;const t=R.phase==='steal'?1-R.ctl:R.ctl;if(teamPhones(t).length<(p?2:1))return;
+  const u=A.uids[0],nm=p?p.name:(A.name||'Un jugador');if(R.phase==='steal')R.thief=null;if(p)R.silenced=u;closeAsk('Se desconectó');clearGrace();hideSay();ckReset();toast(`📵 ${nm} perdió la conexión: le toca a otro de su equipo`);
+  T(700,()=>{turnStart();if(R&&R.silenced===u)R.silenced=null})}catch(e){}},1000);
 
 }
 </script>
