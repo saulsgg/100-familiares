@@ -1205,6 +1205,16 @@ body{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-r
 .j-mepanel{max-height:58vh;overflow:auto}
 .j-mem{max-height:22vh;overflow:auto;text-align:left;margin-top:8px}.j-mem p{margin:4px 0;padding:6px 10px;border-radius:12px;background:rgba(255,255,255,.08)}.j-mem p.me{background:rgba(255,215,106,.18)}.j-mem p.sys{background:none;color:#b9c1f5;font-size:13px}
 .l3-crown{pointer-events:none}
+/* ===== grupos ===== */
+.j-grpb{cursor:pointer;border:0;font:inherit;background:rgba(255,255,255,.12);color:#fff}.j-grpb.none{background:#ffb020;color:#2b1840;font-weight:800}
+.j-grpm{position:fixed;top:0;right:0;bottom:0;left:0;z-index:96;display:grid;place-items:center;padding:16px;background:rgba(5,6,30,.82);backdrop-filter:blur(4px)}
+.j-grpi{width:560px;width:min(560px,100%);max-height:92vh;overflow:auto;padding:22px;border-radius:22px;background:#171c55;box-shadow:0 20px 60px rgba(0,0,0,.5);color:#fff;display:grid;gap:12px;text-align:center}
+.j-grpi h2{margin:0;font-size:28px;font-size:clamp(20px,3vw,28px)}.j-grpi p{margin:0;color:#c9cdf2}.j-grpo{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}.j-grpo .l2-b{font-size:26px;font-size:clamp(18px,2.4vw,26px);padding:14px 22px}
+.j-grpi details{text-align:left;background:rgba(255,255,255,.05);border-radius:14px;padding:10px 14px}.j-grpi summary{cursor:pointer;font-weight:700}
+.j-grc{font:800 24px monospace;font:800 clamp(18px,2.4vw,24px) monospace;letter-spacing:.04em;color:#ffd23f!important;text-align:center;margin:8px 0!important;user-select:all}
+.j-grpi form{display:flex;gap:8px;flex-wrap:wrap}.j-grpi input{flex:1 1 220px;min-height:44px;padding:8px 12px;border:0;border-radius:12px;background:#0b0f3a;color:#fff;font:16px monospace}
+.j-grh{display:flex;flex-direction:column;align-items:center;gap:2px;margin-bottom:8px}.j-grh b{font-size:24px;font-size:clamp(18px,2.4vw,24px)}.j-grh small{color:#c9cdf2}
+.j-grlk{text-align:center;margin-top:16px}
 
 /* ===== foto finish: carrera de caballos (galope, polvo, cerca y meta) ===== */
 .hr{--hw:46px;position:relative;display:grid;gap:3px;margin:4px 0;padding:17px 8px 7px;border-radius:14px;overflow:hidden;text-align:left;color:#fff;
@@ -1707,7 +1717,7 @@ body.ver{overflow-x:hidden}
 
 <script>
 {
-const APPV='botones-v46';
+const APPV='botones-v47';
 const $=(s,r)=>(r||document).querySelector(s),$$=(s,r)=>[...(r||document).querySelectorAll(s)];
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const S={mute:false,music:'baja',gm:'j1',anime:true,order:'orden'};const view=()=>'tablero';let introOn=false;let flowTok=0;

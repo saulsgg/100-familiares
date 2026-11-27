@@ -1237,6 +1237,16 @@ body{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-r
 .j-mepanel{max-height:58vh;overflow:auto}
 .j-mem{max-height:22vh;overflow:auto;text-align:left;margin-top:8px}.j-mem p{margin:4px 0;padding:6px 10px;border-radius:12px;background:rgba(255,255,255,.08)}.j-mem p.me{background:rgba(255,215,106,.18)}.j-mem p.sys{background:none;color:#b9c1f5;font-size:13px}
 .l3-crown{pointer-events:none}
+/* ===== grupos ===== */
+.j-grpb{cursor:pointer;border:0;font:inherit;background:rgba(255,255,255,.12);color:#fff}.j-grpb.none{background:#ffb020;color:#2b1840;font-weight:800}
+.j-grpm{position:fixed;top:0;right:0;bottom:0;left:0;z-index:96;display:grid;place-items:center;padding:16px;background:rgba(5,6,30,.82);backdrop-filter:blur(4px)}
+.j-grpi{width:560px;width:min(560px,100%);max-height:92vh;overflow:auto;padding:22px;border-radius:22px;background:#171c55;box-shadow:0 20px 60px rgba(0,0,0,.5);color:#fff;display:grid;gap:12px;text-align:center}
+.j-grpi h2{margin:0;font-size:28px;font-size:clamp(20px,3vw,28px)}.j-grpi p{margin:0;color:#c9cdf2}.j-grpo{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}.j-grpo .l2-b{font-size:26px;font-size:clamp(18px,2.4vw,26px);padding:14px 22px}
+.j-grpi details{text-align:left;background:rgba(255,255,255,.05);border-radius:14px;padding:10px 14px}.j-grpi summary{cursor:pointer;font-weight:700}
+.j-grc{font:800 24px monospace;font:800 clamp(18px,2.4vw,24px) monospace;letter-spacing:.04em;color:#ffd23f!important;text-align:center;margin:8px 0!important;user-select:all}
+.j-grpi form{display:flex;gap:8px;flex-wrap:wrap}.j-grpi input{flex:1 1 220px;min-height:44px;padding:8px 12px;border:0;border-radius:12px;background:#0b0f3a;color:#fff;font:16px monospace}
+.j-grh{display:flex;flex-direction:column;align-items:center;gap:2px;margin-bottom:8px}.j-grh b{font-size:24px;font-size:clamp(18px,2.4vw,24px)}.j-grh small{color:#c9cdf2}
+.j-grlk{text-align:center;margin-top:16px}
 
 /* ===== foto finish: carrera de caballos (galope, polvo, cerca y meta) ===== */
 .hr{--hw:46px;position:relative;display:grid;gap:3px;margin:4px 0;padding:17px 8px 7px;border-radius:14px;overflow:hidden;text-align:left;color:#fff;
@@ -1639,7 +1649,7 @@ button.ctk:active .ctk-d{transform:scale(.88)}
 <!-- sala: código, QR, jugadores y animalitos -->
 <div class="j-lobby" id="lobby" hidden role="dialog" aria-modal="true" aria-labelledby="lobt">
   <div class="j-lin">
-    <header><h2 id="lobt">Sala de la partida</h2><span class="pill" id="lobstat">Conectando…</span></header>
+    <header><h2 id="lobt">Sala de la partida</h2><button type="button" class="pill j-grpb" id="grpb" title="Con quién se juega en esta pantalla">Grupo…</button><span class="pill" id="lobstat">Conectando…</span></header>
     <div class="j-saved" id="saved" hidden>
       <b id="savedh">💾 Hay una partida guardada</b><p id="savedtx"></p><small id="savedat"></small>
       <div><button type="button" class="l2-b l2-gd big" id="cont">▶ Continuar</button><button type="button" class="l2-b" id="fresh">Empezar de nuevo</button></div>
@@ -1751,7 +1761,7 @@ button.ctk:active .ctk-d{transform:scale(.88)}
 <script src="vendor/qrcode.js"></script>
 <script>
 {
-const APPV='botones-v46';
+const APPV='botones-v47';
 const $=(s,r)=>(r||document).querySelector(s),$$=(s,r)=>[...(r||document).querySelectorAll(s)];
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const S={mute:false,music:'baja',gm:'j1',anime:true,order:'orden'};const view=()=>'tablero';let introOn=false;let flowTok=0;
@@ -2611,6 +2621,50 @@ function fastestBroker(){if(BROKERS.length<2)return Promise.resolve(0);return ne
   later(5500,()=>fin(LSN.get('bt-bi',0)))})}
 
 
+/* ===================== LA NUBE: lo que se comparte entre tus aparatos (compu, celular, tele) =====================
+   Usa los mismos servidores públicos de mensajes del juego. Cada aparato guarda SU parte en un mensaje "retenido"
+   (el servidor se queda con el último) y lee la de los demás. Todo va cifrado con la clave del grupo: sin la
+   clave nadie puede leer los nombres. Si un servidor borra algo, cada aparato vuelve a subir lo que tiene. */
+const NUBE={cs:[],sp:{},up:0,ok:0,at:0};
+const nubeB64=u=>{let s='';for(let i=0;i<u.length;i+=4096)s+=String.fromCharCode.apply(null,u.subarray(i,i+4096));return btoa(s)};
+const nubeU8=t=>{const s=atob(t),u=new Uint8Array(s.length);for(let i=0;i<s.length;i++)u[i]=s.charCodeAt(i);return u};
+async function nubeHex(s){const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(s));return[...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('')}
+async function nubeKey(sec){const base=await crypto.subtle.importKey('raw',new TextEncoder().encode(sec),'PBKDF2',false,['deriveKey']);
+  return crypto.subtle.deriveKey({name:'PBKDF2',salt:new TextEncoder().encode('100familiares-nube'),iterations:30000,hash:'SHA-256'},base,{name:'AES-GCM',length:256},false,['encrypt','decrypt'])}
+async function nubeEnc(key,obj){const iv=crypto.getRandomValues(new Uint8Array(12)),ct=new Uint8Array(await crypto.subtle.encrypt({name:'AES-GCM',iv},key,new TextEncoder().encode(JSON.stringify(obj)))),o=new Uint8Array(12+ct.length);o.set(iv);o.set(ct,12);return nubeB64(o)}
+async function nubeDec(key,t){const u=nubeU8(t);return JSON.parse(new TextDecoder().decode(await crypto.subtle.decrypt({name:'AES-GCM',iv:u.subarray(0,12)},key,u.subarray(12))))}
+const nubeTopic=(S,slot)=>'fam100dijeron/nube/'+S.tid+'/'+slot;
+function nubeConnect(){if(NUBE.cs.length||typeof Paho==='undefined')return;
+  BROKERS.forEach((u,i)=>{const B={u,i,c:null,up:false,wait:2000};NUBE.cs.push(B);
+    const go=()=>{let c;try{c=new Paho.Client(u,'n'+Math.random().toString(36).slice(2,10))}catch(e){return}B.c=c;
+      c.onMessageArrived=m=>{try{nubeIn(m.destinationName,m.payloadString)}catch(e){}};
+      c.onConnectionLost=()=>{B.up=false;nubeCount();setTimeout(go,B.wait=Math.min(B.wait*2,60000))};
+      try{c.connect({timeout:8,keepAliveInterval:50,cleanSession:true,mqttVersion:4,useSSL:/^wss/.test(u),
+        onSuccess:()=>{B.up=true;B.wait=2000;nubeCount();Object.values(NUBE.sp).forEach(S=>{try{c.subscribe(nubeTopic(S,'#'),{qos:1})}catch(e){}});
+          /* al conectar se vuelve a subir lo propio (por si el servidor lo perdió) */
+          setTimeout(()=>Object.values(NUBE.sp).forEach(S=>nubeRepub(S,B)),1500)},
+        onFailure:()=>{B.up=false;setTimeout(go,B.wait=Math.min(B.wait*2,60000))}})}catch(e){setTimeout(go,B.wait)}};
+    go()})}
+function nubeCount(){NUBE.up=NUBE.cs.filter(B=>B.up).length;if(NUBE.onState)try{NUBE.onState()}catch(e){}}
+/* un espacio = un grupo (o tu perfil). onSlot(slot, datos) cada vez que llega algo nuevo de otro aparato */
+async function nubeJoin(id,sec,mine,onSlot){const S={id,sec,mine,onSlot,key:await nubeKey(sec),tid:(await nubeHex('100f-espacio|'+sec)).slice(0,24),cache:{},own:null};
+  NUBE.sp[id]=S;nubeConnect();NUBE.cs.forEach(B=>{if(B.up)try{B.c.subscribe(nubeTopic(S,'#'),{qos:1})}catch(e){}});
+  /* lo de otros aparatos que ya conocíamos: si a los 12 s ningún servidor lo trae, lo volvemos a subir nosotros */
+  setTimeout(()=>Object.values(S.cache).forEach(x=>{if(!x.seen&&x.raw)NUBE.cs.forEach(B=>nubeSend(B,nubeTopic(S,x.slot),x.raw))}),12000);return S}
+function nubeLeave(id){const S=NUBE.sp[id];if(!S)return;delete NUBE.sp[id];NUBE.cs.forEach(B=>{if(B.up)try{B.c.unsubscribe(nubeTopic(S,'#'))}catch(e){}})}
+function nubeSend(B,topic,raw){if(!B.up||!B.c)return false;try{const m=new Paho.Message(raw);m.destinationName=topic;m.qos=1;m.retained=true;B.c.send(m);return true}catch(e){return false}}
+async function nubePut(id,data){const S=NUBE.sp[id];if(!S)return;data.v=Date.now();S.own={raw:await nubeEnc(S.key,data),v:data.v};NUBE.cs.forEach(B=>nubeSend(B,nubeTopic(S,S.mine),S.own.raw))}
+function nubeRepub(S,B){if(S.own)nubeSend(B,nubeTopic(S,S.mine),S.own.raw)}
+async function nubeIn(topic,raw){const S=Object.values(NUBE.sp).find(s=>topic.startsWith('fam100dijeron/nube/'+s.tid+'/'));if(!S||!raw)return;const slot=topic.slice(topic.lastIndexOf('/')+1);
+  if(slot===S.mine){if(S.own&&raw!==S.own.raw){try{const d=await nubeDec(S.key,raw);if(d.v>S.own.v&&S.onSlot)S.onSlot(slot,d,raw)}catch(e){}}return}
+  const c=S.cache[slot];if(c&&c.raw===raw){c.seen=1;return}let d;try{d=await nubeDec(S.key,raw)}catch(e){return}
+  if(!d||typeof d!=='object'||(c&&c.v>=d.v)){if(c)c.seen=1;return}S.cache[slot]={slot,v:d.v,raw,seen:1};NUBE.ok++;NUBE.at=Date.now();if(S.onSlot)S.onSlot(slot,d,raw)}
+/* para que otro aparato use los mismos grupos: un código de palabras fácil de escribir */
+const NUBEW=['luna','sol','tigre','mango','faro','nube','rayo','coco','perla','trueno','lima','oso','foca','pino','rio','miel','kiwi','loro','nopal','cielo','fresa','gato','lobo','mar','roca','salsa','taco','uva','vaca','zorro','bola','dado','flor','gema','hoja','isla','jade','lago','mapa','nido','ola','pera','queso','rana','seda','tren','vela','yate'];
+function nubeCode(){const r=crypto.getRandomValues(new Uint32Array(5));return[0,1,2,3].map(i=>NUBEW[r[i]%NUBEW.length]).join('-')+'-'+String(10+r[4]%90)}
+const nubeNorm=s=>String(s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+const nubeValid=s=>/^([a-z]+-){4}\d{2}$/.test(s);
+
 /* ===================== SALA: la pantalla del juego abre la partida y los celulares son los botones ===================== */
 const NH={net:null,code:'',bi:0,P:new Map(),mem:{},av:['ajolote','jaguar'],foul:true,r:0,phase:'idle',presses:[],res:null,first:0,early:null,armAt:0,d:0,lat:0,T:[],dT:0,pingT:0,resAt:0,info:null,
   on:{players(){},status(){},press(){},result(){},late(){},msg(){},hello(){},local(){},wthrow(){},cmdmsg(){}}};
@@ -3068,6 +3122,8 @@ $('#avtitle').addEventListener('click',()=>avSecretTap($('#avtitle'),()=>{openSh
 /* ===================== FLUJO DE LA PARTIDA ===================== */
 function nextQ(){const bl=new Set(LSx.get('j-black',[])),ok=i=>!bl.has(DB.r[i].q);let pool=DB.r.map((q,i)=>i).filter(i=>!G.used.includes(i)&&ok(i));
   /* que no salga una que ya vio alguien de los que están (cada celular recuerda las suyas); si ya no hay, se vale repetir */
+  /* que no salga una que ya salió con este grupo (en cualquiera de sus pantallas) ni una de las que ya se quitaron */
+  {const gx=grExcl(),f1=pool.filter(i=>!gx.has(qid(DB.r[i].q)));if(f1.length)pool=f1}
   {const sn=new Set();NH.P.forEach(p=>{if(p.seen&&(p.team>=0))p.seen.forEach(x=>sn.add(x))});const fresh=pool.filter(i=>!sn.has(qid(DB.r[i].q)));if(fresh.length)pool=fresh}if(!pool.length){G.used=[];pool=DB.r.map((q,i)=>i).filter(ok)}const i=pool[Math.floor(Math.random()*pool.length)];G.used.push(i);saveG();return DB.r[i]}
 function ctl(mode){const c=$('#ctl');
   c.innerHTML=mode==='fl'?`<button class="l2-b" type="button" data-a="flskip">⏭ Saltar la Ronda Relámpago</button>`
@@ -3552,7 +3608,7 @@ function pe(p,e,v,x){if(!p)return;if(p.local){if(window.__mePe)try{window.__mePe
 const teamPe=(t,e,v)=>NH.P.forEach(p=>{if(p.team===t)pe(p,e,v)});
 /* cada celular recuerda las preguntas que ya vio */
 {const q0=qReveal;qReveal=function(){const r=q0.apply(this,arguments);try{if(R&&R.q&&!R.qSent){R.qSent=1;const id=qid(R.q.q);NH.P.forEach(p=>pe(p,'q',null,{id}));
-    const L=LSx.get('j-qplay',[]);if(!L.includes(id)){L.push(id);LSx.set('j-qplay',L.slice(-2000))}}}catch(e){}return r}}
+    grSeen(id)}}catch(e){}return r}}
 /* respuestas atinadas: quién, si fue la #1, en un robo, justo después de una junta, o en el último segundo */
 {const r0=stReveal;stReveal=function(i){const by=R&&R.by,steal=R&&R.phase==='steal',t=R?(steal?1-R.ctl:R.ctl):-1,hive=!!(R&&R.hive===t);
   r0.apply(this,arguments);try{if(!by)return;const p=NH.P.get(by.uid);if(!p)return;pe(p,'hit',{i,steal,hive});if(R)R.hive=null;
@@ -3572,19 +3628,20 @@ function peGameEnd(w,a,b){if(G.st.gend)return;G.st.gend=1;saveG();const diff=Mat
     pe(p,'gend',{rd:(G.ri|0)+1,won,tie:w<0,diff,perfect:won&&!(G.st.t[p.team].xx>0),comeback:won&&cb!=null&&(p.team===0?cb<=-200:cb>=200),edge:won&&!!(R&&R.edge&&R.edge.uid===p.uid)})})}
 {const f0=finStart;finStart=function(){try{if(R){const[a,b]=G.sc;peGameEnd(a===b?-1:a>b?0:1,a,b)}}catch(e){}return f0.apply(this,arguments)}}
 
-/* ===================== SALÓN DE LA FAMA (se guarda en esta pantalla) ===================== */
-const FAME=(f=>{f=f&&typeof f==='object'?f:{};f.fast=Array.isArray(f.fast)?f.fast:[];return f})(LSx.get('j-fame',null));
+/* ===================== SALÓN DE LA FAMA (es del grupo: se arma con lo de todas sus pantallas, ver j_temp) ===================== */
+const FAME={fast:[]};
 const hoy=()=>new Date().toLocaleDateString('es-MX',{day:'numeric',month:'short',year:'numeric'});
-/* el récord que ya existía (el más rápido de siempre en esta pantalla) entra primero */
-{const rec=LSN.get('bt-rec',null);if(rec&&rec.rt>0&&rec.name&&!FAME.fast.some(x=>x.n===rec.name&&x.rt<=rec.rt)){FAME.fast=FAME.fast.filter(x=>x.n!==rec.name);FAME.fast.push({n:String(rec.name).slice(0,14),rt:rec.rt,d:''});FAME.fast.sort((a,b)=>a.rt-b.rt);FAME.fast=FAME.fast.slice(0,5);LSx.set('j-fame',FAME)}}
-function fameSave(){LSx.set('j-fame',FAME)}
-function fameFast(list){let nu=null;list.forEach(x=>{if(!(x.rt>=0&&x.rt<15000)||!x.name)return;const k=FAME.fast.findIndex(y=>y.n===x.name);if(k>=0&&FAME.fast[k].rt<=x.rt)return;if(k>=0)FAME.fast.splice(k,1);FAME.fast.push({n:x.name,rt:x.rt,d:hoy()});if(!nu||x.rt<nu.rt)nu=x});
-  FAME.fast.sort((a,b)=>a.rt-b.rt);FAME.fast=FAME.fast.slice(0,5);if(nu&&FAME.fast[0]&&FAME.fast[0].n===nu.name&&FAME.fast[0].rt===nu.rt){G.st.newRec={k:'fast',d:`${nu.name} · ${(nu.rt/1000).toFixed(2)} s`};saveG()}fameSave()}
+function fameSave(){}
+const grU=x=>{if(!x)return null;if(x.uid==='me'||x.local){const m=NH.P.get('me');return m&&m.puid||null}return x.uid||null};
+function fameFast(list){const id=GR.cur;if(!id)return;const o=GD[id].own,top=FAME.fast[0];let nu=null;
+  list.forEach(x=>{if(!(x.rt>=0&&x.rt<15000)||!x.name)return;const u=grU(x);if(!u)return;const c=o.fast[u];if(!c||x.rt<c[0]){o.fast[u]=[x.rt,Date.now()];grNm(id,u,NH.P.get(x.uid)||x)}if(!nu||x.rt<nu.rt)nu=x});
+  if(nu&&grU(nu)&&(!top||nu.rt<top.rt)){G.st.newRec={k:'fast',d:`${nu.name} · ${(nu.rt/1000).toFixed(2)} s`};saveG()}grSave(id,0);grView()}
 {const r1=NH.on.result;NH.on.result=res=>{try{if(res.kind==='ok'&&res.list)fameFast(res.list)}catch(e){}r1(res)}}
-function fameRec(k,obj,better){const cur=FAME[k];if(cur&&!better(obj,cur))return;FAME[k]=Object.assign(obj,{d:hoy()});fameSave();G.st.newRec=G.st.newRec||{k};saveG()}
+function fameRec(k,obj,better){const id=GR.cur;if(!id)return;const o=GD[id].own,nw=Object.assign({},obj,{ts:Date.now()}),cur=o.rec[k];if(!cur||better(nw,cur)){o.rec[k]=nw;grSave(id,0)}
+  const mg=FAME[k];if(!mg||better(nw,mg)){G.st.newRec=G.st.newRec||{k};saveG()}grView()}
 function fameDraw(){const f=FAME,row=(i,t,d)=>`<div class="j-fr"><span>${i}</span><div><b>${t}</b><small>${d}</small></div></div>`;
-  const all=new Set(DB.r.map(q=>qid(q.q))),pl=(LSx.get('j-qplay',[])||[]).filter(x=>all.has(x)).length;
-  let h=`<p class="j-qc">📚 <b>${DB.r.length}</b> preguntas en el juego · <b>${pl}</b> ya salieron en esta pantalla · faltan <b>${Math.max(0,DB.r.length-pl)}</b></p>`+'<h3>⚡ Los dedos más rápidos</h3>'+(f.fast.length?'<ol class="j-fl">'+f.fast.map((x,k)=>`<li${k===0?' class="top"':''}><b>${esc(x.n)}</b><span>${(x.rt/1000).toFixed(3)} s</span><small>${esc(x.d||'')}</small></li>`).join('')+'</ol>':'<p class="j-fe">Todavía nadie. ¡El primero que toque el botón entra!</p>');
+  const all=new Set(DB.r.map(q=>qid(q.q))),gx=grExcl(),pl=DB.r.filter(q=>gx.has(qid(q.q))).length;
+  let h=`<p class="j-qc">📚 <b>${DB.r.length}</b> preguntas en el juego · <b>${pl}</b> ya salieron (o ya no se usan) · faltan <b>${Math.max(0,DB.r.length-pl)}</b></p>`+'<h3>⚡ Los dedos más rápidos</h3>'+(f.fast.length?'<ol class="j-fl">'+f.fast.map((x,k)=>`<li${k===0?' class="top"':''}><b>${esc(x.n)}</b><span>${(x.rt/1000).toFixed(3)} s</span><small>${esc(x.d||'')}</small></li>`).join('')+'</ol>':'<p class="j-fe">Todavía nadie. ¡El primero que toque el botón entra!</p>');
   h+='<h3>🏅 Récords</h3>';
   h+=row('🕵️','El robo más grande',f.steal?`${esc(f.steal.who)} se robaron ${f.steal.pts} puntos · ${esc(f.steal.d)}`:'Todavía no hay');
   h+=row('💯','Más puntos en una partida',f.score?`${esc(f.score.who)} · ${f.score.pts} puntos · ${esc(f.score.d)}`:'Todavía no hay');
@@ -3975,50 +4032,124 @@ function flAbort(){if(!FL)return;clearTimeout(FL.T);const id=FL.id;[0,1].forEach
     else flSend(p,{st:'wait',txt:`${flNames(t)[b]} está contestando por ${losN(t)}…`,sub:'¡No le soplen! 🤫'})}
   else if(FL.ph==='rev')flSend(p,{st:'rev'})})}}
 
-/* ===================== TEMPORADAS (tabla del mes) E HISTORIAL DE PARTIDAS (todo se guarda en esta pantalla) ===================== */
+/* ===================== GRUPOS: Familia y Amigos =====================
+   Cada grupo tiene su temporada, su salón de la fama, su historial y sus preguntas ya vistas, y son iguales en todas
+   tus pantallas (compu, celular, tele): cada pantalla sube su parte cifrada a "la nube" (nube.js) y arma la tabla
+   juntando la de todas. Lo de un grupo nunca se ve en el otro. */
 const MESES=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
 const mesKey=d=>{d=d||new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')};
 const mesN=k=>{const p=String(k||'').split('-');return(MESES[+p[1]-1]||'')+(+p[0]&&+p[0]!==new Date().getFullYear()?' '+p[0]:'')};
-const TEMP=(t=>{t=t&&typeof t==='object'?t:{};if(typeof t.m!=='string')t.m=mesKey();t.p=t.p&&typeof t.p==='object'?t.p:{};t.past=Array.isArray(t.past)?t.past:[];return t})(LSx.get('j-temp',null));
 /* puntos de temporada: ganar 10 · empate 5 · jugar 2 · cada atinada 1 */
 const tempPts=x=>(x.w||0)*10+(x.e||0)*5+(x.g||0)*2+(x.h||0);
 const TPRIZE=[300,150,75];
+const GRPS=[{id:'fam',ic:'👪',n:'Familia'},{id:'ami',ic:'🎮',n:'Amigos'}];
+const GR=(g=>{g=g&&typeof g==='object'?g:{};if(!nubeValid(g.m||''))g.m=nubeCode();if(typeof g.dev!=='string'||!/^[a-z0-9]{6,12}$/.test(g.dev))g.dev=Math.random().toString(36).slice(2,10);
+  if(!GRPS.some(x=>x.id===g.cur))g.cur=null;return g})(LSx.get('j-grp',null));
+LSx.set('j-grp',GR);
+const grpN=id=>{const x=GRPS.find(g=>g.id===id);return x?x.ic+' '+x.n:''};
+const grOwn=id=>{let o=LSx.get('j-gd-'+id,null);o=o&&typeof o==='object'?o:{};['m','nm','fast','rec'].forEach(k=>{o[k]=o[k]&&typeof o[k]==='object'&&!Array.isArray(o[k])?o[k]:{}});
+  ['hs','s','b'].forEach(k=>{o[k]=Array.isArray(o[k])?o[k]:[]});return o};
+const GD={};GRPS.forEach(g=>{const c=LSx.get('j-gc-'+g.id,null);GD[g.id]={own:grOwn(g.id),oth:c&&typeof c==='object'?c:{}}});
+const GRPT={};
+function grSave(id,push){LSx.set('j-gd-'+id,GD[id].own);if(push){clearTimeout(GRPT[id]);GRPT[id]=setTimeout(()=>{try{nubePut(id,Object.assign({dev:GR.dev},GD[id].own))}catch(e){}},600)}}
+function grNm(id,u,p){if(!u||!p)return;GD[id].own.nm[u]=[String(p.name||'Jugador').slice(0,14),(typeof pAv==='function'&&p.uid?pAv(p):p.av)||'',Date.now()]}
+function grSeen(q){const id=GR.cur;if(!id||typeof q!=='string')return;const o=GD[id].own;if(!o.s.includes(q)){o.s.push(q);if(o.s.length>2500)o.s=o.s.slice(-2500);grSave(id,0)}}
+
+/* ===== reinicio de las tablas viejas (una sola vez): compensación y las preguntas que ya salieron se quitan ===== */
+if(!LSx.get('j-grmig',0)){try{const old=LSx.get('j-qplay',[]),ban=Array.isArray(old)?old.filter(x=>typeof x==='string'):[];
+    GRPS.forEach(g=>{const o=GD[g.id].own;ban.forEach(x=>{if(!o.b.includes(x))o.b.push(x)});grSave(g.id,0)});
+    const T=LSx.get('j-temp',null),C={},add=(u,n,pts)=>{if(!u||typeof u!=='string')return;const c=C[u]||(C[u]={n:String(n||'').slice(0,14),c:150});c.c=Math.min(1000,c.c+Math.round(+pts||0)*2)};
+    if(T&&typeof T==='object'){const P0=T.p&&typeof T.p==='object'?T.p:{};for(const u in P0)add(u,P0[u].n,tempPts(P0[u]));(Array.isArray(T.past)?T.past:[]).forEach(s=>(s&&Array.isArray(s.top)?s.top:[]).forEach(x=>add(x.u,x.n,x.pts)))}
+    LSx.set('j-comp',C);['j-temp','j-fame','j-hist','j-qplay','bt-rec'].forEach(k=>{try{localStorage.removeItem(k)}catch(e){}})}catch(e){}LSx.set('j-grmig',1)}
+/* la compensación le llega a cada quien cuando se conecta (su celular solo la cobra una vez) */
+{const h0=NH.on.hello;NH.on.hello=p=>{h0&&h0(p);try{if(p.local)return;const C=LSx.get('j-comp',{});if(C&&C[p.uid])pe(p,'comp',{id:'tab-'+GR.dev,c:C[p.uid].c,d:'Reiniciamos la temporada y el salón de la fama: esto es por lo que ya llevabas'})}catch(e){}}}
+
+/* ===== juntar lo de todas las pantallas del grupo ===== */
+function grMerge(id){const L=[GD[id].own].concat(Object.values(GD[id].oth||{})).filter(x=>x&&typeof x==='object'),M={},NM={},HS=new Map(),F={},REC={},S=new Set(),B=new Set();
+  L.forEach(o=>{const om=o.m&&typeof o.m==='object'?o.m:{};for(const mk in om){if(!/^\d{4}-\d{2}$/.test(mk))continue;const mm=M[mk]||(M[mk]={});for(const u in om[mk]){const a=om[mk][u];if(!Array.isArray(a))continue;const t=mm[u]||(mm[u]=[0,0,0,0]);for(let i=0;i<4;i++)t[i]+=+a[i]||0}}
+    const on=o.nm&&typeof o.nm==='object'?o.nm:{};for(const u in on){const a=on[u];if(Array.isArray(a)&&typeof a[0]==='string'&&(!NM[u]||(+a[2]||0)>(+NM[u][2]||0)))NM[u]=a}
+    (Array.isArray(o.hs)?o.hs:[]).forEach(h=>{if(h&&h.id&&Array.isArray(h.sc)&&!HS.has(h.id))HS.set(h.id,h)});
+    const of=o.fast&&typeof o.fast==='object'?o.fast:{};for(const u in of){const a=of[u];if(Array.isArray(a)&&a[0]>0&&(!F[u]||a[0]<F[u][0]))F[u]=a}
+    const orc=o.rec&&typeof o.rec==='object'?o.rec:{};for(const k in orc){const r=orc[k],v=x=>+(x.pts||x.n||0);if(r&&typeof r==='object'&&(!REC[k]||v(r)>v(REC[k])))REC[k]=r}
+    (Array.isArray(o.s)?o.s:[]).forEach(x=>S.add(x));(Array.isArray(o.b)?o.b:[]).forEach(x=>B.add(x))});
+  return{M,NM,HS:[...HS.values()].sort((a,b)=>b.ts-a.ts),F,REC,S,B}}
+/* las preguntas que ya no deben salir en este grupo */
+function grExcl(){const id=GR.cur;if(!id)return new Set();const V=GV||grMerge(id),x=new Set(V.S);V.B.forEach(q=>x.add(q));return x}
+
+/* ===== lo que se muestra (se vuelve a armar cada vez que llega algo) ===== */
+const TEMP={m:mesKey(),p:{},past:[]},HIST=[];let GV=null;
+const fDate=ts=>new Date(ts).toLocaleDateString('es-MX',{day:'numeric',month:'short',year:'numeric'});
+function grView(){const id=GR.cur;FAME.fast=[];['steal','score','streak'].forEach(k=>{delete FAME[k]});TEMP.m=mesKey();TEMP.p={};TEMP.past=[];HIST.length=0;GV=null;if(!id)return;
+  const V=GV=grMerge(id),nm=u=>V.NM[u]||['Jugador','',0],cur=V.M[TEMP.m]||{};
+  for(const u in cur){const a=cur[u];TEMP.p[u]={n:nm(u)[0],av:nm(u)[1],g:a[0],w:a[1],e:a[2],h:a[3]}}
+  Object.keys(V.M).filter(k=>k<TEMP.m).sort().reverse().slice(0,12).forEach(k=>{const top=Object.entries(V.M[k]).map(([u,a])=>({u,n:nm(u)[0],av:nm(u)[1],g:a[0],w:a[1],pts:tempPts({g:a[0],w:a[1],e:a[2],h:a[3]})})).filter(x=>x.g>0).sort((a,b)=>b.pts-a.pts||b.w-a.w).slice(0,3);if(top.length)TEMP.past.push({m:k,top})});
+  V.HS.slice(0,12).forEach(h=>HIST.push(h));
+  FAME.fast=Object.entries(V.F).map(([u,a])=>({n:nm(u)[0],rt:a[0],d:a[1]?fDate(a[1]):''})).sort((a,b)=>a.rt-b.rt).slice(0,5);
+  for(const k in V.REC){const r=V.REC[k];FAME[k]=Object.assign({},r,{d:r.ts?fDate(r.ts):''})}}
 function tempRank(){return Object.entries(TEMP.p).map(([u,x])=>Object.assign({},x,{u,pts:tempPts(x)})).filter(x=>x.g>0).sort((a,b)=>b.pts-a.pts||b.w-a.w||String(a.n).localeCompare(String(b.n)))}
-/* cambió el mes: se guardan los 3 primeros y empieza la tabla de nuevo */
-function tempRoll(){const k=mesKey();if(TEMP.m===k)return;const top=tempRank().slice(0,3).map(x=>({u:x.u,n:x.n,av:x.av||'',pts:x.pts,w:x.w||0,g:x.g||0}));
-  if(top.length)TEMP.past.unshift({m:TEMP.m,top});TEMP.past=TEMP.past.slice(0,12);TEMP.m=k;TEMP.p={};LSx.set('j-temp',TEMP)}
-tempRoll();
-/* solo cuentan los que juegan con su celular (cada celular es una persona) */
-function tempAdd(w){tempRoll();let n=0;NH.P.forEach(p=>{if(p.local||!(p.team===0||p.team===1)||!p.uid)return;const s=G.st.p[p.uid]||{},x=TEMP.p[p.uid]||(TEMP.p[p.uid]={n:'',g:0,w:0,e:0,h:0});
-    x.n=String(p.name||'Jugador').slice(0,14);x.av=pAv(p)||'';x.g++;if(w<0)x.e++;else if(w===p.team)x.w++;x.h+=s.hits||0;n++});
-  if(n)LSx.set('j-temp',TEMP)}
+function tempRoll(){if(TEMP.m!==mesKey())grView()}
+function tempAdd(){}
+function histAdd(){}
 /* el campeón del mes pasado (sale con 👑 en la sala) */
 const tempChamp=uid=>{const L=TEMP.past[0];if(!L||!L.top[0]||L.top[0].u!==uid)return false;const d=new Date(),pm=mesKey(new Date(d.getFullYear(),d.getMonth()-1,1));return L.m===pm};
 /* premios de temporada: se le avisan al celular cada vez que se conecta (el celular solo lo cobra una vez) */
 {const h0=NH.on.hello;NH.on.hello=p=>{h0&&h0(p);try{if(p.local)return;TEMP.past.slice(0,3).forEach(s=>{const i=s.top.findIndex(x=>x.u===p.uid);if(i>=0)pe(p,'temp',{m:s.m,pl:i+1,mn:mesN(s.m),pts:s.top[i].pts})})}catch(e){}}}
 
-/* ===== historial: cómo quedaron las últimas partidas en esta pantalla ===== */
-const HIST=(h=>Array.isArray(h)?h.filter(x=>x&&Array.isArray(x.sc)):[])(LSx.get('j-hist',null));
-function histAdd(w){const pl=[[],[]];try{NH.P.forEach(p=>{if((p.team===0||p.team===1)&&p.name)pl[p.team].push(String(p.name).slice(0,14))})}catch(e){}
+/* ===== al terminar la partida se anota en el grupo y se sube ===== */
+function grGame(w){const id=GR.cur;if(!id)return;const o=GD[id].own,mk=mesKey(),now=Date.now(),mm=o.m[mk]||(o.m[mk]={}),pl=[[],[]];
+  NH.P.forEach(p=>{if(!(p.team===0||p.team===1))return;const u=p.local?p.puid:p.uid;if(!u)return;const s=G.st.p[p.uid]||{},a=mm[u]||(mm[u]=[0,0,0,0]);
+    a[0]++;if(w<0)a[2]++;else if(w===p.team)a[1]++;a[3]+=s.hits||0;grNm(id,u,p);pl[p.team].push(String(p.name||'Jugador').slice(0,14))});
   let mo=null;try{const L=finMoments([]);mo=L.find(x=>x.ic==='⭐')||L[0]||null}catch(e){}
-  HIST.unshift({ts:Date.now(),n:[NAMES[0],NAMES[1]],sc:[G.sc[0],G.sc[1]],w,pl,mo:mo?{ic:mo.ic,t:mo.t,d:String(mo.d).slice(0,140)}:null,fl:!!G.flashDone});
-  HIST.length=Math.min(HIST.length,30);LSx.set('j-hist',HIST)}
-{const f0=finStart;finStart=function(){try{if(R&&!G.st.hist){G.st.hist=1;saveG();const[a,b]=G.sc,w=a===b?-1:a>b?0:1;histAdd(w);tempAdd(w)}}catch(e){}return f0.apply(this,arguments)}}
+  o.hs.unshift({id:GR.dev+'-'+now.toString(36),ts:now,n:[NAMES[0],NAMES[1]],sc:[G.sc[0],G.sc[1]],w,pl,mo:mo?{ic:mo.ic,t:mo.t,d:String(mo.d).slice(0,140)}:null,fl:!!G.flashDone});
+  o.hs.length=Math.min(o.hs.length,30);grSave(id,1);grView()}
+{const f0=finStart;finStart=function(){const r=f0.apply(this,arguments);try{if(R&&!G.st.hist){G.st.hist=1;saveG();const[a,b]=G.sc;grGame(a===b?-1:a>b?0:1)}}catch(e){}return r}}
+
+/* ===== en el salón de la fama ===== */
 const hDate=ts=>{const d=new Date(ts);return d.toLocaleDateString('es-MX',{day:'numeric',month:'short'})+' · '+d.toLocaleTimeString('es-MX',{hour:'numeric',minute:'2-digit'})};
+function grSync(){const n=Object.keys(GD[GR.cur]&&GD[GR.cur].oth||{}).length;return NUBE.up?`☁️ Conectado${n?` · junta lo de ${n+1} pantallas`:' · solo esta pantalla por ahora'}`:'☁️ Sin conexión: se sube en cuanto haya internet'}
 function tempHTML(){tempRoll();const L=tempRank(),d=new Date(),fin=new Date(d.getFullYear(),d.getMonth()+1,1),dias=Math.ceil((fin-d)/864e5);
-  let h=`<h3>📅 Temporada de ${esc(mesN(TEMP.m))} <small>· ${dias<=1?'¡último día!':`faltan ${dias} días`}</small></h3>`+
+  let h=`<div class="j-grh"><b>${esc(grpN(GR.cur)||'Sin grupo')}</b><small>${esc(grSync())}</small></div>`;
+  h+=`<h3>📅 Temporada de ${esc(mesN(TEMP.m))} <small>· ${dias<=1?'¡último día!':`faltan ${dias} días`}</small></h3>`+
     `<p class="j-qc">Ganar <b>10</b> · Empate <b>5</b> · Jugar <b>2</b> · Cada atinada <b>1</b>. Al terminar el mes, el 1er lugar se lleva el título <b class="tit-camp">«Campeón de temporada»</b> y fichas: 🥇 ${TPRIZE[0]} · 🥈 ${TPRIZE[1]} · 🥉 ${TPRIZE[2]}.</p>`;
   h+=L.length?'<ol class="j-fl j-tp">'+L.slice(0,10).map((x,k)=>`<li${k===0?' class="top"':''}><i class="j-tpav">${avSVG(AVM[x.av]?x.av:AV[0])}</i><b>${['🥇','🥈','🥉'][k]||(k+1)+'°'} ${esc(x.n)}</b><span>${x.pts} pts</span><small>${x.w} ganada${x.w===1?'':'s'} de ${x.g} · ${x.h} atinada${x.h===1?'':'s'}</small></li>`).join('')+'</ol>'
-    :'<p class="j-fe">Todavía nadie este mes. Cuenta a los que juegan con su celular.</p>';
+    :'<p class="j-fe">Todavía nadie este mes. Cuentan todos los que juegan con su celular (y tú desde esta pantalla).</p>';
   if(TEMP.past.length)h+='<p class="j-tpp">👑 Campeones: '+TEMP.past.slice(0,4).map(s=>`<b>${esc(mesN(s.m))}</b> ${esc(s.top[0].n)}`).join(' · ')+'</p>';
   return h}
-function histHTML(){if(!HIST.length)return '<h3>📜 Últimas partidas</h3><p class="j-fe">Aquí van a salir las partidas que terminen en esta pantalla.</p>';
-  return '<h3>📜 Últimas partidas</h3><ol class="j-hs">'+HIST.slice(0,12).map(x=>{const w=x.w;
-    return `<li><small class="j-hd">${esc(hDate(x.ts))}${x.fl?' · ⚡ con Relámpago':''}</small><b><span class="${w===0?'w':''}" style="color:${TCOL[0]}">${esc(x.n[0])}</span> <em>${x.sc[0]}</em> – <em>${x.sc[1]}</em> <span class="${w===1?'w':''}" style="color:${TCOL[1]}">${esc(x.n[1])}</span>${w<0?' · 🤝 empate':''}</b>`+
-      (x.pl&&(x.pl[0].length||x.pl[1].length)?`<small>👥 ${esc(x.pl[0].join(', ')||'—')} <i>vs</i> ${esc(x.pl[1].join(', ')||'—')}</small>`:'')+
-      (x.mo?`<small class="j-hm">${esc(x.mo.ic)} ${esc(x.mo.t)}: ${esc(x.mo.d)}</small>`:'')+'</li>'}).join('')+'</ol>'}
-{const fd=fameDraw;fameDraw=function(){fd.apply(this,arguments);try{const f=$('#fame');f.insertAdjacentHTML('afterbegin',tempHTML());f.insertAdjacentHTML('beforeend',histHTML())}catch(e){}}}
-window.__tempChamp=tempChamp;window.__j.temp=()=>TEMP;window.__j.hist=()=>HIST;window.__j.tempRoll=tempRoll;
+/* la tabla de siempre: todo lo que llevan desde el reinicio */
+function allHTML(){if(!GV)return '';const T={};for(const mk in GV.M)for(const u in GV.M[mk]){const a=GV.M[mk][u],t=T[u]||(T[u]={u,g:0,w:0,e:0,h:0});t.g+=a[0];t.w+=a[1];t.e+=a[2];t.h+=a[3]}
+  const L=Object.values(T).filter(x=>x.g>0).map(x=>Object.assign(x,{pts:tempPts(x),n:(GV.NM[x.u]||['Jugador'])[0],av:(GV.NM[x.u]||[])[1]})).sort((a,b)=>b.pts-a.pts||b.w-a.w).slice(0,10);
+  if(!L.length)return '';
+  return '<h3>🏆 Tabla de siempre</h3><ol class="j-fl j-tp">'+L.map((x,k)=>`<li${k===0?' class="top"':''}><i class="j-tpav">${avSVG(AVM[x.av]?x.av:AV[0])}</i><b>${['🥇','🥈','🥉'][k]||(k+1)+'°'} ${esc(x.n)}</b><span>${x.pts} pts</span><small>${x.w} ganada${x.w===1?'':'s'} de ${x.g} · ${x.h} atinada${x.h===1?'':'s'}</small></li>`).join('')+'</ol>'}
+function histHTML(){if(!HIST.length)return '<h3>📜 Últimas partidas</h3><p class="j-fe">Aquí van a salir las partidas que terminen con este grupo.</p>';
+  return '<h3>📜 Últimas partidas</h3><ol class="j-hs">'+HIST.slice(0,12).map(x=>{const w=x.w,pl=Array.isArray(x.pl)?x.pl:[[],[]],nm=Array.isArray(x.n)?x.n:['',''];
+    return `<li><small class="j-hd">${esc(hDate(x.ts))}${x.fl?' · ⚡ con Relámpago':''}</small><b><span class="${w===0?'w':''}" style="color:${TCOL[0]}">${esc(nm[0])}</span> <em>${+x.sc[0]||0}</em> – <em>${+x.sc[1]||0}</em> <span class="${w===1?'w':''}" style="color:${TCOL[1]}">${esc(nm[1])}</span>${w<0?' · 🤝 empate':''}</b>`+
+      (pl[0]&&pl[1]&&(pl[0].length||pl[1].length)?`<small>👥 ${esc(pl[0].join(', ')||'—')} <i>vs</i> ${esc(pl[1].join(', ')||'—')}</small>`:'')+
+      (x.mo&&x.mo.t?`<small class="j-hm">${esc(x.mo.ic)} ${esc(x.mo.t)}: ${esc(x.mo.d)}</small>`:'')+'</li>'}).join('')+'</ol>'}
+{const fd=fameDraw;fameDraw=function(){fd.apply(this,arguments);try{const f=$('#fame');f.insertAdjacentHTML('afterbegin',tempHTML()+allHTML());f.insertAdjacentHTML('beforeend',histHTML()+
+    '<p class="j-grlk"><button type="button" class="l2-b" data-grp="1">👪🎮 Cambiar de grupo o vincular otra pantalla</button></p>')}catch(e){}}}
+
+/* ===== escoger el grupo de esta pantalla (cambiarlo pide el PIN) y vincular otra pantalla ===== */
+async function grPin(){const v=prompt('PIN del anfitrión:');if(v==null)return false;const k=await sha256('100familiares-anfitrion:'+String(v).trim());if((await sha256(k))===ADM_KH)return true;toast('PIN incorrecto.');return false}
+function grDraw(){const b=$('#grpb');if(b){b.textContent=(GR.cur?grpN(GR.cur):'¿Con quién juegan?')+(NUBE.up?'':' · ☁️✕');b.classList.toggle('none',!GR.cur)}}
+function grSet(id){if(!GRPS.some(g=>g.id===id))return;GR.cur=id;LSx.set('j-grp',GR);grView();grDraw();try{if(!$('#tab-fama').hidden)fameDraw()}catch(e){}toast(`Ahora esta pantalla juega con ${grpN(id)}`)}
+function grModal(first){let m=$('#grpm');if(!m){m=document.createElement('div');m.id='grpm';m.className='j-grpm';m.setAttribute('role','dialog');m.setAttribute('aria-modal','true');document.body.appendChild(m)}
+  m.innerHTML=`<div class="j-grpi"><h2>${first?'¿Con quién se juega en esta pantalla?':'Grupo de esta pantalla'}</h2><p>Cada grupo tiene su propia tabla, salón de la fama e historial. Los de un grupo nunca ven los nombres del otro.</p>`+
+    `<div class="j-grpo">${GRPS.map(g=>`<button type="button" class="l2-b${GR.cur===g.id?' l2-gd':''}" data-gs="${g.id}">${g.ic} ${g.n}</button>`).join('')}</div>`+
+    `<details><summary>🔗 Vincular con otra pantalla (compu, celular o tele)</summary><p>Para que otra pantalla tenga las mismas tablas, escribe allá este código (o aquí el de la otra):</p><p class="j-grc">${esc(GR.m)}</p>`+
+    `<form id="grpf"><input id="grpin" placeholder="código-de-la-otra-pantalla" autocomplete="off" spellcheck="false"><button class="l2-b" type="submit">Usar ese código</button></form></details>`+
+    `${first?'':'<button type="button" class="l2-b" data-gx="1">Cerrar</button>'}</div>`;m.hidden=false;
+  $('#grpf',m).addEventListener('submit',e=>{e.preventDefault();const c=nubeNorm($('#grpin',m).value);if(!nubeValid(c)){toast('Ese código no está completo: son 4 palabras y un número.');return}if(c===GR.m){toast('Ese ya es el código de esta pantalla.');return}
+    GR.m=c;LSx.set('j-grp',GR);GRPS.forEach(g=>{try{localStorage.removeItem('j-gc-'+g.id)}catch(e){}});toast('¡Listo! Esta pantalla ya comparte las tablas con la otra.');setTimeout(()=>location.reload(),1200)})}
+document.addEventListener('click',async e=>{const s=e.target.closest('[data-gs]'),x=e.target.closest('[data-gx]'),o=e.target.closest('#grpb,[data-grp]');
+  if(s){grSet(s.dataset.gs);$('#grpm').hidden=true;return}if(x){$('#grpm').hidden=true;return}
+  if(o){if(GR.cur&&!(await grPin()))return;grModal(!GR.cur)}});
+/* lo que llega de las otras pantallas */
+NUBE.onState=grDraw;
+(async()=>{try{for(const g of GRPS){await nubeJoin(g.id,GR.m+'|'+g.id,'d_'+GR.dev,(slot,d)=>{if(!/^d_[a-z0-9]{6,12}$/.test(slot))return;GD[g.id].oth[slot]=d;LSx.set('j-gc-'+g.id,GD[g.id].oth);if(g.id===GR.cur){grView();try{if(!$('#tab-fama').hidden)fameDraw()}catch(e){}}});grSave(g.id,1)}}catch(e){}})();
+grView();grDraw();
+/* la primera vez se pregunta (en pruebas automáticas se usa Familia) */
+if(!GR.cur){if(navigator.webdriver)grSet('fam');else setTimeout(()=>{if(!GR.cur)grModal(true)},1200)}
+window.__tempChamp=tempChamp;window.__j.temp=()=>TEMP;window.__j.hist=()=>HIST;window.__j.tempRoll=tempRoll;window.__j.GR=GR;window.__j.GD=GD;window.__j.grSet=grSet;window.__j.grView=grView;window.__j.grSave=grSave;window.__j.grGame=grGame;window.__j.grExcl=grExcl;
 
 /* ===================== TU PERFIL EN ESTA PANTALLA =====================
    Si esta pantalla es el celular (o la compu) donde también tienes la app, el jugador de «¿Juegas desde esta pantalla?»
@@ -4057,8 +4188,6 @@ function meRes(m){if(MERS.has(m.r)||!meProf())return;const p=meLoad();
       const S=LSx.get('bt-seen',[]);me.seen=Array.isArray(S)?S:[];const u=LSx.get('bt-uid',null);me.puid=typeof u==='string'?u:null}}catch(e){}return r}}
 /* nombre de tu perfil ya escrito */
 /* temporada: también cuentas tú (con el id de tu celular) y se te paga el premio aquí */
-{const t0=tempAdd;tempAdd=function(w){t0.apply(this,arguments);try{const me=NH.P.get('me');if(!me||!me.puid||!(me.team===0||me.team===1))return;const s=G.st.p.me||{},
-    x=TEMP.p[me.puid]||(TEMP.p[me.puid]={n:'',g:0,w:0,e:0,h:0});x.n=String(me.name).slice(0,14);x.av=me.av||'';x.g++;if(w<0)x.e++;else if(w===me.team)x.w++;x.h+=s.hits||0;LSx.set('j-temp',TEMP)}catch(e){}}}
 {try{const u=LSx.get('bt-uid',null);if(typeof u==='string'&&meProf()){const p=meLoad();let got=0;TEMP.past.slice(0,3).forEach(s=>{const i=s.top.findIndex(x=>x.u===u);if(i>=0&&!p.tp[s.m]){p.tp[s.m]=i+1;meCoin(p,COIN.tp[i]);got=1;
       later(1500,()=>toast(`${['🥇','🥈','🥉'][i]} Quedaste ${i+1}° en la temporada de ${mesN(s.m)}${i===0?': título «Campeón de temporada»':''} · +${COIN.tp[i]} 🪙`))}});if(got)meDone(p)}}catch(e){}}
 meSync();
